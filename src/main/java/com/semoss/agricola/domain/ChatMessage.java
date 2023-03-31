@@ -10,6 +10,8 @@ import java.time.LocalDate;
  */
 @Getter
 public class ChatMessage {
+    private static long NextID = 0;
+    private Long id;
     private String content;
     private User sender;
     private MessageType type;
@@ -17,6 +19,7 @@ public class ChatMessage {
 
     @Builder
     public ChatMessage(String content, User sender, MessageType type) {
+        this.id = NextID++;
         this.content = content;
         this.sender = sender;
         this.type = type;

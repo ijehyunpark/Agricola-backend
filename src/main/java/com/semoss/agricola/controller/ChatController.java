@@ -8,6 +8,7 @@ import com.semoss.agricola.service.GameRoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
@@ -22,7 +23,7 @@ public class ChatController {
     private final GameRoomService gameRoomService;
 
     @MessageMapping("/greetings/{gameRoomId}")
-    public void greeting(@DestinationVariable Long gameRoomId, String username, SimpMessageHeaderAccessor headerAccessor) {
+    public void greeting(@DestinationVariable Long gameRoomId, @Payload String username, SimpMessageHeaderAccessor headerAccessor) {
         // 해당 id의 게임룸이 존재하지 않는다. return WS STATUS ?
         GameRoom gameRoom = gameRoomService.getGameRoom(gameRoomId).orElseThrow(NoSuchElementException::new);
 
@@ -48,7 +49,7 @@ public class ChatController {
     }
 
     @MessageMapping("/send/{gameRoomId}")
-    public void sendMessage(@DestinationVariable Long gameRoomId, String content, SimpMessageHeaderAccessor headerAccessor) {
+    public void sendMessage(@DestinationVariable Long gameRoomId, @Payload String content, SimpMessageHeaderAccessor headerAccessor) {
         // 해당 id의 게임룸이 존재하지 않는다. return WS STATUS ?
         if(!gameRoomService.existGameRoom(gameRoomId))
             throw new NoSuchElementException();

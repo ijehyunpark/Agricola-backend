@@ -37,8 +37,8 @@ public class GameRoomController {
     }
 
     /**
-     * 기존 채팅방을 삭제합니다.
-     * @param id 삭제할 채팅방의 고유 식별자
+     * 기존 게임방을 삭제합니다.
+     * @param id 삭제할 게임방의 고유 식별자
      */
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

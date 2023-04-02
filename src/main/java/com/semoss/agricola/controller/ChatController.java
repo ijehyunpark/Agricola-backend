@@ -24,8 +24,8 @@ public class ChatController {
     private final GameRoomService gameRoomService;
 
     /**
-     * 처음 채팅 방에 입장할 때 유저이름을 등록합니다.
-     * @param gameRoomId 입장할 채팅 방 고유 식별자
+     * 처음 게임 방에 입장할 때 유저이름을 등록합니다.
+     * @param gameRoomId 입장할 게임 방 고유 식별자
      * @param username 입장할 유저가 사용할 이름
      */
     @MessageMapping("/greetings/{gameRoomId}")
@@ -64,8 +64,8 @@ public class ChatController {
     }
 
     /**
-     * 채팅방에 메세지를 방송합니다.
-     * @param content 채팅 메세지
+     * 게임방에 메세지를 방송합니다.
+     * @param content 게임 메세지
      */
     @MessageMapping("/send")
     public void sendMessage(@Payload String content, SimpMessageHeaderAccessor headerAccessor) {

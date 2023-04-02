@@ -23,7 +23,9 @@ public class GameRoomController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<GameRoomResponse> searchAllGameRoom(){
-        return gameRoomService.getGameRoomList();
+        return gameRoomService.getGameRoomList().stream()
+                .map(GameRoomResponse::toDto)
+                .toList();
     }
 
     /**

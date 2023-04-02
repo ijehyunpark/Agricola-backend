@@ -7,6 +7,7 @@ import com.semoss.agricola.domain.User;
 import com.semoss.agricola.service.GameRoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -22,21 +23,35 @@ public class ChatController {
     private final SimpMessageSendingOperations simpMessageSendingOperations;
     private final GameRoomService gameRoomService;
 
+    /**
+     * 처음 채팅 방에 입장할 때 유저이름을 등록합니다.
+     * @param gameRoomId 입장할 채팅 방 고유 식별자
+     * @param username 입장할 유저가 사용할 이름
+     */
     @MessageMapping("/greetings/{gameRoomId}")
-    public void greeting(@DestinationVariable Long gameRoomId, @Payload String username, SimpMessageHeaderAccessor headerAccessor) {
+    public void greeting(@DestinationVariable Long gameRoomId, @Payload String username, SimpMessageHeaderAccessor headerAccessor, @Header("simpSessionId") String sessionId) {
         // 해당 id의 게임룸이 존재하지 않는다. return WS STATUS ?
         GameRoom gameRoom = gameRoomService.getGameRoom(gameRoomId).orElseThrow(NoSuchElementException::new);
+
+        if(gameRoom.getParticipants().size() >= gameRoom.getCapacity()){
+            ChatMessage message = ChatMessage.builder()
+                    .type(MessageType.DENIED)
+                    .build();
+            simpMessageSendingOperations.convertAndSend("/sub/channel/" + gameRoomId, message);
+            throw new RuntimeException("참여 인원이 가득찼습니다.");
+        }
 
         // 새로운 게스트 계정 생성
         User user = User.builder()
                 .username(username)
+                .gameRoom(gameRoom)
                 .build();
-
-        // 웹소켓 연결상 세션에 유저 고유 식별자 저장
-        headerAccessor.getSessionAttributes().put("userId", user.getId());
 
         // 게임룸에도 저장
         gameRoom.getParticipants().add(user);
+
+        // 웹소켓 연결상 세션에 유저 저장
+        headerAccessor.getSessionAttributes().put("user", user);
 
         // 참여 메세지 제작
         ChatMessage message = ChatMessage.builder()
@@ -48,15 +63,14 @@ public class ChatController {
         simpMessageSendingOperations.convertAndSend("/sub/channel/" + gameRoomId, message);
     }
 
-    @MessageMapping("/send/{gameRoomId}")
-    public void sendMessage(@DestinationVariable Long gameRoomId, @Payload String content, SimpMessageHeaderAccessor headerAccessor) {
-        // 해당 id의 게임룸이 존재하지 않는다. return WS STATUS ?
-        if(!gameRoomService.existGameRoom(gameRoomId))
-            throw new NoSuchElementException();
-
+    /**
+     * 채팅방에 메세지를 방송합니다.
+     * @param content 채팅 메세지
+     */
+    @MessageMapping("/send")
+    public void sendMessage(@Payload String content, SimpMessageHeaderAccessor headerAccessor) {
         // 누가 보낸 메세지 일까?
-        Long userId = (Long) headerAccessor.getSessionAttributes().get("userId");
-        User user = gameRoomService.getUser(gameRoomId, userId).orElseThrow(NoSuchElementException::new);
+        User user = (User) headerAccessor.getSessionAttributes().get("user");
 
         // 참여 메세지 제작
         ChatMessage message = ChatMessage.builder()
@@ -66,29 +80,7 @@ public class ChatController {
                 .build();
 
         // 그리고 전송
-        simpMessageSendingOperations.convertAndSend("/sub/channel/" + gameRoomId, message);
+        simpMessageSendingOperations.convertAndSend("/sub/channel/" + user.getGameRoom().getId(), message);
     }
 
-    @MessageMapping("/exit/{gameRoomId}")
-    public void exitGameRoom(@DestinationVariable Long gameRoomId, SimpMessageHeaderAccessor headerAccessor){
-        // 해당 id의 게임룸이 존재하지 않는다. return WS STATUS ?
-        if(!gameRoomService.existGameRoom(gameRoomId))
-            throw new NoSuchElementException();
-
-        // 누가 보낸 메세지 일까?
-        Long userId = (Long) headerAccessor.getSessionAttributes().get("userId");
-        User user = gameRoomService.getUser(gameRoomId, userId).orElseThrow(NoSuchElementException::new);
-
-        // 참여 메세지 제작
-        ChatMessage message = ChatMessage.builder()
-                .sender(user)
-                .type(MessageType.LEAVE)
-                .build();
-
-        // 그리고 전송
-        simpMessageSendingOperations.convertAndSend("/sub/channel/" + gameRoomId, message);
-
-        // 생각해보니 유저 삭제하면 기록 사라지네...
-        gameRoomService.deleteUser(gameRoomId, userId);
-    }
 }

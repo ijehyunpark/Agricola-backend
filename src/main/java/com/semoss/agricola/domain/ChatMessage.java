@@ -13,7 +13,7 @@ public class ChatMessage {
     private static long NextID = 0;
     private Long id;
     private String content;
-    private User sender;
+    private String sender;
     private MessageType type;
     private LocalDate createTime;
 
@@ -21,7 +21,7 @@ public class ChatMessage {
     public ChatMessage(String content, User sender, MessageType type) {
         this.id = NextID++;
         this.content = content;
-        this.sender = sender;
+        this.sender = sender.getUsername();
         this.type = type;
         this.createTime = LocalDate.now();
     }

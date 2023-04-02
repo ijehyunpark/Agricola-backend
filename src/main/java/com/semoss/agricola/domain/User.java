@@ -15,10 +15,12 @@ public class User {
 
     private Long id;
     private String username;
+    private GameRoom gameRoom;
 
     @Builder
-    public User(String username) {
+    public User(String username, GameRoom gameRoom) {
         this.id = NextUserID++;
         this.username = username;
+        this.gameRoom = gameRoom;
     }
 }

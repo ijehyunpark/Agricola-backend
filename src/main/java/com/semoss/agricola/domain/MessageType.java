@@ -6,5 +6,6 @@ package com.semoss.agricola.domain;
 public enum MessageType {
     MESSAGE,
     GREETING,
-    LEAVE
+    LEAVE,
+    DENIED,
 }

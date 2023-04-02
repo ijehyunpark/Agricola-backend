@@ -89,7 +89,7 @@ public class GameRoomService {
      * 기존 gameRoon을 제거한다.
      * @param id 제거할 gameRoon의 고유 식별자
      */
-    public void destoryGameRoom(Long id) {
+    public void destroyGameRoom(Long id) {
         memoryGameRoomList.removeIf(gameRoom -> gameRoom.getId() == id);
     }
 }

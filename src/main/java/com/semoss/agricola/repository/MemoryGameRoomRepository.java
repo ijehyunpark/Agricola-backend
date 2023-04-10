@@ -1,11 +1,13 @@
 package com.semoss.agricola.repository;
 
 import com.semoss.agricola.domain.GameRoom;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class MemoryGameRoomRepository implements GameRoomRepository {
 
     private final List<GameRoom> gameRoomList = new ArrayList<>();

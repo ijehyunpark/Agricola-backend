@@ -1,10 +1,9 @@
 package com.semoss.agricola.service;
 
 import com.semoss.agricola.domain.GameRoom;
-import com.semoss.agricola.repository.GameRoomRepository;
-import com.semoss.agricola.domain.User;
+    import com.semoss.agricola.domain.User;
 import com.semoss.agricola.dto.GameRoomCreateRequest;
-import com.semoss.agricola.dto.GameRoomResponse;
+import com.semoss.agricola.repository.GameRoomRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

@@ -6,6 +6,7 @@ import com.semoss.agricola.GameRoom.dto.GameRoomResponse;
 import com.semoss.agricola.GameRoom.dto.GameRoomUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -48,12 +49,12 @@ public class GameRoomController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void createGameRoom(@RequestBody GameRoomCreateRequest gameRoomCreateRequest) {
+    public void createGameRoom(@RequestBody @Validated GameRoomCreateRequest gameRoomCreateRequest) {
         gameRoomService.create(gameRoomCreateRequest.getName(), gameRoomCreateRequest.getCapacity());
     }
 
     @PutMapping(value = "/{id}")
-    public void updateGameRoom(@PathVariable Long id, @RequestBody GameRoomUpdateRequest gameRoomUpdateRequest) throws IllegalAccessException {
+    public void updateGameRoom(@PathVariable Long id, @RequestBody @Validated GameRoomUpdateRequest gameRoomUpdateRequest) throws IllegalAccessException {
         gameRoomService.update(id, gameRoomUpdateRequest.getName(), gameRoomUpdateRequest.getCapacity());
     }
 

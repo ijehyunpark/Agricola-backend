@@ -10,5 +10,4 @@ public interface GameRoomRepository {
     List<GameRoom> findAll();
     void insert(GameRoom gameRoom);
     void deleteById(Long id);
-
 }

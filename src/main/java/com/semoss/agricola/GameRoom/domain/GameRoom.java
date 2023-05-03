@@ -12,7 +12,7 @@ import java.util.List;
  */
 @Getter
 public class GameRoom {
-    private static long NextGameRoomID = 0L;
+    private static long NextGameRoomID = 1L;
     private final Long id;
     @Setter
     private String name;

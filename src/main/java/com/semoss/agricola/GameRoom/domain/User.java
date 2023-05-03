@@ -7,7 +7,7 @@ import lombok.Setter;
  * 게임방에 찹가한 플레이어 객체
  */
 public class User {
-    private static long NextUserID = 0L;
+    private static long NextUserID = 1L;
     private final Long id;
     @Setter
     private String username;

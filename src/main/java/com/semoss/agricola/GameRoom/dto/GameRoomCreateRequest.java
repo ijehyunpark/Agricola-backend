@@ -13,6 +13,7 @@
         @NotNull(message = "name 필드는 필수입니다.")
         private String name;
 
+        @Builder.Default
         @Max(value = 4, message = "현재 4인용만 지원합니다.")
         @Min(value = 4, message = "현재 4인용만 지원합니다.")
         private Integer capacity = 4;

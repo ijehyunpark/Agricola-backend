@@ -1,11 +1,13 @@
 package com.semoss.agricola.GameRoom.domain;
 
 import lombok.Builder;
+import lombok.Getter;
 import lombok.Setter;
 
 /**
  * 게임방에 찹가한 플레이어 객체
  */
+@Getter
 public class User {
     private static long NextUserID = 1L;
     private final Long id;

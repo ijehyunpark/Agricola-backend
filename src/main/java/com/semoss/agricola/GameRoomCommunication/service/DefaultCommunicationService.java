@@ -2,7 +2,7 @@ package com.semoss.agricola.GameRoomCommunication.service;
 
 import com.semoss.agricola.GameRoom.Repository.GameRoomRepository;
 import com.semoss.agricola.GameRoom.domain.GameRoom;
-import com.semoss.agricola.GameRoom.domain.User;
+import com.semoss.agricola.GameRoomCommunication.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

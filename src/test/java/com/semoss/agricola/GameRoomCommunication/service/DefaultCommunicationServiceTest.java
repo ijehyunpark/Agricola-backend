@@ -2,7 +2,7 @@ package com.semoss.agricola.GameRoomCommunication.service;
 
 import com.semoss.agricola.GameRoom.Repository.GameRoomRepository;
 import com.semoss.agricola.GameRoom.domain.GameRoom;
-import com.semoss.agricola.GameRoom.domain.User;
+import com.semoss.agricola.GameRoomCommunication.domain.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

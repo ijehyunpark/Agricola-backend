@@ -1,7 +1,6 @@
 package com.semoss.agricola.GameRoomCommunication.config;
 
-import com.semoss.agricola.GameRoom.Service.GameRoomService;
-import com.semoss.agricola.GameRoom.domain.User;
+import com.semoss.agricola.GameRoomCommunication.domain.User;
 import com.semoss.agricola.GameRoomCommunication.service.CommunicationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -12,6 +11,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
+
+import java.util.NoSuchElementException;
 
 @Component
 @RequiredArgsConstructor
@@ -29,7 +30,7 @@ public class StompWebSocketEventListener {
     public void handleWebSocketConnectListener(SessionConnectEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String sessionId = headerAccessor.getSessionId();
-        log.info("세션 연결 요청 발생 : " + sessionId);
+        log.info("Session Connect : " + sessionId);
     }
 
     /**
@@ -40,7 +41,7 @@ public class StompWebSocketEventListener {
     public void handleWebSocketConnectListener(SessionConnectedEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String sessionId = headerAccessor.getSessionId();
-        log.info("세션 연결 요청 성공 : " + sessionId);
+        log.info("Session Connected : " + sessionId);
     }
 
     /**
@@ -58,6 +59,10 @@ public class StompWebSocketEventListener {
         Long gameRoomId = (Long) headerAccessor.getSessionAttributes().get("gameRoomId");
 
         // 그리고 유저 삭제
-        communicationService.exit(gameRoomId, userId);
+        try{
+            communicationService.exit(gameRoomId, userId);
+        } catch (NoSuchElementException ex){
+            log.error(ex.getLocalizedMessage());
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.semoss.agricola.GameRoom.domain;
 
+import com.semoss.agricola.GameRoomCommunication.domain.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,4 +1,4 @@
-package com.semoss.agricola.GameRoom.domain;
+package com.semoss.agricola.GameRoomCommunication.domain;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -13,6 +13,8 @@ public class User {
     private final Long id;
     @Setter
     private String username;
+    @Setter
+    private Long gameRoomId;
 
     @Builder
     public User(String username) {

@@ -36,9 +36,4 @@ public class DefaultCommunicationService implements CommunicationService {
         gameRoom.exit(userId);
         return null;
     }
-
-    @Override
-    public void start(Long gameRoomId) {
-        //doNothing now
-    }
 }

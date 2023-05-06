@@ -18,9 +18,11 @@ class BasicActionTest {
 
     @Test
     void runAction() {
-        assertEquals(player.getResource(ResourceType.WOOD),0);
+        assertEquals(0,player.getResource(ResourceType.WOOD));
         basicAction = new BasicAction(ResourceType.WOOD,3);
         basicAction.runAction(player);
-        assertEquals(player.getResource(ResourceType.WOOD),3);
+        assertEquals(3,player.getResource(ResourceType.WOOD));
+        basicAction.runAction(player);
+        assertEquals(6,player.getResource(ResourceType.WOOD));
     }
 }

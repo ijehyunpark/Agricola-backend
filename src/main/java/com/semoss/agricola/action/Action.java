@@ -6,4 +6,5 @@ public interface Action {
     ActionType actionType = ActionType.EMPTY;
     boolean runAction();
     boolean runAction(Player player);
+    ActionType getActionType();
 }

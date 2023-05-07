@@ -1,11 +1,7 @@
 package com.semoss.agricola.GamePlay.domain.player;
 
-import com.semoss.agricola.GamePlay.domain.player.type.AnimalType;
-import com.semoss.agricola.GamePlay.domain.player.type.ResidentType;
-import com.semoss.agricola.GamePlay.domain.player.type.RoomType;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -13,7 +9,6 @@ import java.util.List;
 
 @Getter
 public class Room implements Field {
-
     @Getter
     private class Resident {
         private ResidentType residentType;
@@ -86,5 +81,21 @@ public class Room implements Field {
             if(resident.getResidentType() == ResidentType.CHILD)
                 resident.growUpChild();
         }
+    }
+
+
+    /**
+     * 음식 요구사항 계산
+     * @return
+     */
+    public int calculateFoodNeeds() {
+        int result = 0;
+        for (Resident resident : residents){
+            if(resident.getResidentType() == ResidentType.ADULT)
+                result += 2;
+            else if(resident.getResidentType() == ResidentType.CHILD)
+                result += 1;
+        }
+        return result;
     }
 }

@@ -1,18 +1,18 @@
 package com.semoss.agricola.GamePlay.service;
 
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
-import com.semoss.agricola.GamePlay.domain.player.Player;
-import com.semoss.agricola.GamePlay.domain.resource.PlayerResource;
+import com.semoss.agricola.GamePlay.domain.GameProgress;
 import com.semoss.agricola.GamePlay.domain.gameBoard.GameBoard;
+import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.player.PlayerBoard;
-import com.semoss.agricola.GameRoom.repository.GameRoomRepository;
-import com.semoss.agricola.GameRoom.domain.GameRoom;
+import com.semoss.agricola.GamePlay.domain.player.PlayerResource;
 import com.semoss.agricola.GameRoom.domain.Game;
+import com.semoss.agricola.GameRoom.domain.GameRoom;
+import com.semoss.agricola.GameRoom.repository.GameRoomRepository;
 import com.semoss.agricola.GameRoomCommunication.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.IntStream;
@@ -67,8 +67,8 @@ public class AgricolaServiceImpl implements AgricolaService {
                                     .isStartingPlayer(isFirst)
                                     .build())
                             .playerBoard(PlayerBoard.builder().build())
-                            .cardField(new ArrayList<>()) // TODO : 플레이어 카드 필드 구현
-                            .cardHand(new ArrayList<>()) // TODO : 플레이어 직업 카드, 보조 설비 카드 분배 구현 (e,g 랜덤으로 7장 수령)
+//                            .cardField(new ArrayList<>()) // TODO : 플레이어 카드 필드 구현
+//                            .cardHand(new ArrayList<>()) // TODO : 플레이어 직업 카드, 보조 설비 카드 분배 구현 (e,g 랜덤으로 7장 수령)
                             .build();
                 })
                 .toList();
@@ -87,10 +87,13 @@ public class AgricolaServiceImpl implements AgricolaService {
                 () -> new NoSuchElementException("해당 id를 가진 게임방이 존재하지 않습니다.")
         );
 
+        if (gameRoom.getGame() != null)
+            throw new RuntimeException("현재 진행중인 게임이 있습니다.");
+
         // TODO: 다인용 지원
-        if (gameRoom.getParticipants().size() != 4){
-            throw new RuntimeException("현재 4인용만 지원합니다.");
-        }
+//      if (gameRoom.getParticipants().size() != 4){
+//          throw new RuntimeException("현재 4인용만 지원합니다.");
+//      }
 
         // 새로운 아그리콜라 게임 시스템을 제작한다.
         AgricolaGame game = AgricolaGame.builder()
@@ -128,6 +131,9 @@ public class AgricolaServiceImpl implements AgricolaService {
     private void roundStart(Long gameRoomId) {
         // 아그리콜라 게임 추출
         AgricolaGame game = extractGame(gameRoomId);
+
+        // 현재 게임 상태를 선공 플레이어의 행동 단계로 변경한다.
+        game.update(GameProgress.PlayerAction, game.getStartingPlayer().getUserId());
 
         // 이번 라운드의 행동이 공개한다.
         game.roundStart();
@@ -173,8 +179,9 @@ public class AgricolaServiceImpl implements AgricolaService {
         AgricolaGame game = extractGame(gameRoomId);
 
         // 남은 말이 있는지 검증
-        if(game.isAllPlayerPlayed() != false)
+        if(!game.isAllPlayerPlayed()) {
             throw new RuntimeException("아직 모둔 플레이를 하지 않은 플레이어가 존재합니다.");
+        }
 
         // 플레이어 행동 말 초기화
         game.initPlayerPlayed();
@@ -182,22 +189,75 @@ public class AgricolaServiceImpl implements AgricolaService {
         // 수확 시기인 경우 수확 행동을 수행한다.
         int round = game.getRound();
         if (round == 4 || round == 7 || round == 9 || round == 11 || round == 13 || round == 14) {
+            game.update(GameProgress.HARVEST, game.getStartingPlayer().getUserId());
             harvesting(gameRoomId);
         }
+    }
+
+    private void roundEndExtension(Long gameRoomId) {
+        // 아그리콜라 게임 추출
+        AgricolaGame game = extractGame(gameRoomId);
+
 
         // 아이를 어른으로 성장시킨다.
         game.growUpChild();
+
+        // 선공 플레이어를 변경한다.
+        game.updateStartingPlayer();
+
+        if(game.getRound() < 14){
+            // 새로운 라운드를 시작한다.
+            roundStart(gameRoomId);
+        } else {
+            // 게임을 종료한다.
+            finish(gameRoomId);
+        }
     }
 
+    /**
+     * 수확 단계
+     * @param gameRoomId
+     */
     public void harvesting(Long gameRoomId) {
-        //    - [수확 시기인 경우] 수확 시기가 되었을 때의 선공권을 가진 플레이어부터 순서대로 이하 **수확 행동**을 수행한다. (방 만들때 정한 시간의 2배)
-        //        - 플레이어 보드판에 있는 채소와 곡식 종자를 1개 수확한다.
-        //        - 사람 1명 당 두 개의 식량을 소비한다.  (아이의 경우 1개 소비한다.)
-        //            - [전제조건] 식량이 부족한 경우, 내가 가지고 있는 자원을 통해 식량으로 교환할 수 있다.
-        //            - 식량이 충분한 경우, 식량을 소비하고 종료한다.
-        //            - 수확 시기에 사용할 수 있는 [직업 카드] 혹은 [설비 카드]가 있는 경우, 이 카드를 사용할 수 있다.
-        //            - 식량이 부족한 상태에서 자원도 없거나 자원이 충분한데 교환하지 않는 경우 또는 시간초과가 됐을 경우 식량 1개 당 하나의 구걸 카드를 받는다.
-        //        - 내 보드판에서 같은 종류의 동물이 2마리 이상 있는 경우 한 마리가 늘어난다(종류별 최대1마리).
+        // 아그리콜라 게임 추출
+        AgricolaGame game = extractGame(gameRoomId);
+
+        AgricolaGame.GameState gameState = game.getGameState();
+
+        Player player = game.findPlayerByUserId(gameState.getUserId());
+
+        // 수확
+        player.harvest();
+
+        // 먹여 살리기 작업
+        feeding(gameRoomId);
+
+        // 동물 번식
+        player.breeding();
+
+        // 다음 플레이어로 수확 상태 변경
+        if(game.getNextPlayer().equals(game.getStartingPlayer())){
+            roundEndExtension(gameRoomId);
+        } else {
+            game.update(GameProgress.HARVEST, game.getNextPlayer().getUserId());
+            harvesting(gameRoomId);
+        }
+
+    }
+
+    /**
+     * 먹여 살리기 단계
+     * @param gameRoomId
+     */
+    public void feeding(Long gameRoomId) {
+        // 아그리콜라 게임 추출
+        AgricolaGame game = extractGame(gameRoomId);
+
+        AgricolaGame.GameState gameState = game.getGameState();
+
+        Player player = game.findPlayerByUserId(gameState.getUserId());
+
+        player.feeding();
     }
 
     /**

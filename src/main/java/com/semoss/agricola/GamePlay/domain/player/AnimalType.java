@@ -1,5 +1,6 @@
-package com.semoss.agricola.GamePlay.domain.player.type;
+package com.semoss.agricola.GamePlay.domain.player;
 
+@Deprecated
 public enum AnimalType {
     WILD_BOAR,
     SHEEP,

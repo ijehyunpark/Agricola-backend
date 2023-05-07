@@ -14,7 +14,7 @@ import java.util.List;
 @Getter
 public class GameBoard {
     private List<Event> events;
-    private ImprovementBoard improvementBoard;
+//    private ImprovementBoard improvementBoard;
 
     @Builder
     public GameBoard() {

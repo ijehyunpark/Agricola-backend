@@ -4,5 +4,5 @@ import lombok.Getter;
 
 @Getter
 public abstract class MajorImprovement {
-    private boolean checkPrerequisites;
+//    private boolean checkPrerequisites;
 }

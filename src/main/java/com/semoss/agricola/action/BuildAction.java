@@ -1,6 +1,6 @@
 package com.semoss.agricola.action;
 
-import com.semoss.agricola.mainflow.FieldType;
+import com.semoss.agricola.GamePlay.domain.Field.FieldType;
 import com.semoss.agricola.mainflow.Player;
 import com.semoss.agricola.mainflow.ResourceType;
 
@@ -15,6 +15,7 @@ public class BuildAction implements Action {
     /** Resources used only once per action */
     private List<Map.Entry<ResourceType,Integer>> resourceUsedOnce;
     private FieldType fieldType;
+    private ActionType actionType = ActionType.BUILD;
 
     public BuildAction(FieldType fieldType, List<Map.Entry<ResourceType,Integer>> resourceSet){
         this.resourceSet = resourceSet;

@@ -1,6 +1,8 @@
 package com.semoss.agricola.mainflow;
 
-import javax.swing.*;
+import com.semoss.agricola.GamePlay.domain.Field.Field;
+import com.semoss.agricola.GamePlay.domain.Field.FieldType;
+
 import java.util.HashMap;
 
 public class Player {
@@ -55,6 +57,13 @@ public class Player {
         return resourceStorage.get(resourceType);
     }
 
+    public FieldType getRoomType(){
+        return playerBoard.getRoomType();
+    }
+
+    public int getRoomCount(){
+        return playerBoard.getRoomCount();
+    }
 
     public boolean buildField(int[][] pos, FieldType fieldType){
         switch (fieldType){
@@ -71,6 +80,9 @@ public class Player {
         return false;
     }
 
+    public void upgradeRoom() {
+        playerBoard.upgradeRoom();
+    }
 
     /**
      * for test. don't use
@@ -78,5 +90,12 @@ public class Player {
      */
     public void setRoomCount(int num) {
         playerBoard.setRoomCount(num);
+    }
+
+    /**
+     * for test
+     */
+    public Field getField(int row, int col){
+        return playerBoard.getField(row,col);
     }
 }

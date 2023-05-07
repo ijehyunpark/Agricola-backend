@@ -1,4 +1,4 @@
-package com.semoss.agricola.mainflow;
+package com.semoss.agricola.GamePlay.domain.Field;
 
 public enum FieldType {
     EMPTY(0), WOOD(1), CLAY(2), STONE(3), FARM(4), BARN(5),

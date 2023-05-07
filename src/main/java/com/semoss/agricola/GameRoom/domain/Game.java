@@ -4,6 +4,6 @@ import com.semoss.agricola.GameRoomCommunication.domain.User;
 
 import java.util.List;
 
-public interface GameScripts {
+public interface Game {
     public List<User> getUser();
 }

@@ -21,7 +21,7 @@ public class GameRoom {
     private final List<User> participants;
 
     @Setter
-    private GameScripts gameScripts;
+    private Game game;
 
     @Builder
     public GameRoom(String name, int capacity) {

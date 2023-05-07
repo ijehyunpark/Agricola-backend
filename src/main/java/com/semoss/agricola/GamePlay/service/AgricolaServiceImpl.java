@@ -7,7 +7,7 @@ import com.semoss.agricola.GamePlay.domain.board.GameBoard;
 import com.semoss.agricola.GamePlay.domain.board.PlayerBoard;
 import com.semoss.agricola.GameRoom.repository.GameRoomRepository;
 import com.semoss.agricola.GameRoom.domain.GameRoom;
-import com.semoss.agricola.GameRoom.domain.GameScripts;
+import com.semoss.agricola.GameRoom.domain.Game;
 import com.semoss.agricola.GameRoomCommunication.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ public class AgricolaServiceImpl implements AgricolaService {
      * 플레이어 순서 변경
      * @param gameScripts
      */
-    private void selectPlayerSequence(GameScripts gameScripts) {
+    private void selectPlayerSequence(Game gameScripts) {
         //do nothing now
         gameScripts.getUser();
 
@@ -76,41 +76,50 @@ public class AgricolaServiceImpl implements AgricolaService {
         }
 
         // 새로운 아그리콜라 게임 시스템을 제작한다.
-        AgricolaGame gameScripts = AgricolaGame.builder()
+        AgricolaGame game = AgricolaGame.builder()
                 .gameBoard(new GameBoard()) // TODO: 게임 보드 설계
                 .player(buildGamePlayer(gameRoom.getParticipants()))
                 .build();
 
         // 현재 게임방에 아그리 콜라 게임 시스템 설정
-        gameRoom.setGameScripts(gameScripts);
+        gameRoom.setGame(game);
 
 
         // Player 배치도 랜덤이다. & 선공 토큰을 랜덤으로 준다.
-        selectPlayerSequence(gameRoom.getGameScripts());
+        selectPlayerSequence(gameRoom.getGame());
         List<Player> players = buildGamePlayer(gameRoom.getParticipants());
 
         // TODO: 주요설비가 나열이 된다.
 
         // TODO: 라운드카드가 같은 라운드 카드끼리 셔플한후 뒤집어진채로 세팅된다.
+
+        // 게임 시작 후 최초 라운드 시작을 개시한다.
+        roundStart(gameRoomId);
     }
 
     /**
-     * 라운드 시작 매커니즘- 보드판에 모인 공용 주요 설비 카드를 확인할 수 있다.
-- 내 보드판을 눌러 내가 가지고 있는 보조 설비 카드를 확인할 수 있다.
-- 내 보드판을 눌러 내가 가지고 있는 직업 카드를 확인할 수 있다.
-- 다른 사람의 판을 눌러 그 사람이 가지고 있는 보조 설비 카드와 직업 카드, 자원을 볼 수 있다.
-- 지금까지 게임의 진행사항(로그)을 확인할 수 있다.
-- 지금까지 게임의 플레이어 점수를 확인할 수 있다.
+     * 라운드 시작 매커니즘 : 게임 시작시 & 모든 플레이어 행동 종료시 실행
+     [ROW TEXT: TODO 개선]
+     * -보드판에 모인 공용 주요 설비 카드를 확인할 수 있다.
+    - 내 보드판을 눌러 내가 가지고 있는 보조 설비 카드를 확인할 수 있다.
+    - 내 보드판을 눌러 내가 가지고 있는 직업 카드를 확인할 수 있다.
+    - 다른 사람의 판을 눌러 그 사람이 가지고 있는 보조 설비 카드와 직업 카드, 자원을 볼 수 있다.
+    - 지금까지 게임의 진행사항(로그)을 확인할 수 있다.
+    - 지금까지 게임의 플레이어 점수를 확인할 수 있다.
      * @param gameRoomId
      */
-    @Override
-    public void roundStart(Long gameRoomId) {
-        // 라운드를 시작할 게임방 검색
+    private void roundStart(Long gameRoomId) {
+        // 라운드를 시작할 게임방 검색 및 적합성 검사
         GameRoom gameRoom =  gameRoomRepository.findById(gameRoomId).orElseThrow(
                 () -> new NoSuchElementException("해당 id를 가진 게임방이 존재하지 않습니다.")
         );
+        if (!(gameRoom.getGame() instanceof AgricolaGame)){
+            throw new RuntimeException("해당 게임방은 아그리콜라를 플레이하고 있지 않습니다.");
+        }
+        AgricolaGame game = (AgricolaGame) gameRoom.getGame();
 
         // 이번 라운드의 행동이 공개한다.
+        game.roundStart();
 
         // [직업,보조카드] 공개되는 라운드카드에 누적되어있는 자원을 자원을 배치한사람이 가져간다.
 
@@ -148,8 +157,7 @@ public class AgricolaServiceImpl implements AgricolaService {
      * 라운드 종료 매커니즘
      * @param gameRoomId
      */
-    @Override
-    public void roundEnd(Long gameRoomId) {
+    private void roundEnd(Long gameRoomId) {
         //6.
         //    - 게임 판에서 모든 플레이어 말들을 모두 집으로 돌아온다.
         //    - [수확 시기인 경우] 수확 시기가 되었을 때의 선공권을 가진 플레이어부터 순서대로 이하 **수확 행동**을 수행한다. (방 만들때 정한 시간의 2배)

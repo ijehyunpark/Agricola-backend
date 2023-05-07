@@ -6,6 +6,9 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 
+/**
+ * 아그리콜라 플레이어 게임 보드
+ */
 @Getter
 public class PlayerBoard {
     private int roomCount;

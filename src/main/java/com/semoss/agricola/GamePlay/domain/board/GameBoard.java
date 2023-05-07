@@ -4,15 +4,18 @@ import com.semoss.agricola.GamePlay.domain.action.Event;
 import lombok.Getter;
 
 import java.util.List;
+
+/**
+ * 아그리콜라 메인 게임 보드
+ */
 @Getter
 public class GameBoard {
-    private Event[] roundAction;
+    private List<Event> events;
     private Object roundStock;
-    private List<Event> basicAction;
     private ImprovementBoard improvementBoard;
 
     public GameBoard() {
-        // TODO
+        // TODO : 게임 보드 설계
         shuffleRoundAction();
     }
 
@@ -20,6 +23,6 @@ public class GameBoard {
      * 라운드 액션을 셔플한다.
      */
     private void shuffleRoundAction(){
-        // TODO
+        // TODO : 라운드 액션 셔플
     }
 }

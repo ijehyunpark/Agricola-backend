@@ -1,8 +1,8 @@
 package com.semoss.agricola.GamePlay.service;
 
-import com.semoss.agricola.GamePlay.domain.AgricolaGameScripts;
+import com.semoss.agricola.GamePlay.domain.AgricolaGame;
 import com.semoss.agricola.GamePlay.domain.Player;
-import com.semoss.agricola.GamePlay.domain.PlayerResource;
+import com.semoss.agricola.GamePlay.domain.resource.PlayerResource;
 import com.semoss.agricola.GamePlay.domain.board.GameBoard;
 import com.semoss.agricola.GamePlay.domain.board.PlayerBoard;
 import com.semoss.agricola.GameRoom.repository.GameRoomRepository;
@@ -15,8 +15,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
@@ -52,8 +50,8 @@ public class AgricolaServiceImpl implements AgricolaService {
                                     .isStartingPlayer(isFirst)
                                     .build())
                             .playerBoard(PlayerBoard.builder().build())
-                            .cardField(new ArrayList<>()) //TODO
-                            .cardHand(new ArrayList<>()) // TODO
+                            .cardField(new ArrayList<>()) // TODO : 플레이어 카드 필드 구현
+                            .cardHand(new ArrayList<>()) // TODO : 플레이어 직업 카드, 보조 설비 카드 분배 구현 (e,g 랜덤으로 7장 수령)
                             .build();
                 })
                 .toList();
@@ -78,8 +76,8 @@ public class AgricolaServiceImpl implements AgricolaService {
         }
 
         // 새로운 아그리콜라 게임 시스템을 제작한다.
-        AgricolaGameScripts gameScripts = AgricolaGameScripts.builder()
-                .gameBoard(new GameBoard())
+        AgricolaGame gameScripts = AgricolaGame.builder()
+                .gameBoard(new GameBoard()) // TODO: 게임 보드 설계
                 .player(buildGamePlayer(gameRoom.getParticipants()))
                 .build();
 
@@ -91,10 +89,7 @@ public class AgricolaServiceImpl implements AgricolaService {
         selectPlayerSequence(gameRoom.getGameScripts());
         List<Player> players = buildGamePlayer(gameRoom.getParticipants());
 
-
-        // TODO: 내 직업 카드, 보조 설비 카드를 랜덤으로 7장씩 받는다.
-
-        // TODO: 주요설비가 나열이 된다.(화면상에선 보이지않음 - 클릭시 보임)
+        // TODO: 주요설비가 나열이 된다.
 
         // TODO: 라운드카드가 같은 라운드 카드끼리 셔플한후 뒤집어진채로 세팅된다.
     }
@@ -110,6 +105,11 @@ public class AgricolaServiceImpl implements AgricolaService {
      */
     @Override
     public void roundStart(Long gameRoomId) {
+        // 라운드를 시작할 게임방 검색
+        GameRoom gameRoom =  gameRoomRepository.findById(gameRoomId).orElseThrow(
+                () -> new NoSuchElementException("해당 id를 가진 게임방이 존재하지 않습니다.")
+        );
+
         // 이번 라운드의 행동이 공개한다.
 
         // [직업,보조카드] 공개되는 라운드카드에 누적되어있는 자원을 자원을 배치한사람이 가져간다.

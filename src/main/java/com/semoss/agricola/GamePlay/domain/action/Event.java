@@ -10,4 +10,8 @@ public class Event {
     private boolean usable;
     private int doType;
     private boolean face;
+
+    public void runActions() {
+
+    }
 }

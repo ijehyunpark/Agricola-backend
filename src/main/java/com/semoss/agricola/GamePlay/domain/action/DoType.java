@@ -1,4 +1,4 @@
-package com.semoss.agricola.action;
+package com.semoss.agricola.GamePlay.domain.action;
 
 public enum DoType {
     EMPTY(0), ANDOR(1), OR(2), NTIMES(3);

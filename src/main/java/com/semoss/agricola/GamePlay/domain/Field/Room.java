@@ -1,6 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.Field;
 
-import com.semoss.agricola.mainflow.ResourceType;
+import com.semoss.agricola.GamePlay.domain.ResourceType;
 
 public class Room implements Field{
     private FieldType fieldType;

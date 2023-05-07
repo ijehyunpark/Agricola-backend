@@ -1,4 +1,4 @@
-package com.semoss.agricola.mainflow;
+package com.semoss.agricola.GamePlay.domain;
 
 public enum ResourceType {
     EMPTY(0), WOOD(1), CLAY(2), STONE(3), REED(4), GRAIN(5), VEGETABLE(6),

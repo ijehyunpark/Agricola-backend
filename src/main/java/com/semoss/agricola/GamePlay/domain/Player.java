@@ -1,4 +1,4 @@
-package com.semoss.agricola.mainflow;
+package com.semoss.agricola.GamePlay.domain;
 
 import com.semoss.agricola.GamePlay.domain.Field.Field;
 import com.semoss.agricola.GamePlay.domain.Field.FieldType;

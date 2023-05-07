@@ -1,6 +1,6 @@
-package com.semoss.agricola.action;
+package com.semoss.agricola.GamePlay.domain.action;
 
-import com.semoss.agricola.mainflow.Player;
+import com.semoss.agricola.GamePlay.domain.Player;
 
 public interface Action {
     ActionType actionType = ActionType.EMPTY;

@@ -1,7 +1,7 @@
-package com.semoss.agricola.action;
+package com.semoss.agricola.GamePlay.domain.action;
 
-import com.semoss.agricola.mainflow.Player;
-import com.semoss.agricola.mainflow.ResourceType;
+import com.semoss.agricola.GamePlay.domain.Player;
+import com.semoss.agricola.GamePlay.domain.ResourceType;
 
 public class StackAction implements Action{
     private ActionType actionType;

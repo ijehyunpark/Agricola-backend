@@ -1,4 +1,4 @@
-package com.semoss.agricola.GamePlay.domain.action;
+package com.semoss.agricola.GamePlay.domain.Action;
 
 public enum ActionType {
     EMPTY(0), STACK(1), CULTIVATION(2), BUILD(3), UPGRADE(4), BAKE(5), STARTING(6),

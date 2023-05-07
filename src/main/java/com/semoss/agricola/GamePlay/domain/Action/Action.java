@@ -1,4 +1,4 @@
-package com.semoss.agricola.GamePlay.domain.action;
+package com.semoss.agricola.GamePlay.domain.Action;
 
 import com.semoss.agricola.GamePlay.domain.Player;
 

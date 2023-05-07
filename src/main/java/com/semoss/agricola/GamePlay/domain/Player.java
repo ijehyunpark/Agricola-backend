@@ -1,22 +1,29 @@
 package com.semoss.agricola.GamePlay.domain;
 
+import com.semoss.agricola.GamePlay.domain.Card.Card;
+import com.semoss.agricola.GamePlay.domain.Card.CardDictionary;
+import com.semoss.agricola.GamePlay.domain.Card.CardType;
 import com.semoss.agricola.GamePlay.domain.Field.Field;
 import com.semoss.agricola.GamePlay.domain.Field.FieldType;
 
-import java.util.HashMap;
+import java.util.*;
 
 public class Player {
     private String userID;
-    private HashMap<ResourceType,Integer> resourceStorage;
-    private PlayerBoard playerBoard;
+    private final EnumMap<ResourceType,Integer> resourceStorage;
+    private final PlayerBoard playerBoard;
+    private final List<String> cardHand;
+    private final List<String> cardField;
 
     public Player(String userID){
         this.userID = userID;
-        resourceStorage = new HashMap<>();
+        resourceStorage = new EnumMap<>(ResourceType.class);
         for (ResourceType rt : ResourceType.values()){
             resourceStorage.put(rt,0);
         }
         playerBoard = new PlayerBoard(userID);
+        cardHand = new ArrayList<>();
+        cardField = new ArrayList<>();
     }
 
     /**
@@ -76,12 +83,51 @@ public class Player {
             case FENCE -> {
                 return playerBoard.buildFence(pos);
             }
+            default -> {
+                return false;
+            }
         }
-        return false;
     }
 
     public void upgradeRoom() {
         playerBoard.upgradeRoom();
+    }
+
+    /**
+     * does player have cards of card type in hand
+     * @param cardType card type
+     * @return result
+     */
+    public boolean hasCardInHand(CardType cardType) {
+        for (String id : cardHand){
+            if (CardDictionary.cardDict.get(id).getCardType() == cardType) return true;
+        }
+        return false;
+    }
+
+    /**
+     * place card in hand to field. card becomes available.
+     * @param cardID card ID
+     * @return result
+     */
+    public boolean placeCard(String cardID){
+        if(cardHand.remove(cardID)) {
+            cardField.add(cardID);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * get major improvement card.
+     * @param cardID card ID
+     * @return result
+     */
+    public boolean getMajorCard(String cardID){
+        if (!Objects.equals(CardDictionary.cardDict.get(cardID).getOwner(),"")) return false;
+        cardField.add(cardID);
+        CardDictionary.cardDict.get(cardID).setOwner(userID);
+        return true;
     }
 
     /**

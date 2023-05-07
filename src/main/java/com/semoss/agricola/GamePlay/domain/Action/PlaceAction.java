@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.Action;
 
+import com.semoss.agricola.GamePlay.domain.Card.Card;
 import com.semoss.agricola.GamePlay.domain.Card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.Card.CardType;
 import com.semoss.agricola.GamePlay.domain.Player;
@@ -18,6 +19,11 @@ public class PlaceAction implements Action{
         actionType = ActionType.PLACE;
     }
 
+    /**
+     * Are there enough resources for the action. Doesn't check additional resources required place cards
+     * @param player player who check precondition
+     * @return result
+     */
     @Override
     public boolean checkPrecondition(Player player) {
         return player.getResource(resourceType) >= resourceNum && player.hasCardInHand(cardType);
@@ -33,8 +39,17 @@ public class PlaceAction implements Action{
         return true;
     }
 
+    /**
+     * player place own card(occupation,minor) or get major card
+     * @param player player who place card
+     * @param cardID card ID
+     * @return result
+     */
     public boolean runAction(Player player, String cardID){
-        if(CardDictionary.cardDict.get(cardID).getCardType() != cardType) return false;
+        Card card = CardDictionary.cardDict.get((cardID));
+        if(card.getCardType() != cardType) return false;
+        if(!card.checkPrerequisites(player)) return false;
+        card.useResource(player);
         if(cardType == CardType.MAJOR) return player.getMajorCard(cardID);
         return player.placeCard(cardID);
     }

@@ -72,6 +72,12 @@ public class Player {
         return playerBoard.getRoomCount();
     }
 
+    /**
+     * build field to player board
+     * @param pos positions of fields
+     * @param fieldType field type
+     * @return result
+     */
     public boolean buildField(int[][] pos, FieldType fieldType){
         switch (fieldType){
             case FARM -> {
@@ -89,6 +95,9 @@ public class Player {
         }
     }
 
+    /**
+     * upgrade room
+     */
     public void upgradeRoom() {
         playerBoard.upgradeRoom();
     }

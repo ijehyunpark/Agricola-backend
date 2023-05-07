@@ -1,5 +1,6 @@
 package com.semoss.agricola.mainflow;
 
+import javax.swing.*;
 import java.util.HashMap;
 
 public class Player {
@@ -33,9 +34,43 @@ public class Player {
         resourceStorage.put(resourceType,resourceStorage.get(resourceType)+num);
     }
 
+    /**
+     * use resource
+     * @param resourceType resource type to use
+     * @param num amount of resource
+     * @return Whether to use
+     */
+    public boolean useResource(ResourceType resourceType, int num){
+        if (resourceStorage.get(resourceType) < num) return false;
+        resourceStorage.put(resourceType,resourceStorage.get(resourceType)-num);
+        return true;
+    }
+
+    /**
+     * get player's resource
+     * @param resourceType resource type to get
+     * @return amount of resource
+     */
     public int getResource(ResourceType resourceType){
         return resourceStorage.get(resourceType);
     }
+
+
+    public boolean buildField(int[][] pos, FieldType fieldType){
+        switch (fieldType){
+            case FARM -> {
+                return playerBoard.buildFarm(pos);
+            }
+            case STABLE -> {
+                return playerBoard.buildStable(pos);
+            }
+            case FENCE -> {
+                return playerBoard.buildFence(pos);
+            }
+        }
+        return false;
+    }
+
 
     /**
      * for test. don't use

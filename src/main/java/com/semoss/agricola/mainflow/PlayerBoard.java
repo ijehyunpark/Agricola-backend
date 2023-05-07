@@ -25,4 +25,16 @@ public class PlayerBoard {
     public void setRoomCount(int roomCount) {
         this.roomCount = roomCount;
     }
+
+    public boolean buildFarm(int[][] pos) {
+        return true;
+    }
+
+    public boolean buildStable(int[][] pos) {
+        return true;
+    }
+
+    public boolean buildFence(int[][] pos) {
+        return true;
+    }
 }

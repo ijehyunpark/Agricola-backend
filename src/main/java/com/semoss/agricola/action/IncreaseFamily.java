@@ -16,6 +16,15 @@ public class IncreaseFamily extends BasicAction{
     }
 
     /**
+     * Check if the player satisfies the precondition
+     * @return if the precondition is satisfied, return true.
+     */
+    @Override
+    public boolean checkPrecondition(Player player) {
+        return (!precondition || player.familyPrecondition());
+    }
+
+    /**
      * increase family
      * @param player player who increase family
      * @return false if there is a precondition and the precondition is not satisfied.

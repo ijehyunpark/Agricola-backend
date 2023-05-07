@@ -22,6 +22,15 @@ public class StackAction implements Action{
     }
 
     /**
+     * Check if the player satisfies the precondition
+     * @return always true
+     */
+    @Override
+    public boolean checkPrecondition(Player player) {
+        return true;
+    }
+
+    /**
      * stack resources
      * @return always true
      */

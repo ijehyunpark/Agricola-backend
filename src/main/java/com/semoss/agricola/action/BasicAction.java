@@ -31,6 +31,15 @@ public class BasicAction implements Action {
     }
 
     /**
+     * Check if the player satisfies the precondition
+     * @return always true
+     */
+    @Override
+    public boolean checkPrecondition(Player player) {
+        return true;
+    }
+
+    /**
      * do nothing
      * @return always return true
      */

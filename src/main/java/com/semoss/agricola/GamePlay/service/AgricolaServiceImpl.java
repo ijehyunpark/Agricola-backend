@@ -1,10 +1,10 @@
 package com.semoss.agricola.GamePlay.service;
 
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
-import com.semoss.agricola.GamePlay.domain.Player;
+import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.PlayerResource;
-import com.semoss.agricola.GamePlay.domain.board.GameBoard;
-import com.semoss.agricola.GamePlay.domain.board.PlayerBoard;
+import com.semoss.agricola.GamePlay.domain.gameBoard.GameBoard;
+import com.semoss.agricola.GamePlay.domain.player.PlayerBoard;
 import com.semoss.agricola.GameRoom.repository.GameRoomRepository;
 import com.semoss.agricola.GameRoom.domain.GameRoom;
 import com.semoss.agricola.GameRoom.domain.Game;
@@ -29,8 +29,25 @@ public class AgricolaServiceImpl implements AgricolaService {
      */
     private void selectPlayerSequence(Game gameScripts) {
         //do nothing now
-        gameScripts.getUser();
 
+    }
+
+
+    /**
+     * 아그리콜라 게임 추출
+     * @param gameRoomId
+     * @return
+     */
+    private AgricolaGame extractGame(Long gameRoomId){
+        // 라운드를 시작할 게임방 검색 및 적합성 검사
+        GameRoom gameRoom =  gameRoomRepository.findById(gameRoomId).orElseThrow(
+                () -> new NoSuchElementException("해당 id를 가진 게임방이 존재하지 않습니다.")
+        );
+        if (!(gameRoom.getGame() instanceof AgricolaGame)){
+            throw new RuntimeException("해당 게임방은 아그리콜라를 플레이하고 있지 않습니다.");
+        }
+
+        return (AgricolaGame) gameRoom.getGame();
     }
 
     /**
@@ -78,7 +95,7 @@ public class AgricolaServiceImpl implements AgricolaService {
         // 새로운 아그리콜라 게임 시스템을 제작한다.
         AgricolaGame game = AgricolaGame.builder()
                 .gameBoard(GameBoard.builder().build()) // TODO: 게임 보드 설계
-                .player(buildGamePlayer(gameRoom.getParticipants()))
+                .players(buildGamePlayer(gameRoom.getParticipants()))
                 .build();
 
         // 현재 게임방에 아그리 콜라 게임 시스템 설정
@@ -109,14 +126,8 @@ public class AgricolaServiceImpl implements AgricolaService {
      * @param gameRoomId
      */
     private void roundStart(Long gameRoomId) {
-        // 라운드를 시작할 게임방 검색 및 적합성 검사
-        GameRoom gameRoom =  gameRoomRepository.findById(gameRoomId).orElseThrow(
-                () -> new NoSuchElementException("해당 id를 가진 게임방이 존재하지 않습니다.")
-        );
-        if (!(gameRoom.getGame() instanceof AgricolaGame)){
-            throw new RuntimeException("해당 게임방은 아그리콜라를 플레이하고 있지 않습니다.");
-        }
-        AgricolaGame game = (AgricolaGame) gameRoom.getGame();
+        // 아그리콜라 게임 추출
+        AgricolaGame game = extractGame(gameRoomId);
 
         // 이번 라운드의 행동이 공개한다.
         game.roundStart();
@@ -158,8 +169,27 @@ public class AgricolaServiceImpl implements AgricolaService {
      * @param gameRoomId
      */
     private void roundEnd(Long gameRoomId) {
-        //6.
-        //    - 게임 판에서 모든 플레이어 말들을 모두 집으로 돌아온다.
+        // 아그리콜라 게임 추출
+        AgricolaGame game = extractGame(gameRoomId);
+
+        // 남은 말이 있는지 검증
+        if(game.isAllPlayerPlayed() != false)
+            throw new RuntimeException("아직 모둔 플레이를 하지 않은 플레이어가 존재합니다.");
+
+        // 플레이어 행동 말 초기화
+        game.initPlayerPlayed();
+
+        // 수확 시기인 경우 수확 행동을 수행한다.
+        int round = game.getRound();
+        if (round == 4 || round == 7 || round == 9 || round == 11 || round == 13 || round == 14) {
+            harvesting(gameRoomId);
+        }
+
+        // 아이를 어른으로 성장시킨다.
+        game.growUpChild();
+    }
+
+    public void harvesting(Long gameRoomId) {
         //    - [수확 시기인 경우] 수확 시기가 되었을 때의 선공권을 가진 플레이어부터 순서대로 이하 **수확 행동**을 수행한다. (방 만들때 정한 시간의 2배)
         //        - 플레이어 보드판에 있는 채소와 곡식 종자를 1개 수확한다.
         //        - 사람 1명 당 두 개의 식량을 소비한다.  (아이의 경우 1개 소비한다.)
@@ -168,7 +198,6 @@ public class AgricolaServiceImpl implements AgricolaService {
         //            - 수확 시기에 사용할 수 있는 [직업 카드] 혹은 [설비 카드]가 있는 경우, 이 카드를 사용할 수 있다.
         //            - 식량이 부족한 상태에서 자원도 없거나 자원이 충분한데 교환하지 않는 경우 또는 시간초과가 됐을 경우 식량 1개 당 하나의 구걸 카드를 받는다.
         //        - 내 보드판에서 같은 종류의 동물이 2마리 이상 있는 경우 한 마리가 늘어난다(종류별 최대1마리).
-        //    - [이번 라운드에 가족구성원을 늘린 경우] 아기가 있는 경우 어른이 된다.
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.semoss.agricola.GamePlay.domain.field;
+package com.semoss.agricola.GamePlay.domain.player;
 
 import lombok.Getter;
 

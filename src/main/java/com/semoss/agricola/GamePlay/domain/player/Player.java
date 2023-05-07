@@ -1,6 +1,5 @@
-package com.semoss.agricola.GamePlay.domain;
+package com.semoss.agricola.GamePlay.domain.player;
 
-import com.semoss.agricola.GamePlay.domain.board.PlayerBoard;
 import com.semoss.agricola.GamePlay.domain.resource.PlayerResource;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,4 +20,22 @@ public class Player {
     private PlayerBoard playerBoard;
     private List<Integer> cardHand;
     private List<Integer> cardField;
+
+    public boolean isCompletedPlayed(){
+        return playerBoard.isCompletedPlayed();
+    }
+
+    /**
+     * 플레이 여부 초기화
+     */
+    public void initPlayed() {
+        this.playerBoard.initPlayed();
+    }
+
+    /**
+     * 아이 성장
+     */
+    public void growUpChild() {
+        playerBoard.growUpChild();
+    }
 }

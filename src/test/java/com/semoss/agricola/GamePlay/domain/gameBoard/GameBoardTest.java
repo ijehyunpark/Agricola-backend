@@ -1,10 +1,4 @@
-package com.semoss.agricola.GamePlay.domain.board;
-
-import com.semoss.agricola.GamePlay.domain.action.Event;
-import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
+package com.semoss.agricola.GamePlay.domain.gameBoard;
 
 // TODO : Event 개선 후 테스트 코드 변경
 class GameBoardTest {

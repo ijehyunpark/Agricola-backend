@@ -1,5 +1,6 @@
-package com.semoss.agricola.GamePlay.domain.field;
+package com.semoss.agricola.GamePlay.domain.player;
 
+import com.semoss.agricola.GamePlay.domain.player.type.AnimalType;
 import lombok.Builder;
 import lombok.Getter;
 

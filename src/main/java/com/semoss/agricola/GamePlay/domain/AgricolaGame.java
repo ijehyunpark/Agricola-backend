@@ -1,11 +1,10 @@
 package com.semoss.agricola.GamePlay.domain;
 
-import com.semoss.agricola.GamePlay.domain.board.GameBoard;
+import com.semoss.agricola.GamePlay.domain.gameBoard.GameBoard;
+import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GameRoom.domain.Game;
-import com.semoss.agricola.GameRoomCommunication.domain.User;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
@@ -16,13 +15,13 @@ import java.util.List;
 @Getter
 public class AgricolaGame implements Game {
     private final GameBoard gameBoard;
-    private final List<Player> player;
+    private final List<Player> players;
     private int round;
 
     @Builder
-    public AgricolaGame(GameBoard gameBoard, List<Player> player) {
+    public AgricolaGame(GameBoard gameBoard, List<Player> players) {
         this.gameBoard = gameBoard;
-        this.player = player;
+        this.players = players;
         this.round = -1;
     }
 
@@ -34,9 +33,34 @@ public class AgricolaGame implements Game {
         this.round++;
     }
 
-    @Override
-    public List<User> getUser() {
-        return null;
+    /**
+     * 모든 플레이어가 해당 라운드에 플레이를 모두 완료했는지 검증
+     * @return
+     */
+    public boolean isAllPlayerPlayed(){
+        for(Player player : players){
+            if(player.isCompletedPlayed() == false)
+                return false;
+        }
+        return true;
+    }
+
+    /**
+     * 모든 플레리어의 행동 여부를 초기화한다.
+     */
+    public void initPlayerPlayed() {
+        for(Player player : players){
+            player.initPlayed();
+        }
+    }
+
+    /**
+     * 아이 성장
+     */
+    public void growUpChild() {
+        for(Player player : players){
+            player.growUpChild();
+        }
     }
 
     //로그 기능

@@ -1,4 +1,4 @@
-package com.semoss.agricola.GamePlay.domain.board;
+package com.semoss.agricola.GamePlay.domain.gameBoard;
 
 import com.semoss.agricola.GamePlay.domain.majorImprovement.MajorImprovement;
 import lombok.Getter;

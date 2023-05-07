@@ -77,7 +77,7 @@ public class AgricolaServiceImpl implements AgricolaService {
 
         // 새로운 아그리콜라 게임 시스템을 제작한다.
         AgricolaGame game = AgricolaGame.builder()
-                .gameBoard(new GameBoard()) // TODO: 게임 보드 설계
+                .gameBoard(GameBoard.builder().build()) // TODO: 게임 보드 설계
                 .player(buildGamePlayer(gameRoom.getParticipants()))
                 .build();
 

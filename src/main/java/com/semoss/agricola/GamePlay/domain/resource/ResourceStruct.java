@@ -8,7 +8,6 @@ import lombok.Getter;
  */
 @Getter
 @Builder
-@Deprecated
 public class ResourceStruct {
     private Resource resource;
     private int count;

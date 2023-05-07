@@ -1,11 +1,23 @@
 package com.semoss.agricola.GamePlay.service;
 
-import com.semoss.agricola.GameRoom.Repository.GameRoomRepository;
+import com.semoss.agricola.GamePlay.domain.AgricolaGameScripts;
+import com.semoss.agricola.GamePlay.domain.Player;
+import com.semoss.agricola.GamePlay.domain.PlayerResource;
+import com.semoss.agricola.GamePlay.domain.board.GameBoard;
+import com.semoss.agricola.GamePlay.domain.board.PlayerBoard;
+import com.semoss.agricola.GameRoom.repository.GameRoomRepository;
 import com.semoss.agricola.GameRoom.domain.GameRoom;
+import com.semoss.agricola.GameRoom.domain.GameScripts;
+import com.semoss.agricola.GameRoomCommunication.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -14,30 +26,77 @@ public class AgricolaServiceImpl implements AgricolaService {
     private final GameRoomRepository gameRoomRepository;
 
     /**
+     * 플레이어 순서 변경
+     * @param gameScripts
+     */
+    private void selectPlayerSequence(GameScripts gameScripts) {
+        //do nothing now
+        gameScripts.getUser();
+
+    }
+
+    /**
+     * 플레이어 게임 객체 생성
+     * @param users
+     * @return
+     */
+    private List<Player> buildGamePlayer(List<User> users){
+        // 플레이어 객체 생성
+        List<Player> players = IntStream.range(0, users.size())
+                .mapToObj(i -> {
+                    boolean isFirst = i == 0;
+                    return Player.builder()
+                            .userId(users.get(i).getId())
+                            .startingToken(isFirst)
+                            .resources(PlayerResource.builder()
+                                    .isStartingPlayer(isFirst)
+                                    .build())
+                            .playerBoard(PlayerBoard.builder().build())
+                            .cardField(new ArrayList<>()) //TODO
+                            .cardHand(new ArrayList<>()) // TODO
+                            .build();
+                })
+                .toList();
+
+        return players;
+    }
+
+    /**
      * 게임 시작 매커니즘
      * @param gameRoomId
      */
     @Override
     public void start(Long gameRoomId) {
+        // 게임을 사작할 게임방 검색
         GameRoom gameRoom =  gameRoomRepository.findById(gameRoomId).orElseThrow(
                 () -> new NoSuchElementException("해당 id를 가진 게임방이 존재하지 않습니다.")
         );
 
-        // 선공 토큰을 랜덤으로 준다.
+        // TODO: 다인용 지원
+        if (gameRoom.getParticipants().size() != 4){
+            throw new RuntimeException("현재 4인용만 지원합니다.");
+        }
 
-        // Player 배치도 랜덤이다.
+        // 새로운 아그리콜라 게임 시스템을 제작한다.
+        AgricolaGameScripts gameScripts = AgricolaGameScripts.builder()
+                .gameBoard(new GameBoard())
+                .player(buildGamePlayer(gameRoom.getParticipants()))
+                .build();
 
-        // 게임 진행 순서는 선공토큰을 가진 유저의 시계방향(아래방향)으로 진행된다.
+        // 현재 게임방에 아그리 콜라 게임 시스템 설정
+        gameRoom.setGameScripts(gameScripts);
 
-        // 내 직업 카드, 보조 설비 카드를 랜덤으로 7장씩 받는다.
 
-        // 주요설비가 나열이 된다.(화면상에선 보이지않음 - 클릭시 보임)
+        // Player 배치도 랜덤이다. & 선공 토큰을 랜덤으로 준다.
+        selectPlayerSequence(gameRoom.getGameScripts());
+        List<Player> players = buildGamePlayer(gameRoom.getParticipants());
 
-        // 선공인 사람은 식량을 2개 받고, 나머지 사람들은 3개씩 받는다.
 
-        // 애완동물나무집 1개(보드판에 포함되지않는다.), 나무집 2개와 가족 2명를 받는다.
+        // TODO: 내 직업 카드, 보조 설비 카드를 랜덤으로 7장씩 받는다.
 
-        // 라운드카드가 같은 라운드 카드끼리 셔플한후 뒤집어진채로 세팅된다.
+        // TODO: 주요설비가 나열이 된다.(화면상에선 보이지않음 - 클릭시 보임)
+
+        // TODO: 라운드카드가 같은 라운드 카드끼리 셔플한후 뒤집어진채로 세팅된다.
     }
 
     /**

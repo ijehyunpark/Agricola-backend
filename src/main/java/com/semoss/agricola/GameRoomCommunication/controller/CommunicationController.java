@@ -40,14 +40,4 @@ public class CommunicationController {
         headerAccessor.getSessionAttributes().put("userId", user.getId());
         headerAccessor.getSessionAttributes().put("gameRoomId", gameRoomId);
     }
-
-    /**
-     * 게임 시작 요청
-     * @param gameRoomId 게임을 진행할 게임방 식별자
-     * @param headerAccessor 웹 소켓 메세지 헤더 접근자
-     */
-    @MessageMapping("/start-game/{gameRoomId}")
-    public void startGame(@DestinationVariable Long gameRoomId, SimpMessageHeaderAccessor headerAccessor) {
-        communicationService.start(gameRoomId);
-    }
 }

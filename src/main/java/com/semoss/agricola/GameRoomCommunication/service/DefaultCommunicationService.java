@@ -1,6 +1,6 @@
 package com.semoss.agricola.GameRoomCommunication.service;
 
-import com.semoss.agricola.GameRoom.Repository.GameRoomRepository;
+import com.semoss.agricola.GameRoom.repository.GameRoomRepository;
 import com.semoss.agricola.GameRoom.domain.GameRoom;
 import com.semoss.agricola.GameRoomCommunication.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -35,10 +35,5 @@ public class DefaultCommunicationService implements CommunicationService {
         // 게임방에서 유저를 제거한다.
         gameRoom.exit(userId);
         return null;
-    }
-
-    @Override
-    public void start(Long gameRoomId) {
-        //doNothing now
     }
 }

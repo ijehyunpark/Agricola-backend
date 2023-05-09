@@ -6,5 +6,4 @@ public interface CommunicationService {
     public User participate(Long gameRoomId, String username);
 
     public User exit(Long gameRoomId, Long userId);
-    public void start(Long gameRoomId);
 }

@@ -20,6 +20,9 @@ public class GameRoom {
     private int capacity;
     private final List<User> participants;
 
+    @Setter
+    private Game game;
+
     @Builder
     public GameRoom(String name, int capacity) {
         this.id = NextGameRoomID++;

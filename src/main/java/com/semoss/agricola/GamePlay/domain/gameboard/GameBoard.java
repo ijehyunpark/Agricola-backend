@@ -1,4 +1,4 @@
-package com.semoss.agricola.GamePlay.domain.gameBoard;
+package com.semoss.agricola.GamePlay.domain.gameboard;
 
 import com.semoss.agricola.GamePlay.domain.action.Event;
 import lombok.Builder;

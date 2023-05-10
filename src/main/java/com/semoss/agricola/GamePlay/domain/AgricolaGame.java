@@ -1,6 +1,6 @@
 package com.semoss.agricola.GamePlay.domain;
 
-import com.semoss.agricola.GamePlay.domain.gameBoard.GameBoard;
+import com.semoss.agricola.GamePlay.domain.gameboard.GameBoard;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GameRoom.domain.Game;
 import lombok.Builder;

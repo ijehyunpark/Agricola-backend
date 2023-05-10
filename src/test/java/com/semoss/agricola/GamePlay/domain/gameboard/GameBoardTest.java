@@ -1,4 +1,4 @@
-package com.semoss.agricola.GamePlay.domain.gameBoard;
+package com.semoss.agricola.GamePlay.domain.gameboard;
 
 // TODO : Event 개선 후 테스트 코드 변경
 class GameBoardTest {

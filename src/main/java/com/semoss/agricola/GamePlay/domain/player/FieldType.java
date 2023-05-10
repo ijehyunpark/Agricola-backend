@@ -1,12 +1,12 @@
 package com.semoss.agricola.GamePlay.domain.player;
 
-@Deprecated
 public enum FieldType {
-    EMPTY,
-    WOOD_ROOM,
-    CLAY_ROOM,
-    STONE_ROOM,
-    FARM,
-    BARN,
-    STABLE
+    EMPTY(0), WOOD(1), CLAY(2), STONE(3), FARM(4), BARN(5),
+    STABLE(6), FENCE(7), ROOM(100);
+
+    private final int value;
+
+    FieldType(int value) { this.value = value; }
+
+    public int getValue() { return value; }
 }

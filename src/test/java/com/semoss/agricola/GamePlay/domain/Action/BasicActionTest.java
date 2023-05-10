@@ -1,11 +1,12 @@
 package com.semoss.agricola.GamePlay.domain.Action;
 
-import com.semoss.agricola.GamePlay.domain.Player;
-import com.semoss.agricola.GamePlay.domain.ResourceType;
+import com.semoss.agricola.GamePlay.domain.action.BasicAction;
+import com.semoss.agricola.GamePlay.domain.player.Player;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class BasicActionTest {
     Player player;
@@ -13,7 +14,10 @@ class BasicActionTest {
 
     @BeforeEach
     void setUp() {
-        player = new Player("test");
+        player = Player.builder()
+                .userId(1234L)
+                .isStartPlayer(true)
+                .build();
     }
 
     @Test

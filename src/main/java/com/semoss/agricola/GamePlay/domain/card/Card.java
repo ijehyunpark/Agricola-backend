@@ -1,6 +1,6 @@
-package com.semoss.agricola.GamePlay.domain.Card;
+package com.semoss.agricola.GamePlay.domain.card;
 
-import com.semoss.agricola.GamePlay.domain.Player;
+import com.semoss.agricola.GamePlay.domain.player.Player;
 
 public interface Card {
     /**
@@ -10,7 +10,7 @@ public interface Card {
      */
     boolean checkPrerequisites(Player player);
     CardType getCardType();
-    String getOwner();
-    void setOwner(String userID);
+    Long getOwner();
+    void setOwner(Long userID);
     void useResource(Player player);
 }

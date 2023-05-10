@@ -1,4 +1,4 @@
-package com.semoss.agricola.GamePlay.domain.Card;
+package com.semoss.agricola.GamePlay.domain.card;
 
 public enum CardType {
     EMPTY(0), OCCUPATION(1), MINOR(2), MAJOR(3);

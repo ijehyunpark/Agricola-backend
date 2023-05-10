@@ -1,9 +1,9 @@
-package com.semoss.agricola.GamePlay.domain.Action;
+package com.semoss.agricola.GamePlay.domain.action;
 
-import com.semoss.agricola.GamePlay.domain.Player;
-import com.semoss.agricola.GamePlay.domain.ResourceType;
+import com.semoss.agricola.GamePlay.domain.player.Player;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 
-public class IncreaseFamily extends BasicAction{
+public class IncreaseFamily extends BasicAction {
     private boolean precondition;
     /**
      * increase family action

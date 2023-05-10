@@ -1,9 +1,11 @@
-package com.semoss.agricola.GamePlay.domain.Action;
+package com.semoss.agricola.GamePlay.domain.action;
 
-import com.semoss.agricola.GamePlay.domain.Player;
-import com.semoss.agricola.GamePlay.domain.ResourceType;
+import com.semoss.agricola.GamePlay.domain.player.Player;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
+import lombok.Getter;
 
-public class RoomUpgradeAction implements Action{
+public class RoomUpgradeAction implements Action {
+    @Getter
     private ActionType actionType = ActionType.UPGRADE;
     /** used one each action */
     private ResourceType resourceType;
@@ -50,10 +52,5 @@ public class RoomUpgradeAction implements Action{
         player.useResource(needResource,player.getRoomCount() * numEachUpgrade);
         player.useResource(resourceType,resourceNum);
         return true;
-    }
-
-    @Override
-    public ActionType getActionType() {
-        return actionType;
     }
 }

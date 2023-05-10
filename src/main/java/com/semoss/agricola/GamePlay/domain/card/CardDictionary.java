@@ -1,4 +1,4 @@
-package com.semoss.agricola.GamePlay.domain.Card;
+package com.semoss.agricola.GamePlay.domain.card;
 
 import java.util.HashMap;
 import java.util.Map;

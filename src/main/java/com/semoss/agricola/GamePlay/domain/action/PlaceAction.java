@@ -50,11 +50,11 @@ public class PlaceAction implements SimpleAction {
 //            return player.getMajorCard(cardID);
 //        return player.placeCard(cardID);
 
-        // 해당 card의 소유주가 있는지 확인
+        // TODO: 해당 card의 소유주가 있는지 확인
 
-        // 해당 card의 전제조건 및 비용을 만족하는지 확인
+        // TODO: 해당 card의 전제조건 및 비용을 만족하는지 확인
 
-        // 해당 card의 소유주를 player로 변경
+        // TODO: 해당 card의 소유주를 player로 변경
 
         return true;
     }

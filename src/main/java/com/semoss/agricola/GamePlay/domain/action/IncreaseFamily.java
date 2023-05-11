@@ -7,7 +7,7 @@ import lombok.Getter;
 /**
  * increase family action
  */
-public class IncreaseFamily implements Action {
+public class IncreaseFamily implements SimpleAction {
     @Getter
     private final ActionType actionType = ActionType.ADOPT;
     private final boolean precondition;
@@ -24,11 +24,6 @@ public class IncreaseFamily implements Action {
     @Override
     public boolean checkPrecondition(Player player) {
         return (!precondition || player.familyPrecondition());
-    }
-
-    @Override
-    public boolean runAction() {
-        return false;
     }
 
     /**

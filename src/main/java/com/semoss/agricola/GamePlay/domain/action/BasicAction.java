@@ -5,7 +5,7 @@ import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import lombok.Builder;
 import lombok.Getter;
 
-public class BasicAction implements Action {
+public class BasicAction implements SimpleAction {
     @Getter
     private final ActionType actionType = ActionType.BASIC;
     private final ResourceStruct resource;
@@ -36,15 +36,6 @@ public class BasicAction implements Action {
      */
     @Override
     public boolean checkPrecondition(Player player) {
-        return true;
-    }
-
-    /**
-     * do nothing
-     * @return always return true
-     */
-    @Override
-    public boolean runAction() {
         return true;
     }
 }

@@ -7,7 +7,7 @@ import lombok.Getter;
 /**
  * 선공권 가져오기
  */
-public class GetStartingPositionAction implements Action {
+public class GetStartingPositionAction implements SimpleAction {
     @Getter
     private final ActionType actionType = ActionType.STARTING;
 
@@ -23,15 +23,6 @@ public class GetStartingPositionAction implements Action {
     @Override
     public boolean checkPrecondition(Player player) {
         return true;
-    }
-
-    /**
-     * 선공권 가져오는 행동의 라운드 행동은 없습니다.
-     * @return
-     */
-    @Override
-    public boolean runAction() {
-        return false;
     }
 
     /**

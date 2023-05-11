@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 @Deprecated
-public class BuildAction implements Action{
+public class BuildAction implements SimpleAction, RoundAction{
     /** 두종류의 자원 셋에 중복되는 자원 타입이 없다는 가정으로 작성되었음 */
     /** Resources added by the number of actions */
     private List<Map.Entry<ResourceType,Integer>> resourceSet;
@@ -49,7 +49,7 @@ public class BuildAction implements Action{
     }
 
     @Override
-    public boolean runAction() {
+    public boolean runRoundAction() {
         return true;
     }
 

@@ -5,9 +5,9 @@ import lombok.Builder;
 import lombok.Getter;
 
 /**
- * 씨 뿌리기 액션
+ * TODO: 씨 뿌리기 액션
  */
-public class CultivationAction implements Action {
+public class CultivationAction implements MultiInputAction {
 
     @Getter
     private final ActionType actionType = ActionType.CULTIVATION;
@@ -18,30 +18,22 @@ public class CultivationAction implements Action {
 
     /**
      * TODO: 씨앗 심기 전 빈 밭인지 검증
-     * @param player
+     * @param player 씨를 뿌릴 플레이어
+     * @param detail 밭의 y, x 좌표
      * @return
      */
     @Override
-    public boolean checkPrecondition(Player player) {
-        return false;
-    }
-
-    /**
-     * 씨 뿌리기는 라운드 종료 액션을 수행하지 않습니다.
-     * @return
-     */
-    @Override
-    public boolean runAction() {
+    public boolean checkPrecondition(Player player, Object detail) {
         return false;
     }
 
     /**
      * TODO: 플레이어 밭에 씨를 뿌립니다.
-     * @param player
+     * @param player 씨를 뿌릴 플레이어
+     * @param detail 밭의 y, x 좌표
      * @return
      */
-    @Override
-    public boolean runAction(Player player) {
+    public boolean runAction(Player player, Object detail) {
         return false;
     }
 }

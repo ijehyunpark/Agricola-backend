@@ -9,7 +9,7 @@ import lombok.Getter;
 import java.util.List;
 import java.util.Map;
 
-public class RoomUpgradeAction implements Action {
+public class RoomUpgradeAction implements SimpleAction {
     @Getter
     private final ActionType actionType = ActionType.UPGRADE;
     /** upgrade cost [before room rank, costs] */
@@ -39,11 +39,6 @@ public class RoomUpgradeAction implements Action {
         }
 
         return true;
-    }
-
-    @Override
-    public boolean runAction() {
-        return false;
     }
 
     @Override

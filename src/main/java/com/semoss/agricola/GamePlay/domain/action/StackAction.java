@@ -9,7 +9,7 @@ import lombok.Getter;
 /**
  * 자원이 누적해서 쌓이는 행동
  */
-public class StackAction implements Action {
+public class StackAction implements SimpleAction, RoundAction {
     @Getter
     private final ActionType actionType = ActionType.STACK;
     private final ResourceStruct resource;
@@ -44,7 +44,7 @@ public class StackAction implements Action {
      * @return always true
      */
     @Override
-    public boolean runAction() {
+    public boolean runRoundAction() {
         this.resource.addResource(this.stackCount);
         return true;
     }

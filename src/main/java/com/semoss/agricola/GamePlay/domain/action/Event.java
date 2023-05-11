@@ -1,7 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
 import com.semoss.agricola.GamePlay.domain.resource.Reservation;
-import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import lombok.Builder;
 import lombok.Getter;
 

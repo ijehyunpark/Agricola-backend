@@ -5,12 +5,12 @@ import lombok.Builder;
 import lombok.Getter;
 
 /**
- * 울타리 건설 액션
+ * TODO: 울타리 건설 액션
  * 울타리를 건설해 봐요.
  * e.g 집, 외양간 여러개 짓기
  */
 //TODO : implement fence actions
-public class BuildFenceAction implements Action {
+public class BuildFenceAction implements MultiInputAction {
     @Getter
     private final ActionType actionType = ActionType.BUILD;
     @Builder
@@ -19,17 +19,12 @@ public class BuildFenceAction implements Action {
     }
     
     @Override
-    public boolean checkPrecondition(Player player) {
+    public boolean checkPrecondition(Player player, Object detail) {
         return false;
     }
 
     @Override
-    public boolean runAction() {
-        return false;
-    }
-
-    @Override
-    public boolean runAction(Player player) {
+    public boolean runAction(Player player, Object detail) {
         return false;
     }
 }

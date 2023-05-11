@@ -1,13 +1,14 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
+import com.semoss.agricola.GamePlay.domain.gameboard.ImprovementBoard;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import lombok.Builder;
 import lombok.Getter;
 
 /**
- * 빵 굽기 액션
+ * TODO: 빵 굽기 액션
  */
-public class BakeAction implements Action {
+public class BakeAction implements MultiInputAction {
 
     @Getter
     private final ActionType actionType = ActionType.BAKE;
@@ -17,28 +18,25 @@ public class BakeAction implements Action {
     }
 
     @Override
-    public boolean checkPrecondition(Player player) {
-        // TODO: 플레이어가 화로, 화덕, 흙가마 주설비를 가지고 있는지 확인
+    public boolean checkPrecondition(Player player, Object ImprovementCard) {
+        // TODO: 플레이어가 화로, 화덕, 흙가마 주설비를 가지고 있는지 확인 (필요 없을지도)
         return false;
     }
 
-    /**
-     * 빵 굽기는 라운드 종료 액션을 수행하지 않습니다.
-     * @return
-     */
-    @Override
-    public boolean runAction() {
-        return true;
+    private boolean checkPrecondition(Player player, ImprovementBoard improvementBoard) {
+        // TODO: 플레이어가 해당 주설비를 가지고 있는지 확인
+        return false;
     }
 
     /**
      * 빵 굽는다.
      * @param player
+     * @param ImprovementCard
      * @return
      */
-    @Override
-    public boolean runAction(Player player) {
-        // TODO: 플레이어가 소유한 화로, 화덕, 흙가마 주설비를 사용하여 자원을 교환한다.
+    public boolean runAction(Player player, Object ImprovementCard) {
+        // TODO: 플레이어가 해당 주설비를 사용하여 자원을 교환한다.
+        // TODO: ImprovementCard 보단 1. ImprovementBoardType을 만들어 화로, 화덕, 흙가마, 돌가마만 받아 player에서 가져와 확인 || 2. cardId를 가져와 검증
         return true;
     }
 }

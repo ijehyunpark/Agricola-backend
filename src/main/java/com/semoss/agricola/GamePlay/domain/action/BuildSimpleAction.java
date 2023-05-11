@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
+import ch.qos.logback.core.joran.sanity.Pair;
 import com.semoss.agricola.GamePlay.domain.player.FieldType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
@@ -13,7 +14,7 @@ import java.util.List;
  * 1개의 빈 필드에 새로운 건축물을 건설한다.
  * e.g 밭 일구기, 집 건설
  */
-public class BuildSimpleAction implements Action {
+public class BuildSimpleAction implements MultiInputAction {
     @Getter
     private final ActionType actionType = ActionType.BUILD;
     private final FieldType fieldType;
@@ -35,7 +36,7 @@ public class BuildSimpleAction implements Action {
      * @return 플레이어가 필요한 자원을 가지고 있다면 true를 반환한다.
      */
     @Override
-    public boolean checkPrecondition(Player player) {
+    public boolean checkPrecondition(Player player, Object detail) {
         // 요구사항이 없을 경우 true 반환
         if (this.requirements.size() == 0)
             return true;
@@ -49,35 +50,23 @@ public class BuildSimpleAction implements Action {
     }
 
     /**
-     * 사용하지 않음
-     * @return
-     */
-    @Override
-    public boolean runAction() {
-        return false;
-    }
-
-    /**
-     * 사용하지 않음 TODO runAction 인터페이스 사양 변경
-     * @param player
-     * @return
-     */
-    @Override
-    public boolean runAction(Player player) {
-        throw new RuntimeException("건설 작업은 해당 함수 사용 안합니다.");
-    }
-
-    /**
      * 플레이어의 필드에 새로운 건물을 추가한다.
      * @param player 건설 작업을 수행할 플레이어
      * @return ?
      */
-    public boolean runAction(Player player, int y, int x) {
-        if(!checkPrecondition(player))
+    public boolean runAction(Player player, Object detail) {
+        if(!checkPrecondition(player, detail))
             throw new RuntimeException("건설을 수행할 자원이 부족합니다.");
 
-        // 건설 작업 수행
-        player.buildField(y, x, this.fieldType);
-        return true;
+        try{
+            if(!(detail instanceof Pair<?,?>))
+                throw new RuntimeException("입력이 잘못됬습니다.");
+            Pair<Integer, Integer> pos = (Pair<Integer, Integer>) detail;
+            // 건설 작업 수행
+            player.buildField(pos.first, pos.second, this.fieldType);
+            return true;
+        } catch (Exception ex) {
+            throw new RuntimeException("입력이 잘못됬습니다.");
+        }
     }
 }

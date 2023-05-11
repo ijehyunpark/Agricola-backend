@@ -1,5 +1,7 @@
 package com.semoss.agricola.GamePlay.domain.player;
 
+import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,17 +33,19 @@ public class Room implements Field {
     }
 
     private PetRoom petRoom;
-    private RoomType roomType;
-    private List<Resident> residents;
+    private final List<Resident> residents;
+    private final ResourceStruct resource;
 
     @Builder
-    public Room(boolean isPetRoom, RoomType roomType){
+    public Room(boolean isPetRoom){
         if(isPetRoom){
             this.petRoom = new PetRoom();
         }
-
-        this.roomType = roomType;
         this.residents = new ArrayList<>();
+        this.resource = ResourceStruct.builder()
+                .resource(ResourceType.EMPTY)
+                .count(0)
+                .build();
     }
 
     /**
@@ -49,7 +53,7 @@ public class Room implements Field {
      * @param residentType 거주자 상태
      */
     public void addResident(ResidentType residentType) {
-        residents.add(new Resident(residentType, false));
+        this.residents.add(new Resident(residentType, false));
     }
 
     /**
@@ -57,7 +61,7 @@ public class Room implements Field {
      * @return
      */
     protected boolean isCompletedPlayed() {
-        for (Resident resident : residents){
+        for (Resident resident : this.residents){
             if(resident.isPlayed() == false)
                 return false;
         }
@@ -68,7 +72,7 @@ public class Room implements Field {
      * 플레이 여부 초기화
      */
     protected void initPlayed() {
-        for (Resident resident : residents){
+        for (Resident resident : this.residents){
             resident.setPlayed(false);
         }
     }
@@ -77,7 +81,7 @@ public class Room implements Field {
      * 아이 성장
      */
     protected void growUpChild() {
-        for (Resident resident : residents){
+        for (Resident resident : this.residents){
             if(resident.getResidentType() == ResidentType.CHILD)
                 resident.growUpChild();
         }
@@ -90,12 +94,16 @@ public class Room implements Field {
      */
     public int calculateFoodNeeds() {
         int result = 0;
-        for (Resident resident : residents){
+        for (Resident resident : this.residents){
             if(resident.getResidentType() == ResidentType.ADULT)
                 result += 2;
             else if(resident.getResidentType() == ResidentType.CHILD)
                 result += 1;
         }
         return result;
+    }
+
+    public boolean isEmptyRoom() {
+        return this.residents.size() == 0;
     }
 }

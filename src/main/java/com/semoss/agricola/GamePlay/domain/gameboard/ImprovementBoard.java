@@ -1,4 +1,4 @@
-package com.semoss.agricola.GamePlay.domain.gameBoard;
+package com.semoss.agricola.GamePlay.domain.gameboard;
 
 import lombok.Getter;
 @Getter

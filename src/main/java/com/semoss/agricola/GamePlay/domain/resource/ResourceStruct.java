@@ -1,6 +1,5 @@
 package com.semoss.agricola.GamePlay.domain.resource;
 
-import com.semoss.agricola.GamePlay.domain.resource.Resource;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +11,6 @@ import lombok.Setter;
 @Setter
 @Builder
 public class ResourceStruct {
-    private Resource resource;
+    private ResourceType resource;
     private int count;
 }

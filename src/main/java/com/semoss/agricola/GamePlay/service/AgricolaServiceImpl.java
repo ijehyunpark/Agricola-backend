@@ -2,10 +2,8 @@ package com.semoss.agricola.GamePlay.service;
 
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
 import com.semoss.agricola.GamePlay.domain.GameProgress;
-import com.semoss.agricola.GamePlay.domain.gameBoard.GameBoard;
+import com.semoss.agricola.GamePlay.domain.gameboard.GameBoard;
 import com.semoss.agricola.GamePlay.domain.player.Player;
-import com.semoss.agricola.GamePlay.domain.player.PlayerBoard;
-import com.semoss.agricola.GamePlay.domain.player.PlayerResource;
 import com.semoss.agricola.GameRoom.domain.Game;
 import com.semoss.agricola.GameRoom.domain.GameRoom;
 import com.semoss.agricola.GameRoom.repository.GameRoomRepository;
@@ -62,13 +60,7 @@ public class AgricolaServiceImpl implements AgricolaService {
                     boolean isFirst = i == 0;
                     return Player.builder()
                             .userId(users.get(i).getId())
-                            .startingToken(isFirst)
-                            .resources(PlayerResource.builder()
-                                    .isStartingPlayer(isFirst)
-                                    .build())
-                            .playerBoard(PlayerBoard.builder().build())
-//                            .cardField(new ArrayList<>()) // TODO : 플레이어 카드 필드 구현
-//                            .cardHand(new ArrayList<>()) // TODO : 플레이어 직업 카드, 보조 설비 카드 분배 구현 (e,g 랜덤으로 7장 수령)
+                            .isStartPlayer(isFirst)
                             .build();
                 })
                 .toList();

@@ -4,7 +4,7 @@ import lombok.Builder;
 
 public class Seed extends ResourceStruct {
     @Builder(builderMethodName = "seedBuilder")
-    Seed(Resource resource, int count) {
+    Seed(ResourceType resource, int count) {
         super(resource, count);
     }
 

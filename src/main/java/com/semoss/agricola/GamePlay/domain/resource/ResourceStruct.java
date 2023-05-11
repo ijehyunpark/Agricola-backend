@@ -13,4 +13,8 @@ import lombok.Setter;
 public class ResourceStruct {
     private ResourceType resource;
     private int count;
+
+    public void addResource(int count) {
+        this.count += count;
+    }
 }

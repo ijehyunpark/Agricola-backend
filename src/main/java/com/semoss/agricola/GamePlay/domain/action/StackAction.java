@@ -1,27 +1,33 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
 import com.semoss.agricola.GamePlay.domain.player.Player;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
+import lombok.Builder;
 import lombok.Getter;
 
+/**
+ * 자원이 누적해서 쌓이는 행동
+ */
 public class StackAction implements Action {
     @Getter
-    private ActionType actionType;
-    private ResourceType resourceType;
-    private int resourceNum;
+    private final ActionType actionType = ActionType.STACK;
+    private ResourceStruct resource;
     @Getter
-    private int stackResource;
+    private int stackCount;
 
     /**
      * Stack resource action - Resources stack each round.
-     * @param rt  resource type to add
-     * @param num amount of resource
+     * @param resourceType  resource type to stack
+     * @param stackCount number of resource to stack
      */
-    public StackAction(ResourceType rt, int num) {
-        actionType = ActionType.STACK;
-        resourceType = rt;
-        resourceNum = num;
-        stackResource = num;
+    @Builder
+    public StackAction(ResourceType resourceType, int stackCount) {
+        this.resource = ResourceStruct.builder()
+                .resource(resourceType)
+                .count(0)
+                .build();
+        this.stackCount = stackCount;
     }
 
     /**
@@ -39,7 +45,7 @@ public class StackAction implements Action {
      */
     @Override
     public boolean runAction() {
-        stackResource += resourceNum;
+        this.resource.addResource(this.stackCount);
         return true;
     }
 
@@ -50,8 +56,8 @@ public class StackAction implements Action {
      */
     @Override
     public boolean runAction(Player player) {
-        player.addResource(resourceType,stackResource);
-        stackResource = 0;
+        player.addResource(this.resource);
+        this.resource.setCount(0);
         return true;
     }
 }

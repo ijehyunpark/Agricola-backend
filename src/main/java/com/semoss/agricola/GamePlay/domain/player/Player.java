@@ -258,4 +258,11 @@ public class Player {
     public void upgradeRoom() {
         this.playerBoard.upgradeRoom();
     }
+
+    /**
+     * 아기를 입양한다.
+     */
+    public void addChild() {
+        this.playerBoard.addChard();
+    }
 }

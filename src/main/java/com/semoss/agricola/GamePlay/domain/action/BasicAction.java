@@ -7,8 +7,8 @@ import lombok.Getter;
 
 public class BasicAction implements Action {
     @Getter
-    private ActionType actionType;
-    private ResourceStruct resource;
+    private final ActionType actionType = ActionType.BASIC;
+    private final ResourceStruct resource;
 
     /**
      * basic resource action
@@ -16,7 +16,6 @@ public class BasicAction implements Action {
      */
     @Builder
     public BasicAction(ResourceStruct resource) {
-        this.actionType = ActionType.BASIC;
         this.resource = resource;
     }
 

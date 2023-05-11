@@ -12,7 +12,7 @@ import java.util.List;
 public class Event {
     private final List<Action> actions;
     private final List<DoType> actionDoType;
-    private final List<ResourceStruct> stacks; // 누적 쌓인 자원
+//    private final List<ResourceStruct> stacks; // 누적 쌓인 자원
     private final List<Reservation> reservations; // 예약으로 쌓인 자원
 
     private int round;
@@ -26,7 +26,7 @@ public class Event {
     public Event(List<Action> actions, List<DoType> actionDoType, int round) {
         this.actions = actions;
         this.actionDoType = actionDoType;
-        this.stacks = new ArrayList<>();
+//        this.stacks = new ArrayList<>();
         this.reservations = new ArrayList<>();
         this.round = round;
         this.playerUsed = null;

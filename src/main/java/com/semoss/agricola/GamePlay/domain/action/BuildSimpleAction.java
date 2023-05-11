@@ -13,16 +13,20 @@ import java.util.List;
  * 1개의 빈 필드에 새로운 건축물을 건설한다.
  * e.g 밭 일구기, 집 건설
  */
-public class BuildAction1 implements Action {
+public class BuildSimpleAction implements Action {
     @Getter
     private final ActionType actionType = ActionType.BUILD;
     private final FieldType fieldType;
     private final List<ResourceStruct> requirements;
+    @Getter
+    private final int buildMaxCount;
 
     @Builder
-    public BuildAction1(FieldType fieldType, List<ResourceStruct> requirements) {
+    public BuildSimpleAction(FieldType fieldType, List<ResourceStruct> requirements, int buildMaxCount) {
         this.fieldType = fieldType;
         this.requirements = requirements;
+        // 최대 건설 횟수: -1인 경우 무한
+        this.buildMaxCount = buildMaxCount;
     }
 
     /**

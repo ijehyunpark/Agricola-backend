@@ -3,8 +3,6 @@ package com.semoss.agricola.GamePlay.domain.action;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 
 public interface Action {
-    ActionType actionType = ActionType.EMPTY;
-
     /**
      * Check if the player satisfies the precondition
      */

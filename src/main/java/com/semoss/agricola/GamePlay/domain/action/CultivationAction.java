@@ -5,28 +5,29 @@ import lombok.Builder;
 import lombok.Getter;
 
 /**
- * 선공권 가져오기
+ * 씨 뿌리기 액션
  */
-public class GetStartingPositionAction implements Action {
+public class CultivationAction implements Action {
+
     @Getter
-    private final ActionType actionType = ActionType.STARTING;
+    private final ActionType actionType = ActionType.CULTIVATION;
 
     @Builder
-    public GetStartingPositionAction() {
+    public CultivationAction() {
     }
 
     /**
-     * 선공권 가져오는 행동의 전제조건은 없습니다.
+     * TODO: 씨앗 심기 전 빈 밭인지 검증
      * @param player
-     * @return true
+     * @return
      */
     @Override
     public boolean checkPrecondition(Player player) {
-        return true;
+        return false;
     }
 
     /**
-     * 선공권 가져오는 행동의 라운드 행동은 없습니다.
+     * 씨 뿌리기는 라운드 종료 액션을 수행하지 않습니다.
      * @return
      */
     @Override
@@ -35,13 +36,12 @@ public class GetStartingPositionAction implements Action {
     }
 
     /**
-     * 선공권을 가져옵니다.
+     * TODO: 플레이어 밭에 씨를 뿌립니다.
      * @param player
      * @return
      */
     @Override
     public boolean runAction(Player player) {
-        player.setStartingTokenByTrue();
         return false;
     }
 }

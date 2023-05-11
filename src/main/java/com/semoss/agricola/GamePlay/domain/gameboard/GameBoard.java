@@ -7,10 +7,7 @@ import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * 아그리콜라 메인 게임 보드
@@ -18,11 +15,11 @@ import java.util.List;
 @Getter
 public class GameBoard {
     private List<Event> events;
-//    private ImprovementBoard improvementBoard;
+    private ImprovementBoard improvementBoard;
 
     @Builder
     public GameBoard() {
-        // event 배치 및 주설비 배치
+        // event를 배치한다.
         events = new ArrayList<>();
         // 1.방 만들기 그리고/또는 외양간 짓기
         List<Action> actions1 = new ArrayList<>();
@@ -36,8 +33,9 @@ public class GameBoard {
                 .resource(ResourceType.GRAIN)
                 .count(2)
                 .build());
-        actions1.add(BuildAction1.builder()
+        actions1.add(BuildSimpleAction.builder()
                         .fieldType(FieldType.ROOM)
+                        .buildMaxCount(-1)
                         .requirements(requirements1_1)
                 .build());
         // 1-2 외양간 짓기
@@ -46,27 +44,26 @@ public class GameBoard {
                 .resource(ResourceType.WOOD)
                 .count(2)
                 .build());
-        actions1.add(BuildAction1.builder()
+        actions1.add(BuildSimpleAction.builder()
                 .fieldType(FieldType.STABLE)
+                .buildMaxCount(-1)
                 .requirements(requirements1_2)
                 .build());
-        Event event1 = Event.builder()
+        events.add(Event.builder()
                 .actions(actions1)
                 .actionDoType(new ArrayList<>(Arrays.asList(DoType.ANDOR)))
                 .round(0)
-                .build();
-        events.add(event1);
+                .build());
 
         // TODO: 2.시작 플레이어 되기 그리고/또는 보조 설비 1개 놓기
         // 2-1. 시작 플레이어 되기
         List<Action> actions2 = new ArrayList<>();
         actions2.add(GetStartingPositionAction.builder().build());
-        Event event2 = Event.builder()
+        events.add(Event.builder()
                 .actions(actions2)
                 .actionDoType(new ArrayList<>())
                 .round(0)
-                .build();
-        events.add(event2);
+                .build());
 
 
         // 3.곡식 1개 가져가기
@@ -77,12 +74,11 @@ public class GameBoard {
                         .count(1)
                         .build())
                 .build());
-        Event event3 = Event.builder()
+        events.add(Event.builder()
                 .actions(actions3)
                 .actionDoType(new ArrayList<>())
                 .round(0)
-                .build();
-        events.add(event3);
+                .build());
 
         // TODO: 4.직업 1개 놓기
 
@@ -101,12 +97,11 @@ public class GameBoard {
                         .count(2)
                         .build())
                 .build());
-        Event event6 = Event.builder()
+        events.add(Event.builder()
                 .actions(actions6)
                 .actionDoType(new ArrayList<>())
                 .round(0)
-                .build();
-        events.add(event6);
+                .build());
 
         // 7.누적 나무 3개
         events.add(buildEventToSimpleStackAction(ResourceType.WOOD, 3, 0));
@@ -124,51 +119,93 @@ public class GameBoard {
         // 11. 양 시장 (누적 양 1개)
         events.add(buildEventToSimpleStackAction(ResourceType.SHEEP, 1, 1));
 
-        // TODO: a2. 울타리 치기
+        // 12. 울타리 치기
+        events.add(Event.builder()
+                .actions(new ArrayList(Arrays.asList(buildActionToFence())))
+                .actionDoType(new ArrayList<>())
+                .round(1)
+                .build());
 
-        // TODO: a3. 주요 설비나 보조 설비 1개 놓기
+        // TODO: 13. 주요 설비나 보조 설비 1개 놓기
 
-        // TODO: a4. 씨 뿌리기 그리고/또는 빵 굽기
+        // 14. 씨 뿌리기 그리고/또는 빵 굽기
+        events.add(Event.builder()
+                .actions(new ArrayList<>(Arrays.asList(buildActionToCultivation(), buildActionToBake())))
+                .actionDoType(new ArrayList<>(Arrays.asList(DoType.ANDOR)))
+                .round(1)
+                .build());
 
         //  --- 2주기 ---
 
-        // TODO: 집 개조: 집 한번 고치기 그 후에 주요 설비 / 보조 설비 중 1개 내려놓기
+        // TODO: 15. 집 개조: 집 한번 고치기 그 후에 주요 설비 / 보조 설비 중 1개 내려놓기
 
-        // 서부 채석장: 누적 돌 1개
+        // 16. 서부 채석장: 누적 돌 1개
         events.add(buildEventToSimpleStackAction(ResourceType.STONE, 1, 2));
 
-        // TODO: 급하지 않은 가족 늘리기: 빈 방이 있어야만 가족 늘리기 그 후에 보조 설비 1개
+        // TODO: 17. 급하지 않은 가족 늘리기: 빈 방이 있어야만 가족 늘리기 그 후에 보조 설비 1개
+        List<Action> actions17 = new ArrayList<>();
+        actions17.add(IncreaseFamily.builder()
+                        .precondition(true)
+                        .build());
+        events.add(Event.builder()
+                .actions(actions17)
+                .actionDoType(new ArrayList<>())
+                .round(2)
+                .build());
 
         // --- 3주기 ---
 
-        // 돼지 시장: 누적 돼지 1개
+        // 18.돼지 시장: 누적 돼지 1개
         events.add(buildEventToSimpleStackAction(ResourceType.WILD_BOAR, 1, 3));
 
-        // 채소 종자: 채소 1개
+        // 19.채소 종자: 채소 1개
         events.add(buildEventToSimpleStackAction(ResourceType.VEGETABLE, 1, 3));
 
         // --- 4주기 ---
 
-        // 소 시장: 누적 소 1개
-        events.add(buildEventToSimpleStackAction(ResourceType.CATTLE, 1, 1));
+        // 20.소 시장: 누적 소 1개
+        events.add(buildEventToSimpleStackAction(ResourceType.CATTLE, 1, 4));
 
-        // 동부 채석장: 누적 돌 1개
-        events.add(buildEventToSimpleStackAction(ResourceType.STONE, 1, 1));
+        // 21.동부 채석장: 누적 돌 1개
+        events.add(buildEventToSimpleStackAction(ResourceType.STONE, 1, 4));
 
         // --- 5주기 ---
 
-        // TODO: 밭 농사: 밭 하나 일구기 그리고/또는 씨 뿌리기
+        // 22.밭 농사: 밭 하나 일구기 그리고/또는 씨 뿌리기
+        events.add(Event.builder()
+                .actions(new ArrayList<>(Arrays.asList(
+                        buildActionToTillingFarm(),
+                        buildActionToCultivation())))
+                .actionDoType(new ArrayList<>(Arrays.asList(DoType.ANDOR)))
+                .round(5)
+                .build());
 
-        // TODO: 급한 가족 늘리기: 빈 방이 없어도 가족 늘리기
+        // 23.급한 가족 늘리기: 빈 방이 없어도 가족 늘리기
+        List<Action> actions23 = new ArrayList<>();
+        actions23.add(IncreaseFamily.builder()
+                .precondition(false)
+                .build());
+        events.add(Event.builder()
+                .actions(actions23)
+                .actionDoType(new ArrayList<>())
+                .round(5)
+                .build());
 
         // --- 6주기 ---
 
-        // TODO : 농장 개조: 집 한번 고치기 그 후에 울타리 치기
-
-
+        // \24. 농장 개조: 집 한번 고치기 그 후에 울타리 치기
+        events.add(Event.builder()
+                .actions(new ArrayList<>(Arrays.asList(
+                        buildActionToRoomUpgrade(),
+                        buildActionToFence())))
+                .actionDoType(new ArrayList<>(Arrays.asList(DoType.ANDOR)))
+                .round(6)
+                .build());
 
         // 같은 라운드 행동 이벤트끼리는 무작위로 섞는다.
         shuffleEventsWithinRound();
+
+        // TODO : 주설비 보드판 제작
     }
 
     /**
@@ -191,17 +228,72 @@ public class GameBoard {
                 .build();
     }
 
-
-
     /**
      * 밭 일구기 액션를 구성한다.
      * @return
      */
-    private Action buildActionToTillingFarm() {
-        return BuildAction1.builder()
+    private BuildSimpleAction buildActionToTillingFarm() {
+        return BuildSimpleAction.builder()
                 .fieldType(FieldType.FARM)
+                .buildMaxCount(1)
                 .requirements(new ArrayList<>())
                 .build();
+    }
+
+    /**
+     * 씨 뿌리기 액션을 구성한다.
+     * @return
+     */
+    private CultivationAction buildActionToCultivation() {
+        return CultivationAction.builder()
+                .build();
+    }
+
+    /**
+     * 빵 굽기 액션을 구성한다.
+     * @return
+     */
+    private BakeAction buildActionToBake() {
+        return BakeAction.builder().build();
+    }
+
+    /**
+     * 집 업그레이드 액션을 구성한다.
+     * @return
+     */
+    private RoomUpgradeAction buildActionToRoomUpgrade() {
+        Map<ResourceType, List<ResourceStruct>> costs = new HashMap<>();
+        // 나무집 -> 흙집 업그레이드 비용
+        costs.put(ResourceType.CLAY, new ArrayList<>(Arrays.asList(
+                ResourceStruct.builder()
+                        .resource(ResourceType.REED)
+                        .count(1)
+                        .build(), ResourceStruct.builder()
+                        .resource(ResourceType.CLAY)
+                        .count(1)
+                        .build())));
+
+        // 흙집 -> 돌집 업그레이드 비용
+        costs.put(ResourceType.STONE, new ArrayList<>(Arrays.asList(
+                ResourceStruct.builder()
+                        .resource(ResourceType.REED)
+                        .count(1)
+                        .build(), ResourceStruct.builder()
+                        .resource(ResourceType.STONE)
+                        .count(1)
+                        .build())));
+
+        return RoomUpgradeAction.builder()
+                .costs(costs)
+                .build();
+    }
+
+    /**
+     * 울타리 건설 액션을 구성한다.
+     * @return
+     */
+    private BuildFenceAction buildActionToFence(){
+        return BuildFenceAction.builder().build();
     }
 
     /**

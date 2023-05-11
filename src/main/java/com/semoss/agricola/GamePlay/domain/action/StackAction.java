@@ -12,7 +12,7 @@ import lombok.Getter;
 public class StackAction implements Action {
     @Getter
     private final ActionType actionType = ActionType.STACK;
-    private ResourceStruct resource;
+    private final ResourceStruct resource;
     @Getter
     private int stackCount;
 

@@ -184,4 +184,33 @@ public class PlayerBoard {
             }
         }
     }
+
+    /**
+     * 아기를 입양한다.
+     */
+    protected void addChard() {
+        // 빈 방에 우선 추가
+        for (int i = 0; i < 3; i++){
+            for(int j = 0; j < 5; j++){
+                Field field = fields[i][j];
+                if (field instanceof Room) {
+                    if(((Room) field).isEmptyRoom()){
+                        ((Room) field).addResident(ResidentType.CHILD);
+                        return;
+                    }
+                }
+            }
+        }
+
+        // 없으면 아무 방에 추가
+        for (int i = 0; i < 3; i++){
+            for(int j = 0; j < 5; j++){
+                Field field = fields[i][j];
+                if (field instanceof Room) {
+                    ((Room) field).addResident(ResidentType.CHILD);
+                    return;
+                }
+            }
+        }
+    }
 }

@@ -26,7 +26,7 @@ public class AgricolaServiceImpl implements AgricolaService {
      * @param gameScripts
      */
     private void selectPlayerSequence(Game gameScripts) {
-        //do nothing now
+        //TODO
 
     }
 
@@ -92,6 +92,11 @@ public class AgricolaServiceImpl implements AgricolaService {
                 .gameBoard(GameBoard.builder().build()) // TODO: 게임 보드 설계
                 .players(buildGamePlayer(gameRoom.getParticipants()))
                 .build();
+        // 플레이어가 소유자 게임을 알고 있어야 한다. TODO: 개선사항
+        for (Player player : game.getPlayers()){
+            player.setGame(game);
+        }
+
 
         // 현재 게임방에 아그리 콜라 게임 시스템 설정
         gameRoom.setGame(game);
@@ -102,8 +107,6 @@ public class AgricolaServiceImpl implements AgricolaService {
         List<Player> players = buildGamePlayer(gameRoom.getParticipants());
 
         // TODO: 주요설비가 나열이 된다.
-
-        // TODO: 라운드카드가 같은 라운드 카드끼리 셔플한후 뒤집어진채로 세팅된다.
 
         // 게임 시작 후 최초 라운드 시작을 개시한다.
         roundStart(gameRoomId);

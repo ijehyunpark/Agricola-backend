@@ -1,24 +1,23 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
 import com.semoss.agricola.GamePlay.domain.player.Player;
-import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
+import lombok.Builder;
 import lombok.Getter;
 
 public class BasicAction implements Action {
     @Getter
     private ActionType actionType;
-    private ResourceType resourceType;
-    private int resourceNum;
+    private ResourceStruct resource;
 
     /**
      * basic resource action
-     * @param rt resource type to add
-     * @param num amount of resource
+     * @param resource type and amount of resource to add
      */
-    public BasicAction(ResourceType rt, int num) {
-        actionType = ActionType.BASIC;
-        resourceType = rt;
-        resourceNum = num;
+    @Builder
+    public BasicAction(ResourceStruct resource) {
+        this.actionType = ActionType.BASIC;
+        this.resource = resource;
     }
 
     /**
@@ -28,7 +27,7 @@ public class BasicAction implements Action {
      */
     @Override
     public boolean runAction(Player player) {
-        player.addResource(resourceType,resourceNum);
+        player.addResource(resource);
         return true;
     }
 

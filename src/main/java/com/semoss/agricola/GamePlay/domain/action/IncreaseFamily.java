@@ -1,17 +1,16 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
 import com.semoss.agricola.GamePlay.domain.player.Player;
-import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 
 public class IncreaseFamily extends BasicAction {
     private boolean precondition;
     /**
      * increase family action
-     * @param rt  resource type to add
-     * @param num amount of resource
+     * @param resource  resource type and amount to add
      */
-    public IncreaseFamily(ResourceType rt, int num, boolean precondition) {
-        super(rt, num);
+    public IncreaseFamily(ResourceStruct resource, boolean precondition) {
+        super(resource);
         this.precondition = precondition;
     }
 

@@ -3,6 +3,7 @@ package com.semoss.agricola.GamePlay.domain.Action;
 import com.semoss.agricola.GamePlay.domain.action.IncreaseFamily;
 import com.semoss.agricola.GamePlay.domain.player.FieldType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +25,9 @@ class IncreaseFamilyTest {
 
     @Test
     void runActionPrecondition() {
-        increaseFamily = new IncreaseFamily(ResourceType.FAMILY,1,true);
+        increaseFamily = IncreaseFamily.builder()
+                .precondition(true)
+                .build();
         assertFalse(player.familyPrecondition());
         assertFalse(increaseFamily.runAction(player));
         player.buildField(0, 0, FieldType.ROOM);
@@ -35,7 +38,9 @@ class IncreaseFamilyTest {
 
     @Test
     void runActionNotPrecondition() {
-        increaseFamily = new IncreaseFamily(ResourceType.FAMILY,1,false);
+        increaseFamily = IncreaseFamily.builder()
+                .precondition(false)
+                .build();
         assertTrue(increaseFamily.runAction(player));
         assertEquals(3,player.getResource(ResourceType.FAMILY));
         assertFalse(player.familyPrecondition());

@@ -1,17 +1,19 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
 import com.semoss.agricola.GamePlay.domain.player.Player;
-import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
+import lombok.Builder;
+import lombok.Getter;
 
-public class IncreaseFamily extends BasicAction {
-    private boolean precondition;
-    /**
-     * increase family action
-     * @param rt  resource type to add
-     * @param num amount of resource
-     */
-    public IncreaseFamily(ResourceType rt, int num, boolean precondition) {
-        super(rt, num);
+/**
+ * increase family action
+ */
+public class IncreaseFamily implements SimpleAction {
+    @Getter
+    private final ActionType actionType = ActionType.ADOPT;
+    private final boolean precondition;
+
+    @Builder
+    public IncreaseFamily(boolean precondition) {
         this.precondition = precondition;
     }
 
@@ -31,8 +33,8 @@ public class IncreaseFamily extends BasicAction {
      */
     @Override
     public boolean runAction(Player player){
-        if (!precondition || player.familyPrecondition()){
-            super.runAction(player);
+        if (checkPrecondition(player)){
+            player.addChild();
             return true;
         }
         return false;

@@ -18,7 +18,7 @@ class BakeActionTest {
                 .userId(1234L)
                 .isStartPlayer(true)
                 .build();
-        bakeAction = new BakeAction(2);
+        bakeAction = BakeAction.builder().build();
     }
 
     @Test

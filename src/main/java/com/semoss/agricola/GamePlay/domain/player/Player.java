@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.player;
 
+import com.semoss.agricola.GamePlay.domain.AgricolaGame;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
@@ -21,6 +22,7 @@ import java.util.Objects;
 public class Player {
     private Long userId;
     @Setter
+    private AgricolaGame game;
     private boolean startingToken;
     private final EnumMap<ResourceType,Integer> resources;
     private final PlayerBoard playerBoard;
@@ -31,6 +33,7 @@ public class Player {
     public Player(Long userId, boolean isStartPlayer){
         this.userId = userId;
         this.startingToken = isStartPlayer;
+        this.game = game;
         this.resources = new EnumMap<>(ResourceType.class);
         for (ResourceType resource : ResourceType.values()){
             resources.put(resource,0);
@@ -57,6 +60,13 @@ public class Player {
         return resources.get(resourceType);
     }
 
+    /**
+     * add resources to storage
+     * @param resource resource type and amout to add
+     */
+    public void addResource(ResourceStruct resource){
+        resources.compute(resource.getResource(), (key, value) -> value + resource.getCount());
+    }
     /**
      * add resources to storage
      * @param resourceType resource type to add
@@ -98,6 +108,26 @@ public class Player {
                 .resource(resourceType)
                 .count(resources.get(resourceType))
                 .build();
+    }
+
+    /**
+     * 시작 토큰을 가지도록 설정한다.
+     */
+    public void setStartingTokenByTrue() {
+        this.game.getPlayers().stream()
+                .filter(player -> player.isStartingToken())
+                .findAny()
+                .orElseThrow(RuntimeException::new)
+                .disableStartingToken();
+
+        this.startingToken = true;
+    }
+
+    /**
+     * 시작 토큰을 제거한다.
+     */
+    private void disableStartingToken() {
+        this.startingToken = false;
     }
 
     /**
@@ -227,5 +257,12 @@ public class Player {
      */
     public void upgradeRoom() {
         this.playerBoard.upgradeRoom();
+    }
+
+    /**
+     * 아기를 입양한다.
+     */
+    public void addChild() {
+        this.playerBoard.addChard();
     }
 }

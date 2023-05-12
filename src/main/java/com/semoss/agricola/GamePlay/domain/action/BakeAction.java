@@ -1,37 +1,42 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
+import com.semoss.agricola.GamePlay.domain.gameboard.ImprovementBoard;
 import com.semoss.agricola.GamePlay.domain.player.Player;
-import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
+import lombok.Builder;
 import lombok.Getter;
 
-public class BakeAction implements Action {
+/**
+ * TODO: 빵 굽기 액션
+ */
+public class BakeAction implements MultiInputAction {
 
     @Getter
-    private ActionType actionType;
-    private ResourceType resourceType;
-    private ResourceType bread = ResourceType.FOOD;
-    private int breadNum;
+    private final ActionType actionType = ActionType.BAKE;
 
-    public BakeAction(int breadNum){
-        actionType = ActionType.BAKE;
-        resourceType = ResourceType.GRAIN;
-        this.breadNum = breadNum;
+    @Builder
+    public BakeAction(){
     }
 
     @Override
-    public boolean checkPrecondition(Player player) {
-        return player.getResource(resourceType) >= 1;
+    public boolean checkPrecondition(Player player, Object ImprovementCard) {
+        // TODO: 플레이어가 화로, 화덕, 흙가마 주설비를 가지고 있는지 확인 (필요 없을지도)
+        return false;
     }
 
-    @Override
-    public boolean runAction() {
-        return true;
+    private boolean checkPrecondition(Player player, ImprovementBoard improvementBoard) {
+        // TODO: 플레이어가 해당 주설비를 가지고 있는지 확인
+        return false;
     }
 
-    @Override
-    public boolean runAction(Player player) {
-        player.useResource(resourceType,1);
-        player.addResource(bread,breadNum);
+    /**
+     * 빵 굽는다.
+     * @param player
+     * @param ImprovementCard
+     * @return
+     */
+    public boolean runAction(Player player, Object ImprovementCard) {
+        // TODO: 플레이어가 해당 주설비를 사용하여 자원을 교환한다.
+        // TODO: ImprovementCard 보단 1. ImprovementBoardType을 만들어 화로, 화덕, 흙가마, 돌가마만 받아 player에서 가져와 확인 || 2. cardId를 가져와 검증
         return true;
     }
 }

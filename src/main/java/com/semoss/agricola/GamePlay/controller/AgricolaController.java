@@ -1,5 +1,7 @@
 package com.semoss.agricola.GamePlay.controller;
 
+import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
+import com.semoss.agricola.GamePlay.dto.AgricolaExchangeRequest;
 import com.semoss.agricola.GamePlay.dto.AgricolaGameStatus;
 import com.semoss.agricola.GamePlay.service.AgricolaService;
 import com.semoss.agricola.GameRoom.service.GameRoomService;
@@ -8,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 
@@ -42,7 +45,8 @@ public class AgricolaController {
      * @param headerAccessor 웹 소켓 메세지 헤더 접근자
      * @return 아그리콜라 게임 상태
      */
-    public AgricolaGameStatus playAction(@DestinationVariable Long gameRoomId, SimpMessageHeaderAccessor headerAccessor) {
+    @MessageMapping("/play-action/{gameRoomId}")
+    public AgricolaGameStatus playAction(@DestinationVariable Long gameRoomId, @Payload AgricolaActionRequest actionRequest, SimpMessageHeaderAccessor headerAccessor) {
         // 현재 플레이어 턴인지 확인
         if(!agricolaService.validatePlayer(gameRoomId, headerAccessor.getSessionAttributes().get("userId")))
             throw new RuntimeException("잘못된 요청");
@@ -51,7 +55,7 @@ public class AgricolaController {
         GameRoom gameRoom = gameRoomService.getOne(gameRoomId);
 
         // 플레이어 액션 진행 TODO
-        agricolaService.playAction(gameRoomId, null);
+        agricolaService.playAction(gameRoomId, actionRequest.getEventId(), actionRequest.getActs());
         return AgricolaGameStatus.toDto(gameRoom);
     }
 
@@ -61,7 +65,8 @@ public class AgricolaController {
      * @param headerAccessor 웹 소켓 메세지 헤더 접근자
      * @return 아그리콜라 게임 상태
      */
-    public AgricolaGameStatus playExchange(@DestinationVariable Long gameRoomId, SimpMessageHeaderAccessor headerAccessor) {
+    @MessageMapping("/play-exchange/{gameRoomId}")
+    public AgricolaGameStatus playExchange(@DestinationVariable Long gameRoomId, @Payload AgricolaExchangeRequest exchangeRequest, SimpMessageHeaderAccessor headerAccessor) {
         // 현재 플레이어 턴인지 확인
         if(!agricolaService.validatePlayer(gameRoomId, headerAccessor.getSessionAttributes().get("userId")))
             throw new RuntimeException("잘못된 요청");
@@ -69,8 +74,10 @@ public class AgricolaController {
         // 게임 룸 반환
         GameRoom gameRoom = gameRoomService.getOne(gameRoomId);
 
-        // 플레이어 교환 진행 TODO
-        agricolaService.playExchange(gameRoomId, null);
+        // 플레이어 교환 진행
+        for(AgricolaExchangeRequest.ExchangeFormat exchange : exchangeRequest.getExchange()){
+            agricolaService.playExchange(gameRoomId, exchange.getImprovementId(), exchange.getResource(), exchange.getCount());
+        }
         return AgricolaGameStatus.toDto(gameRoom);
     }
 

@@ -116,6 +116,9 @@ public class AgricolaServiceImpl implements AgricolaService {
         // 아그리콜라 게임 추출
         AgricolaGame game = extractGame(gameRoomId);
 
+        // 이번 라운드의 행동이 공개한다.
+        game.increaseRound();
+
         // [직업,보조카드] 공개되는 라운드카드에 누적되어있는 자원을 자원을 배치한사람이 가져간다.
         game.processReservationResource();
 
@@ -125,8 +128,6 @@ public class AgricolaServiceImpl implements AgricolaService {
         // 현재 게임 상태를 선공 플레이어의 행동 단계로 변경한다.
         game.update(GameProgress.PlayerAction, game.getStartingPlayer().getUserId());
 
-        // 이번 라운드의 행동이 공개한다.
-        game.increaseRound();
     }
 
     /**

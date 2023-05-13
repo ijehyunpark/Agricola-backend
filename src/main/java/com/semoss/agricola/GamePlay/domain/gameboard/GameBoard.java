@@ -338,8 +338,10 @@ public class GameBoard {
             currRound = events.get(i).getRoundGroup();
 
             // 셔플할 라운드가 0이 아니고, 이전 Event 객체의 roundGroup 값과 비교하여 다른 roundGroup 값이라면 셔플
-            if (currRound != prevRound && prevRound != 0) {
-                shuffleByIndex(this.events, startIndex, i - 1);
+            if (currRound != prevRound) {
+                if(prevRound != 0){
+                    shuffleByIndex(this.events, startIndex, i - 1);
+                }
                 prevRound = currRound;
                 startIndex = i;
             }

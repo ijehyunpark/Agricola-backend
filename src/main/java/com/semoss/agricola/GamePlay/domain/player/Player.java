@@ -262,6 +262,13 @@ public class Player {
      * 아기를 입양한다.
      */
     public void addChild() {
-        this.playerBoard.addChard();
+        this.playerBoard.addChild();
+    }
+
+    /**
+     * 가족 개수 반환
+     */
+    public int getFamilyNumber() {
+        return this.playerBoard.getFamilyCount();
     }
 }

@@ -20,7 +20,6 @@ class IncreaseFamilyTest {
                 .userId(1234L)
                 .isStartPlayer(true)
                 .build();
-        player.addResource(ResourceType.FAMILY,2);
     }
 
     @Test
@@ -33,7 +32,7 @@ class IncreaseFamilyTest {
         player.buildField(0, 0, FieldType.ROOM);
         assertTrue(player.familyPrecondition());
         assertTrue(increaseFamily.runAction(player));
-        assertEquals(3,player.getResource(ResourceType.FAMILY));
+        assertEquals(3,player.getFamilyNumber());
     }
 
     @Test
@@ -42,9 +41,9 @@ class IncreaseFamilyTest {
                 .precondition(false)
                 .build();
         assertTrue(increaseFamily.runAction(player));
-        assertEquals(3,player.getResource(ResourceType.FAMILY));
+        assertEquals(3,player.getFamilyNumber());
         assertFalse(player.familyPrecondition());
         assertTrue(increaseFamily.runAction(player));
-        assertEquals(4,player.getResource(ResourceType.FAMILY));
+        assertEquals(4,player.getFamilyNumber());
     }
 }

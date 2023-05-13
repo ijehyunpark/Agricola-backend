@@ -17,7 +17,7 @@ public class Event {
     private final List<Reservation> reservations; // 예약으로 쌓인 자원
 
     private int round;
-    private Long playerUsed;
+    private boolean isPlayed;
 
 //    private boolean usable;
 //    private int doType;
@@ -31,10 +31,24 @@ public class Event {
 //        this.stacks = new ArrayList<>();
         this.reservations = new ArrayList<>();
         this.round = round;
-        this.playerUsed = null;
+        this.isPlayed = false;
     }
 
-    public void runActions() {
+    /**
+     * 입력에 대해 액션 수행
+     * @param acts
+     */
+    public void runActions(Object acts) {
+        if(isPlayed)
+            throw new RuntimeException("이미 플레이한 액션칸입니다.");
+
         // TODO: 유저 입력을 받아 actions + actionDoTYPE으로 순회하며 구현
+    }
+
+    /**
+     * 플레이 여부 초기화
+     */
+    public void initPlayed() {
+        this.isPlayed = false;
     }
 }

@@ -13,5 +13,5 @@ public class AgricolaActionRequest {
     @NotNull(message = "eventId는 필수 입니다.")
     private Long eventId;
 
-    private List<Object> acts;
+    private Object acts;
 }

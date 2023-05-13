@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -212,5 +213,19 @@ public class PlayerBoard {
                 }
             }
         }
+    }
+
+    /**
+     * 액션을 플레이한다.
+     */
+    public void playAction() {
+        Arrays.stream(fields)
+                .flatMap(Arrays::stream)
+                .filter(field -> field instanceof Room)
+                .map(field -> (Room) field)
+                .filter(room -> !room.isCompletedPlayed())
+                .findFirst()
+                .orElseThrow(RuntimeException::new)
+                .play();
     }
 }

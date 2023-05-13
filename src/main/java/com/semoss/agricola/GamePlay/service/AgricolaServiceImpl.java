@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 @Service
@@ -131,7 +132,7 @@ public class AgricolaServiceImpl implements AgricolaService {
         AgricolaGame game = extractGame(gameRoomId);
 
         // 현재 게임 상태를 선공 플레이어의 행동 단계로 변경한다.
-        game.update(GameProgress.PlayerAction, game.getStartingPlayer().getUserId());
+        game.update(GameProgress.PlayerAction, game.getStartingPlayer());
 
         // 이번 라운드의 행동이 공개한다.
         game.roundStart();
@@ -139,6 +140,9 @@ public class AgricolaServiceImpl implements AgricolaService {
         // [직업,보조카드] 공개되는 라운드카드에 누적되어있는 자원을 자원을 배치한사람이 가져간다.
 
         // 자원 누적 칸의 경우 자원을 누적하고 누적되지않는 자원 칸의 경우 비어있는 칸의 자원만 보충한다.
+
+        // 액션 칸 사용을 초기화한다.
+        game.initPlayerPlayed();
     }
 
     /**
@@ -160,6 +164,23 @@ public class AgricolaServiceImpl implements AgricolaService {
         //- 말을 놓은 후 확정 버튼을 누르면 나의 행동이 확정된다.
         //- 제한 시간안에 가족을 움직이지 않을 경우 더미보드판으로 가족이 이동한다.
 
+        // 아그리콜라 게임 추출
+        AgricolaGame game = extractGame(gameRoomId);
+
+        // 해당 턴이 유효한지 검증
+        if(game.getGameState().getGameProgress() != GameProgress.PlayerAction)
+            throw new RuntimeException("게임이 액션을 수락하는 단계가 아닙니다.");
+
+        // 행동 칸 작업 수행
+        game.playAction(eventId, acts);
+
+        // 모든 플레이어가 플레이를 마칠 경우 라운드 종료, 아닌 경우 다음 플레이어로 상태 변경
+        Optional<Player> nextPlayer = game.findNextActionPlayer(game.getGameState().getPlayer());
+        if(nextPlayer.isEmpty()){
+            roundEnd(gameRoomId);
+        } else{
+            game.update(GameProgress.PlayerAction, nextPlayer.get());
+        }
     }
 
     /**
@@ -192,18 +213,13 @@ public class AgricolaServiceImpl implements AgricolaService {
         // 아그리콜라 게임 추출
         AgricolaGame game = extractGame(gameRoomId);
 
-        // 남은 말이 있는지 검증
-        if(!game.isAllPlayerPlayed()) {
-            throw new RuntimeException("아직 모둔 플레이를 하지 않은 플레이어가 존재합니다.");
-        }
-
         // 플레이어 행동 말 초기화
         game.initPlayerPlayed();
 
         // 수확 시기인 경우 수확 행동을 수행한다.
         int round = game.getRound();
         if (round == 4 || round == 7 || round == 9 || round == 11 || round == 13 || round == 14) {
-            game.update(GameProgress.HARVEST, game.getStartingPlayer().getUserId());
+            game.update(GameProgress.HARVEST, game.getStartingPlayer());
             harvesting(gameRoomId);
         }
     }
@@ -238,7 +254,7 @@ public class AgricolaServiceImpl implements AgricolaService {
 
         AgricolaGame.GameState gameState = game.getGameState();
 
-        Player player = game.findPlayerByUserId(gameState.getUserId());
+        Player player = gameState.getPlayer();
 
         // 수확
         player.harvest();
@@ -250,10 +266,10 @@ public class AgricolaServiceImpl implements AgricolaService {
         player.breeding();
 
         // 다음 플레이어로 수확 상태 변경
-        if(game.findNextPlayer().equals(game.getStartingPlayer())){
+        if(game.findNextPlayer(player).equals(game.getStartingPlayer())){
             roundEndExtension(gameRoomId);
         } else {
-            game.update(GameProgress.HARVEST, game.findNextPlayer().getUserId());
+            game.update(GameProgress.HARVEST, game.findNextPlayer(player));
             harvesting(gameRoomId);
         }
 
@@ -269,7 +285,7 @@ public class AgricolaServiceImpl implements AgricolaService {
 
         AgricolaGame.GameState gameState = game.getGameState();
 
-        Player player = game.findPlayerByUserId(gameState.getUserId());
+        Player player = gameState.getPlayer();
 
         player.feeding();
     }
@@ -291,6 +307,6 @@ public class AgricolaServiceImpl implements AgricolaService {
         // 아그리콜라 게임 추출
         AgricolaGame game = extractGame(gameRoomId);
 
-        return game.getGameState().getUserId() == userId;
+        return game.getGameState().getPlayer().getUserId() == userId;
     }
 }

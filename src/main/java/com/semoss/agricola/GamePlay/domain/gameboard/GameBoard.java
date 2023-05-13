@@ -2,6 +2,7 @@ package com.semoss.agricola.GamePlay.domain.gameboard;
 
 import com.semoss.agricola.GamePlay.domain.action.*;
 import com.semoss.agricola.GamePlay.domain.player.FieldType;
+import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.Builder;
@@ -342,4 +343,22 @@ public class GameBoard {
         shuffleByIndex(this.events, startIndex, events.size());
     }
 
+    /**
+     * 액션을 플레이한다.
+     * @param player 액션을 플레이하는 플레이어
+     * @param eventId 플레이할 액션
+     * @param acts    액션에 필요한 추가 요청
+     */
+    public void playAction(Player player, Long eventId, Object acts) {
+        events.stream()
+                .filter(event -> event.getId().equals(eventId))
+                .findAny()
+                .orElseThrow(() -> new RuntimeException("이벤트가 존재하지 않습니다"))
+                .runActions(acts);
+    }
+
+    public void initPlayed() {
+        events.stream()
+                .forEach(event -> event.initPlayed());
+    }
 }

@@ -266,4 +266,11 @@ public class Player {
     public void addChild() {
         this.playerBoard.addChard();
     }
+
+    /**
+     * 액션을 플레이한다.
+     */
+    public void playAction() {
+        this.playerBoard.playAction();
+    }
 }

@@ -78,6 +78,17 @@ public class Room implements Field {
     }
 
     /**
+     * 플레이한다.
+     */
+    protected void play() {
+        this.residents.stream()
+                .filter(resident -> resident.isPlayed() == false && resident.residentType == ResidentType.ADULT)
+                .findFirst()
+                .orElseThrow(RuntimeException::new)
+                .setPlayed(true);
+    }
+
+    /**
      * 아이 성장
      */
     protected void growUpChild() {

@@ -33,7 +33,6 @@ public class Player {
     public Player(Long userId, boolean isStartPlayer){
         this.userId = userId;
         this.startingToken = isStartPlayer;
-        this.game = game;
         this.resources = new EnumMap<>(ResourceType.class);
         for (ResourceType resource : ResourceType.values()){
             resources.put(resource,0);

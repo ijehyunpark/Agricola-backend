@@ -22,9 +22,8 @@ public class PlayerBoard {
 //    private int stableCount;
     private FieldType[][] fieldStatus = new FieldType[3][5];
     private Field[][] fields = new Field[3][5];
-//    private int[][] fence = new int[4][6];
-    private boolean[][] colFence;
-    private boolean[][] rowFence;
+    private boolean[][] colFence = new boolean[3][6];
+    private boolean[][] rowFence = new boolean[4][5];
 
     @Builder
     public PlayerBoard() {
@@ -53,10 +52,6 @@ public class PlayerBoard {
         fieldStatus[2][0] = FieldType.ROOM;
 
         this.roomCount = 2;
-
-        // 울타리 초기화
-        colFence = new boolean[3][6];
-        rowFence = new boolean[4][5];
     }
 
     /**
@@ -171,6 +166,37 @@ public class PlayerBoard {
             }
         }
         return false;
+    }
+
+    protected boolean[][] availableFieldPos(FieldType fieldType){
+        boolean[][] ifFirstField = new boolean[fields.length][fields[0].length];
+        boolean[][] ifNthField = new boolean[fields.length][fields[0].length];
+        int i,j;
+
+        for (i=0;i<fields.length;i++) {
+            for (j = 0; j < fields[0].length; j++) {
+                if (fieldStatus[i][j] == FieldType.EMPTY) ifFirstField[i][j] = true;
+            }
+        }
+
+        if (fieldType == FieldType.STABLE) return ifFirstField;
+
+        boolean isIt = false;
+        for (i=0;i<fields.length;i++){
+            for (j=0;j<fields[0].length;j++){
+                if (fieldStatus[i][j] == fieldType){
+                    isIt = true;
+                    if (i != 0) ifNthField[i-1][j] = fieldStatus[i-1][j] == FieldType.EMPTY;
+                    if (i != fields.length-1) ifNthField[i+1][j] = fieldStatus[i+1][j] == FieldType.EMPTY;
+                    if (j != 0) ifNthField[i][j-1] = fieldStatus[i][j-1] == FieldType.EMPTY;
+                    if (j != fields[0].length-1) ifNthField[i][j+1] = fieldStatus[i][j+1] == FieldType.EMPTY;
+                }
+            }
+        }
+        if (isIt) {
+            return ifNthField;
+        }
+        return ifFirstField;
     }
 
     protected void buildField(int y, int x, FieldType fieldType) {

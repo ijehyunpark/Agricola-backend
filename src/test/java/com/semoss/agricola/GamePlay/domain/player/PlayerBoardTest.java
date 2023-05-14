@@ -3,6 +3,8 @@ package com.semoss.agricola.GamePlay.domain.player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class PlayerBoardTest {
@@ -26,7 +28,15 @@ class PlayerBoardTest {
     int[][][] fence3_3 = {{{0,3},{0,4},{1,3}},{{0,3},{0,5}}};
     int[][][] fence_error = {{{0,1}},{{0,1},{0,2},{1,1},{1,2}}};
 
+    boolean[][] pb1_AvailableRoom = new boolean[][]{{true,false,false,false,false},{false,true,false,false,false},{false,false,true,false,false}};
+    boolean[][] pb1_AvailableFarm = new boolean[][]{{true,true,true,true,true},{false,true,true,true,true},{false,false,true,true,true}};
+    boolean[][] pb2_AvailableRoom = new boolean[][]{{true,false,false,false,false},{false,true,false,false,false},{false,true,false,false,false}};
+    boolean[][] pb2_AvailableFarm = new boolean[][]{{false,false,true,false,false},{false,false,false,true,false},{false,false,false,false,true}};
+    boolean[][] pb2_AvailableStable = new boolean[][]{{true,true,true,false,false},{false,true,true,true,false},{false,true,true,true,true}};
+    boolean[][] pb3_AvailableFarm = new boolean[][]{{false,false,true,false,false},{false,true,false,true,false},{false,false,true,false,false}};
+
     boolean[][][] tmpPos;
+    boolean[][] tmpField;
 
     @BeforeEach
     void setUp() {
@@ -82,5 +92,39 @@ class PlayerBoardTest {
         assertFalse(playerBoard2.buildFence(fence_error[0],fence_error[1]));
         assertFalse(playerBoard3.buildFence(fence_error[0],fence_error[1]));
 
+    }
+
+    @Test
+    void testAvailableFieldPos() {
+        int i;
+        tmpField = playerBoard1.availableFieldPos(FieldType.ROOM);
+        for (i=0;i<tmpField.length;i++){
+            assertArrayEquals(tmpField[i],pb1_AvailableRoom[i]);
+        }
+
+        tmpField = playerBoard1.availableFieldPos(FieldType.FARM);
+        for (i=0;i<tmpField.length;i++){
+            assertArrayEquals(tmpField[i],pb1_AvailableFarm[i]);
+        }
+
+        tmpField = playerBoard2.availableFieldPos(FieldType.ROOM);
+        for (i=0;i<tmpField.length;i++){
+            assertArrayEquals(tmpField[i],pb2_AvailableRoom[i]);
+        }
+
+        tmpField = playerBoard2.availableFieldPos(FieldType.FARM);
+        for (i=0;i<tmpField.length;i++){
+            assertArrayEquals(tmpField[i],pb2_AvailableFarm[i]);
+        }
+
+        tmpField = playerBoard2.availableFieldPos(FieldType.STABLE);
+        for (i=0;i<tmpField.length;i++){
+            assertArrayEquals(tmpField[i],pb2_AvailableStable[i]);
+        }
+
+        tmpField = playerBoard3.availableFieldPos(FieldType.FARM);
+        for (i=0;i<tmpField.length;i++){
+            assertArrayEquals(tmpField[i],pb3_AvailableFarm[i]);
+        }
     }
 }

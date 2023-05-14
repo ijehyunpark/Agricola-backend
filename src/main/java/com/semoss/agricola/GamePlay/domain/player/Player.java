@@ -90,12 +90,19 @@ public class Player {
      * use resource
      * @param resourceType resource type to use
      * @param num amount of resource
-     * @return Whether to use
      */
     public void useResource(ResourceType resourceType, int num){
         if (resources.get(resourceType) < num)
             throw new RuntimeException("자원이 부족합니다.");
         resources.compute(resourceType, (key, value) -> value - num);
+    }
+
+    /**
+     * use resource
+     * @param resource resource type and amount to use
+     */
+    public void useResource(ResourceStruct resource){
+        useResource(resource.getResource(), resource.getCount());
     }
 
     /**

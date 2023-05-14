@@ -144,9 +144,7 @@ public class AgricolaServiceImpl implements AgricolaService {
      */
     @Override
     public void playAction(Long gameRoomId, Long eventId, List<AgricolaActionRequest.ActionFormat> acts) {
-        log.info("playAction 요청이 입력되었습니다.");
-        log.info(eventId);
-        log.info(acts.toString());
+        log.info("playAction 요청이 입력되었습니다. : " + eventId.toString());
         //- 나의 차례가 끝나지 않았을 때 [주설비카드]를 이용하여 자원을 음식으로 교환할수있다.
         //- 나의 차례가 끝나지 않았을 때 [직업, 보조설비 카드]를 통해 추가 행동을 할 수 있다.
         //- 나의 차례가 끝나지 않았을 때 울타리 안에 있는 동물의 위치를 바꿀 수 있다.
@@ -181,12 +179,10 @@ public class AgricolaServiceImpl implements AgricolaService {
      * @param gameRoomId
      */
     @Override
-    public void playExchange(Long gameRoomId, String improvementId, ResourceStruct resource, int count) {
-        log.info("playExchange 요청이 입력되었습니다.");
-        log.info(improvementId);
+    public void playExchange(Long gameRoomId, String improvementId, ResourceStruct resource) {
+        log.info("playExchange 요청이 입력되었습니다. : " + improvementId.toString());
         log.info(resource.getResource());
         log.info(resource.getCount());
-        log.info(count);
 
         // 항상 할 수 있는거
         //- 보드판에 모인 공용 주요 설비 카드를 확인할 수 있다.
@@ -196,6 +192,16 @@ public class AgricolaServiceImpl implements AgricolaService {
         //- 지금까지 게임의 진행사항(로그)을 확인할 수 있다.
         //- 지금까지 게임의 플레이어 점수를 확인할 수 있다.
 
+        // 아그리콜라 게임 추출
+        AgricolaGame game = extractGame(gameRoomId);
+
+        // 교환 작업 수행
+        game.playExchange(improvementId, resource);
+
+        // 만약 게임 상태가 수확단계에서 이루어진 교환이라면 이후에 수확 과정을 진행한다.
+        if(game.getGameState().getGameProgress() == GameProgress.HARVEST){
+            feeding(gameRoomId);
+        }
     }
 
     /**
@@ -220,7 +226,6 @@ public class AgricolaServiceImpl implements AgricolaService {
     private void roundEndExtension(Long gameRoomId) {
         // 아그리콜라 게임 추출
         AgricolaGame game = extractGame(gameRoomId);
-
 
         // 아이를 어른으로 성장시킨다.
         game.growUpChild();
@@ -254,18 +259,6 @@ public class AgricolaServiceImpl implements AgricolaService {
 
         // 먹여 살리기 작업
         feeding(gameRoomId);
-
-        // 동물 번식
-        player.breeding();
-
-        // 다음 플레이어로 수확 상태 변경
-        if(game.findNextPlayer(player).equals(game.getStartingPlayer())){
-            roundEndExtension(gameRoomId);
-        } else {
-            game.update(GameProgress.HARVEST, game.findNextPlayer(player));
-            harvesting(gameRoomId);
-        }
-
     }
 
     /**
@@ -280,7 +273,34 @@ public class AgricolaServiceImpl implements AgricolaService {
 
         Player player = gameState.getPlayer();
 
+        // 먹여살리기
         player.feeding();
+
+        breeding(gameRoomId);
+    }
+
+    /**
+     * 번식 단계
+     * @param gameRoomId
+     */
+    private void breeding(Long gameRoomId) {
+        // 아그리콜라 게임 추출
+        AgricolaGame game = extractGame(gameRoomId);
+
+        AgricolaGame.GameState gameState = game.getGameState();
+
+        Player player = gameState.getPlayer();
+
+        // 동물 번식
+        player.breeding();
+
+        // 다음 플레이어로 수확 상태 변경
+        if(game.findNextPlayer(player).equals(game.getStartingPlayer())){
+            roundEndExtension(gameRoomId);
+        } else {
+            game.update(GameProgress.HARVEST, game.findNextPlayer(player));
+            harvesting(gameRoomId);
+        }
     }
 
     /**

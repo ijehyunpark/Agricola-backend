@@ -28,9 +28,11 @@ class GameBoardTest {
                 break;
             }
             if(events.get(i).getRoundGroup() == 0 && events.get(i).getRound() != 0 ||
-                    events.get(i).getRoundGroup() != 0 && events.get(i).getRound() != 0){
+                    events.get(i).getRoundGroup() != 0 && events.get(i).getRound() == 0){
                 isMatched = false;
             }
+//            System.out.print(events.get(i).getRound());
+//            System.out.println(events.get(i).getRoundGroup());
         }
         // 정렬 되있는지 확인
         assertTrue(isSorted);

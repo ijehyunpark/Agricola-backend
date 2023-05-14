@@ -3,6 +3,7 @@ package com.semoss.agricola.GamePlay.domain;
 import com.fasterxml.jackson.annotation.*;
 import com.semoss.agricola.GamePlay.domain.gameboard.GameBoard;
 import com.semoss.agricola.GamePlay.domain.player.Player;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
 import com.semoss.agricola.GameRoom.domain.Game;
 import lombok.Builder;
@@ -19,7 +20,6 @@ import java.util.Optional;
 
 @Getter
 public class AgricolaGame implements Game {
-
     @Getter
     @Setter
     public class GameState {
@@ -173,6 +173,25 @@ public class AgricolaGame implements Game {
 
         // 액션 플레이를 수행한다.
         this.gameBoard.playAction(this.getGameState().getPlayer(), eventId, acts);
+    }
+
+    /**
+     * 교환을 플레이한다.
+     * @param improvementId 자원 교환 작업 시 사용할 주설비 식별자
+     * @param resource 교환할 자원의 종류와 개수
+     */
+    public void playExchange(String improvementId, ResourceStruct resource) {
+        Player player = this.getGameState().getPlayer();
+
+        // TODO: 플레이어가 해당 주설비를 가지고 있는지 검증한다.
+
+        // 플레이어가 교환할 자원을 가지고 있는지 검증한다.
+        if(player.getResource(resource.getResource()) < resource.getCount())
+            throw new RuntimeException("자원이 부족합니다.");
+
+        // 주설비와 교환 요청 자원을 사용하여 교환 작업을 수행한다.
+        // TODO: 교환 후 자원 획득
+        player.useResource(resource);
     }
 
     //로그 기능

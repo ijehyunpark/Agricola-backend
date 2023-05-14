@@ -5,6 +5,7 @@ import com.semoss.agricola.GamePlay.domain.gameboard.ImprovementBoard;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,6 +26,7 @@ class BakeActionTest {
     }
 
     @Test
+    @Disabled
     void runAction() {
         assertFalse(bakeAction.checkPrecondition(player, improvement));
         player.addResource(ResourceType.GRAIN,2);

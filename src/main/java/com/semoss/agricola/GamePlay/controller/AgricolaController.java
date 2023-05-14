@@ -80,7 +80,7 @@ public class AgricolaController {
 
         // 플레이어 교환 진행
         for(AgricolaExchangeRequest.ExchangeFormat exchange : exchangeRequest.getExchange()){
-            agricolaService.playExchange(gameRoomId, exchange.getImprovementId(), exchange.getResource(), exchange.getCount());
+            agricolaService.playExchange(gameRoomId, exchange.getImprovementId(), exchange.getResource());
         }
 
         // 게임 상태 전송

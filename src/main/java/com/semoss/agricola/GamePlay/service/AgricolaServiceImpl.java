@@ -70,6 +70,7 @@ public class AgricolaServiceImpl implements AgricolaService {
      */
     @Override
     public void start(Long gameRoomId) {
+        log.info("게임이 시작되었습니다.");
         // 게임을 사작할 게임방 검색
         GameRoom gameRoom =  gameRoomRepository.findById(gameRoomId).orElseThrow(
                 () -> new NoSuchElementException("해당 id를 가진 게임방이 존재하지 않습니다.")
@@ -120,6 +121,7 @@ public class AgricolaServiceImpl implements AgricolaService {
     private void roundStart(Long gameRoomId) {
         // 아그리콜라 게임 추출
         AgricolaGame game = extractGame(gameRoomId);
+        log.info("round가 시작되었습니다.: " + game.getRound() );
 
         // 현재 게임 상태를 선공 플레이어의 행동 단계로 변경한다.
         game.update(GameProgress.PlayerAction, game.getStartingPlayer());
@@ -209,6 +211,7 @@ public class AgricolaServiceImpl implements AgricolaService {
      * @param gameRoomId
      */
     private void roundEnd(Long gameRoomId) {
+        log.info("라운드가 종료되었습니다.");
         // 아그리콜라 게임 추출
         AgricolaGame game = extractGame(gameRoomId);
 
@@ -220,10 +223,13 @@ public class AgricolaServiceImpl implements AgricolaService {
         if (round == 4 || round == 7 || round == 9 || round == 11 || round == 13 || round == 14) {
             game.update(GameProgress.HARVEST, game.getStartingPlayer());
             harvesting(gameRoomId);
+        } else {
+            roundEndExtension(gameRoomId);
         }
     }
 
     private void roundEndExtension(Long gameRoomId) {
+        log.info("라운드가 종료되었습니다. - Extenstion");
         // 아그리콜라 게임 추출
         AgricolaGame game = extractGame(gameRoomId);
 
@@ -247,6 +253,7 @@ public class AgricolaServiceImpl implements AgricolaService {
      * @param gameRoomId
      */
     public void harvesting(Long gameRoomId) {
+        log.info("수확 라운드입니다.");
         // 아그리콜라 게임 추출
         AgricolaGame game = extractGame(gameRoomId);
 
@@ -266,6 +273,7 @@ public class AgricolaServiceImpl implements AgricolaService {
      * @param gameRoomId
      */
     public void feeding(Long gameRoomId) {
+        log.info("먹여살리기 라운드입니다.");
         // 아그리콜라 게임 추출
         AgricolaGame game = extractGame(gameRoomId);
 
@@ -284,6 +292,7 @@ public class AgricolaServiceImpl implements AgricolaService {
      * @param gameRoomId
      */
     private void breeding(Long gameRoomId) {
+        log.info("번식 라운드입니다.");
         // 아그리콜라 게임 추출
         AgricolaGame game = extractGame(gameRoomId);
 
@@ -309,6 +318,7 @@ public class AgricolaServiceImpl implements AgricolaService {
      */
     @Override
     public void finish(Long gameRoomId) {
+        log.info("종료되었습니다.");
         //1.
         //    - 플레이어가 소유한 자원에 따라 플레이어 점수가 확정되고 최종 순위가 확정된다.
         //    - ‘한 번 더 하기’ 버튼을 누르면 게임방으로 돌아간다.

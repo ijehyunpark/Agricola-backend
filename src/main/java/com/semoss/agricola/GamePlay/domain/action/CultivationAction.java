@@ -7,9 +7,9 @@ import lombok.Getter;
 /**
  * TODO: 씨 뿌리기 액션
  */
-public class CultivationAction implements MultiInputAction {
 
-    @Getter
+@Getter
+public class CultivationAction implements MultiInputAction {
     private final ActionType actionType = ActionType.CULTIVATION;
 
     @Builder

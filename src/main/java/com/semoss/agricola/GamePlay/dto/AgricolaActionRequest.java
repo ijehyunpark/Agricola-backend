@@ -1,6 +1,5 @@
 package com.semoss.agricola.GamePlay.dto;
 
-import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -17,7 +16,7 @@ public class AgricolaActionRequest {
     @Getter
     public static class ActionFormat {
         @NotNull(message = "필수 입력")
-        private boolean isUsed;
+        private Boolean use;
         private Object acts;
     }
 

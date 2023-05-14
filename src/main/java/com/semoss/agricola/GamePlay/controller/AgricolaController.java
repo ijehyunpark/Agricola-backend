@@ -2,12 +2,11 @@ package com.semoss.agricola.GamePlay.controller;
 
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
 import com.semoss.agricola.GamePlay.dto.AgricolaExchangeRequest;
-import com.semoss.agricola.GamePlay.dto.AgricolaGameStatus;
 import com.semoss.agricola.GamePlay.service.AgricolaService;
-import com.semoss.agricola.GameRoom.service.GameRoomService;
 import com.semoss.agricola.GameRoom.domain.GameRoom;
+import com.semoss.agricola.GameRoom.service.GameRoomService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 @RequiredArgsConstructor
-@Log4j2
 public class AgricolaController {
 
     private final SimpMessageSendingOperations simpMessageSendingOperations;
@@ -48,7 +46,7 @@ public class AgricolaController {
      * @param headerAccessor 웹 소켓 메세지 헤더 접근자
      */
     @MessageMapping("/play-action/{gameRoomId}")
-    public void playAction(@DestinationVariable Long gameRoomId, @Payload AgricolaActionRequest actionRequest, SimpMessageHeaderAccessor headerAccessor) {
+    public void playAction(@DestinationVariable Long gameRoomId, @Payload @Valid AgricolaActionRequest actionRequest, SimpMessageHeaderAccessor headerAccessor) {
         // 현재 플레이어 턴인지 확인
         if(!agricolaService.validatePlayer(gameRoomId, headerAccessor.getSessionAttributes().get("userId")))
             throw new RuntimeException("잘못된 요청");
@@ -70,7 +68,7 @@ public class AgricolaController {
      * @param headerAccessor 웹 소켓 메세지 헤더 접근자
      */
     @MessageMapping("/play-exchange/{gameRoomId}")
-    public void playExchange(@DestinationVariable Long gameRoomId, @Payload AgricolaExchangeRequest exchangeRequest, SimpMessageHeaderAccessor headerAccessor) {
+    public void playExchange(@DestinationVariable Long gameRoomId, @Payload @Valid  AgricolaExchangeRequest exchangeRequest, SimpMessageHeaderAccessor headerAccessor) {
         // 현재 플레이어 턴인지 확인
         if(!agricolaService.validatePlayer(gameRoomId, headerAccessor.getSessionAttributes().get("userId")))
             throw new RuntimeException("잘못된 요청");

@@ -9,8 +9,8 @@ import lombok.Getter;
 import java.util.List;
 import java.util.Map;
 
+@Getter
 public class RoomUpgradeAction implements SimpleAction {
-    @Getter
     private final ActionType actionType = ActionType.UPGRADE;
     /** upgrade cost [before room rank, costs] */
     private final Map<ResourceType, List<ResourceStruct>> costs;

@@ -10,8 +10,8 @@ import lombok.Getter;
  * TODO: 카드 놓기
  * card마다 전제 조건 비용이 다르기에 해당 객체에서 비용을 저장하지 말고 외부 카드를 받아와서 처리하는게 좋아 보인다.
  */
+@Getter
 public class PlaceAction implements SimpleAction {
-    @Getter
     private final ActionType actionType = ActionType.PLACE;
 
     @Builder

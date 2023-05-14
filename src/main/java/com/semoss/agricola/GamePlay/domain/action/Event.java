@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
+import com.fasterxml.jackson.annotation.*;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.Reservation;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
@@ -21,14 +22,15 @@ public class Event {
     private final List<ResourceStruct> stacks; // 누적 쌓인 자원
     private final List<Reservation> reservations; // 예약으로 쌓인 자원
 
+    @JsonIgnore
     private int roundGroup;
     @Setter
     private int round;
-    private boolean isPlayed;
 
-//    private boolean usable;
-//    private int doType;
-//    private boolean face;
+    @JsonProperty("playerId")
+    @JsonIdentityReference(alwaysAsId = true)
+    @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@userId")
+    private Player isPlayed;
 
     @Builder
     public Event(List<Action> actions, List<DoType> actionDoType, int roundGroup) {
@@ -38,7 +40,7 @@ public class Event {
         this.stacks = new ArrayList<>();
         this.reservations = new ArrayList<>();
         this.roundGroup = roundGroup;
-        this.isPlayed = false;
+        this.isPlayed = null;
     }
 
     /**
@@ -47,30 +49,29 @@ public class Event {
      * @param acts 액션 수행관련 세부 사항
      */
     public void runActions(Player player, List<AgricolaActionRequest.ActionFormat> acts) {
-        if(isPlayed)
+        // 이미 플레이된 상태인지 확인
+        if(this.isPlayed != null)
             throw new RuntimeException("이미 플레이한 액션칸입니다.");
 
+        this.isPlayed = player;
+
         // TODO: Object 입력 개선 (object acts.acts)
-        try {
-            this.actions.stream()
-                    .filter(action -> acts.get(actions.indexOf(action)).isUsed())
-                    .forEach(action -> {
-                        AgricolaActionRequest.ActionFormat act = acts.get(actions.indexOf(action));
-                        switch (action.getActionType()) {
-                            case BASIC, STARTING, UPGRADE, ADOPT -> {
-                                ((SimpleAction) action).runAction(player);
-                            }
-                            case BAKE, BUILD, PLACE, CULTIVATION -> {
-                                ((MultiInputAction) action).runAction(player, act.getActs());
-                            }
-                            case STACK -> {
-                                throw new RuntimeException("액션 행동을 지원하지 않는 타입입니다.");
-                            }
+        this.actions.stream()
+                .filter(action -> acts.get(actions.indexOf(action)).getUse())
+                .forEach(action -> {
+                    AgricolaActionRequest.ActionFormat act = acts.get(actions.indexOf(action));
+                    switch (action.getActionType()) {
+                        case BASIC, STARTING, UPGRADE, ADOPT -> {
+                            ((SimpleAction) action).runAction(player);
                         }
-                    });
-        } catch (Exception ex){
-            throw new RuntimeException(ex.getLocalizedMessage());
-        }
+                        case BAKE, BUILD, PLACE, CULTIVATION -> {
+                            ((MultiInputAction) action).runAction(player, act.getActs());
+                        }
+                        case STACK -> {
+                            throw new RuntimeException("액션 행동을 지원하지 않는 타입입니다.");
+                        }
+                    }
+                });
     }
 
     public void stackResource(ResourceStruct resource){
@@ -98,6 +99,6 @@ public class Event {
      * 플레이 여부 초기화
      */
     public void initPlayed() {
-        this.isPlayed = false;
+        this.isPlayed = null;
     }
 }

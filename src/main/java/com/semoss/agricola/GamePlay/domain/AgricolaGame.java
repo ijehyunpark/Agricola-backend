@@ -1,6 +1,9 @@
 package com.semoss.agricola.GamePlay.domain;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.semoss.agricola.GamePlay.domain.gameboard.GameBoard;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
@@ -9,6 +12,7 @@ import com.semoss.agricola.GameRoom.domain.Game;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -19,6 +23,7 @@ import java.util.Optional;
  */
 
 @Getter
+@Log4j2
 public class AgricolaGame implements Game {
     @Getter
     @Setter
@@ -50,7 +55,7 @@ public class AgricolaGame implements Game {
         this.players = players;
         this.startingPlayer = players.size() > 0 ? players.get(0) : null;
         this.round = -1;
-        this.gameState = new GameState();
+        gameState = new GameState();
     }
 
     /**
@@ -97,7 +102,7 @@ public class AgricolaGame implements Game {
             throw new RuntimeException("다음 유저를 찾을 수 없습니다.");
 
         // 다음플레이어 반환
-        if (index == players.size())
+        if (index + 1 == players.size())
             return players.get(0);
 
         return players.get(index + 1);
@@ -110,10 +115,10 @@ public class AgricolaGame implements Game {
      */
     public Optional<Player> findNextActionPlayer(Player player){
         Player nextPlayer = findNextPlayer(player);
-        while(nextPlayer != player){
+        do{
             if(!nextPlayer.isCompletedPlayed())
                 return Optional.of(nextPlayer);
-        }
+        }while (nextPlayer != player);
         return Optional.empty();
     }
 
@@ -168,11 +173,11 @@ public class AgricolaGame implements Game {
      * @param acts 액션에 필요한 추가 요청
      */
     public void playAction(Long eventId, List<AgricolaActionRequest.ActionFormat> acts) {
-        // 거주자 한명을 임의로 뽑아 플레이 시킨다.
-        this.getGameState().getPlayer().playAction();
-
         // 액션 플레이를 수행한다.
         this.gameBoard.playAction(this.getGameState().getPlayer(), eventId, acts);
+
+        // 거주자 한명을 임의로 뽑아 플레이 시킨다.
+        this.getGameState().getPlayer().playAction();
     }
 
     /**

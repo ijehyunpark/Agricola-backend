@@ -1,7 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.player;
 
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
-import jdk.jshell.spi.ExecutionControl;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -106,8 +105,8 @@ public class PlayerBoard {
     /**
      * TODO: 동물을 번식시킨다.
      */
-    protected void breeding() throws ExecutionControl.NotImplementedException {
-        throw new ExecutionControl.NotImplementedException("미구현");
+    protected void breeding() {
+        // do nothing now
     }
 
     /**

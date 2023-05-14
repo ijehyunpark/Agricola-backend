@@ -7,8 +7,8 @@ import lombok.Getter;
 /**
  * 선공권 가져오기
  */
+@Getter
 public class GetStartingPositionAction implements SimpleAction {
-    @Getter
     private final ActionType actionType = ActionType.STARTING;
 
     @Builder

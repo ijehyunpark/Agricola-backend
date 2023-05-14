@@ -141,7 +141,7 @@ public class Player {
      * 현재 필드 단계를 반환한다.
      * @return
      */
-    public FieldType getRoomType() {
+    public RoomType getRoomType() {
         return playerBoard.getRoomType();
     }
 

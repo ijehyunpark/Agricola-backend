@@ -305,7 +305,9 @@ public class GameBoard {
     }
 
     /**
-     * 해당 인덱스 내에서 배열을 셔플하고 저장하는 함수
+     * round group을 기준으로 해당 인덱스 내에서 배열을 셔플한다.
+     * round group이 0인 경우 셔플 대상에서 제외된다.
+     * round group이 0이 아닌 경우 같은 round group까리 셔플된다.
      * @param lst 셔플할 배열
      * @param start 셔플할 배열 시작 위치
      * @param end 셔플할 배열 끝 위치
@@ -323,7 +325,7 @@ public class GameBoard {
     }
 
     /**
-     * 이벤트 객체 셔플
+     * roundGroup을 기준으로 이벤트 객체를 셔플한다.
      */
     private void shuffleEventsWithinRoundGroup() {
         if (this.events == null || this.events.size() == 0)
@@ -398,6 +400,9 @@ public class GameBoard {
                 .runActions(player, acts);
     }
 
+    /**
+     * 이벤트의 플레이 여부를 초기화한다.
+     */
     public void initPlayed() {
         events.stream()
                 .forEach(event -> event.initPlayed());

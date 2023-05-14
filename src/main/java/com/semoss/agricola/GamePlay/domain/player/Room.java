@@ -1,40 +1,22 @@
 package com.semoss.agricola.GamePlay.domain.player;
 
-import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 public class Room implements Field {
-    @Getter
-    private class Resident {
-        private ResidentType residentType;
-        @Setter
-        private boolean played;
-
-        public Resident(ResidentType residentType, boolean played) {
-            this.residentType = residentType;
-            this.played = played;
-        }
-
-        public void growUpChild(){
-            this.residentType = ResidentType.ADULT;
-        }
-    }
 
     @Getter
     private class PetRoom {
-        private AnimalType animalType;
+        private ResourceType animalType;
     }
 
     private PetRoom petRoom;
     private final List<Resident> residents;
-    private final ResourceStruct resource;
 
     @Builder
     public Room(boolean isPetRoom){
@@ -42,10 +24,6 @@ public class Room implements Field {
             this.petRoom = new PetRoom();
         }
         this.residents = new ArrayList<>();
-        this.resource = ResourceStruct.builder()
-                .resource(ResourceType.EMPTY)
-                .count(0)
-                .build();
     }
 
     /**
@@ -57,15 +35,15 @@ public class Room implements Field {
     }
 
     /**
-     * 거주자 인원수 반환
+     * 방의 거주자 인원수를 가져온다.
      */
     public int getResidentNumber(){
         return this.residents.size();
     }
 
     /**
-     * 플레이하지 않은 가족말 여부
-     * @return
+     * 플레이하지 않은 거주자 여부를 확인한다.
+     * @return 모든 거주자가 플레이 되었을 경우 true를 반환한다.
      */
     protected boolean isCompletedPlayed() {
         return this.residents.stream()
@@ -73,7 +51,7 @@ public class Room implements Field {
     }
 
     /**
-     * 플레이 여부 초기화
+     * 플레이 여부를 초기화한다.
      */
     protected void initPlayed() {
         this.residents.stream()
@@ -81,18 +59,18 @@ public class Room implements Field {
     }
 
     /**
-     * 플레이한다.
+     * 플레이하지 않은 임의의 거주자 한명을 플레이 상태로 변경한다.
      */
     protected void play() {
         this.residents.stream()
-                .filter(resident -> resident.isPlayed() == false && resident.residentType == ResidentType.ADULT)
+                .filter(resident -> resident.isPlayed() == false && resident.getResidentType() == ResidentType.ADULT)
                 .findFirst()
                 .orElseThrow(RuntimeException::new)
                 .setPlayed(true);
     }
 
     /**
-     * 아이 성장
+     * 모든 아이를 성장시킨다.
      */
     protected void growUpChild() {
         this.residents.stream()
@@ -102,8 +80,8 @@ public class Room implements Field {
 
 
     /**
-     * 음식 요구사항 계산
-     * @return
+     * 먹여살리기 단계에 필요한 총 음식 요구사항 계산한다.
+     * @return 총 음식 요구사항 값
      */
     public int calculateFoodNeeds() {
         return this.residents.stream()
@@ -112,8 +90,8 @@ public class Room implements Field {
     }
 
     /**
-     * 빈방 여부 확인
-     * @return
+     * 거주자가 없는 빈방 여부를 확인한다.
+     * @return 거주자가 없을 경우 true를 반환한다.
      */
     public boolean isEmptyRoom() {
         return this.residents.size() == 0;

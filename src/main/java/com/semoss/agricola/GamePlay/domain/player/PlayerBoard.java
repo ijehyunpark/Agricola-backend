@@ -7,7 +7,6 @@ import lombok.Getter;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -17,7 +16,7 @@ import java.util.stream.Collectors;
 @Getter
 public class PlayerBoard {
     private int roomCount;
-    private FieldType roomType;
+    private RoomType roomType;
 //    private int farmCount;
 //    private int fenceCount;
 //    private int stableCount;
@@ -28,7 +27,7 @@ public class PlayerBoard {
     @Builder
     public PlayerBoard() {
         //초기 나무집 설정
-        roomType = FieldType.WOOD;
+        roomType = RoomType.WOOD;
 
         // 애완 동물 나무집
         Room petRoom = Room.builder()
@@ -48,19 +47,19 @@ public class PlayerBoard {
     }
 
     /**
-     * 방 업그레이드
+     * 방을 업그레이드한다.
      */
     public void upgradeRoom() {
         // 방을 한단계 업그레이드 한다.
-        if (roomType == FieldType.WOOD)
-            roomType = FieldType.CLAY;
-        else if (roomType == FieldType.CLAY)
-            roomType = FieldType.STONE;
+        if (roomType == RoomType.WOOD)
+            roomType = RoomType.CLAY;
+        else if (roomType == RoomType.CLAY)
+            roomType = RoomType.STONE;
     }
 
     /**
-     * 플레이하지 않은 가족말 여부
-     * @return
+     * 플레이하지 않은 거주자 여부를 확인한다.
+     * @return 모든 거주자가 플레이 되었을 경우 true를 반환한다.
      */
     protected boolean isCompletedPlayed() {
         return Arrays.stream(fields)
@@ -70,7 +69,7 @@ public class PlayerBoard {
     }
 
     /**
-     * 플레이여부 초기화
+     * 플레이여부 초기화한다.
      */
     protected void initPlayed() {
         Arrays.stream(fields)
@@ -81,7 +80,7 @@ public class PlayerBoard {
     }
 
     /**
-     * 아이 성장
+     * 모든 아이를 성장시킨다.
      */
     protected void growUpChild() {
         Arrays.stream(fields)
@@ -99,19 +98,20 @@ public class PlayerBoard {
                 .flatMap(Arrays::stream)
                 .filter(field -> field instanceof Farm)
                 .map(field -> ((Farm) field).harvest())
-                .filter(Objects::nonNull)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .collect(Collectors.toList());
     }
 
     /**
-     * 동물 번식시키기
+     * TODO: 동물을 번식시킨다.
      */
     protected void breeding() throws ExecutionControl.NotImplementedException {
         throw new ExecutionControl.NotImplementedException("미구현");
     }
 
     /**
-     * 필요한 음식 토큰 개수 계산
+     * 먹여살리기 단게에서 필요한 총 음식 토큰 개수 계산한다.
      */
     protected int calculateFoodNeeds() {
         return Arrays.stream(fields)
@@ -122,7 +122,7 @@ public class PlayerBoard {
     }
 
     /**
-     * 빈 방 확인
+     * 빈 방을 확인한다.
      * @return 만약 빈 방이 존재할 경우, true를 반환한다.
      */
     protected boolean hasEmptyRoom() {
@@ -133,9 +133,16 @@ public class PlayerBoard {
                 .anyMatch(Room::isEmptyRoom);
     }
 
+    /**
+     * TODO: 빈 필드에 새로운 건물을 건설한다.
+     * @param y 건설할 y축 좌표
+     * @param x 건설할 x축 좌표
+     * @param fieldType 건설할 건물 종류
+     */
     protected void buildField(int y, int x, FieldType fieldType) {
         if (fields[y][x] != null)
             throw new RuntimeException("이미 건설 되어 있습니다.");
+
         switch (fieldType){
             case FARM -> {
                 fields[y][x] = new Farm();
@@ -146,16 +153,15 @@ public class PlayerBoard {
                         .build();
             }
             case STABLE -> {
-                // TODO
+                // TODO: 외양간 건설 요청시
                 throw new RuntimeException("friends");
             }
             case FENCE -> {
-                // TODO
+                // TODO: 울타리 건설 요청시
                 throw new RuntimeException("world");
             }
             default -> {
-                // TODO
-                throw new RuntimeException("hello");
+                throw new RuntimeException("불가능한 입력입니다.");
             }
         }
     }
@@ -186,8 +192,8 @@ public class PlayerBoard {
     }
 
     /**
-     * 가족 개수 반환
-     * @return
+     * 총 거주자 인원수를 반환한다.
+     * @return 총 거주자 인원수
      */
     protected int getFamilyCount(){
         return Arrays.stream(fields)

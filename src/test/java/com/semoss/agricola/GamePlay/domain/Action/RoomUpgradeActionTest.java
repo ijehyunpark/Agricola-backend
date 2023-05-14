@@ -3,6 +3,7 @@ package com.semoss.agricola.GamePlay.domain.Action;
 import com.semoss.agricola.GamePlay.domain.action.RoomUpgradeAction;
 import com.semoss.agricola.GamePlay.domain.player.FieldType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
+import com.semoss.agricola.GamePlay.domain.player.RoomType;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,7 +56,7 @@ class RoomUpgradeActionTest {
     @Test
     void checkPrecondition() {
         player.upgradeRoom();
-        assertEquals(FieldType.CLAY,player.getRoomType());
+        assertEquals(RoomType.CLAY,player.getRoomType());
         assertFalse(roomUpgradeAction.checkPrecondition(player));
 
         player.addResource(ResourceType.REED,4);
@@ -63,11 +64,11 @@ class RoomUpgradeActionTest {
         assertTrue(roomUpgradeAction.checkPrecondition(player));
 
         player.upgradeRoom();
-        assertEquals(FieldType.STONE,player.getRoomType());
+        assertEquals(RoomType.STONE,player.getRoomType());
         assertFalse(roomUpgradeAction.checkPrecondition(player));
 
         player.upgradeRoom();
-        assertEquals(FieldType.STONE,player.getRoomType());
+        assertEquals(RoomType.STONE,player.getRoomType());
     }
 
     @Test
@@ -78,13 +79,13 @@ class RoomUpgradeActionTest {
 
         if(roomUpgradeAction.checkPrecondition(player))
             roomUpgradeAction.runAction(player);
-        assertEquals(FieldType.CLAY,player.getRoomType());
+        assertEquals(RoomType.CLAY,player.getRoomType());
 
         if(roomUpgradeAction.checkPrecondition(player))
             roomUpgradeAction.runAction(player);
-        assertEquals(FieldType.STONE,player.getRoomType());
+        assertEquals(RoomType.STONE,player.getRoomType());
 
         roomUpgradeAction.runAction(player);
-        assertEquals(FieldType.STONE,player.getRoomType());
+        assertEquals(RoomType.STONE,player.getRoomType());
     }
 }

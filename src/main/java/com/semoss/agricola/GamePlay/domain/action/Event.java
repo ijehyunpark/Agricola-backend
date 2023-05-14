@@ -63,7 +63,7 @@ public class Event {
                             case BAKE, BUILD, PLACE, CULTIVATION -> {
                                 ((MultiInputAction) action).runAction(player, act.getActs());
                             }
-                            case STACK, EMPTY -> {
+                            case STACK -> {
                                 throw new RuntimeException("액션 행동을 지원하지 않는 타입입니다.");
                             }
                         }

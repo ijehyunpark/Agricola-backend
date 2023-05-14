@@ -1,33 +1,58 @@
 package com.semoss.agricola.GamePlay.domain.gameboard;
 
-// TODO : Event 개선 후 테스트 코드 변경
+import com.semoss.agricola.GamePlay.domain.action.Event;
+import jakarta.validation.constraints.AssertTrue;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 class GameBoardTest {
 
-//    @Test
-//    void shuffleEventsWithinRound_shouldShuffleEventsWithinSameRound() {
-//        // given
-//        List<Event> events = new ArrayList<>();
-//        events.add(Event.builder().round(0).playerUsed(0L).build());
-//        events.add(Event.builder().round(0).playerUsed(1L).build());
-//        events.add(Event.builder().round(1).playerUsed(2L).build());
-//        events.add(Event.builder().round(2).playerUsed(3L).build());
-//        events.add(Event.builder().round(2).playerUsed(4L).build());
-//        events.add(Event.builder().round(2).playerUsed(5L).build());
-//        events.add(Event.builder().round(3).playerUsed(6L).build());
-//        events.add(Event.builder().round(3).playerUsed(7L).build());
-//        events.add(Event.builder().round(3).playerUsed(8L).build());
-//        events.add(Event.builder().round(3).playerUsed(9L).build());
-//        GameBoard board = GameBoard.builder().events(events).build();
-//
-//        // when
-//        board.shuffleEventsWithinRound();
-//
-//        // then
-//        for (int i = 0; i < events.size() - 1; i++) {
-//            System.out.print(events.get(i).getRound());
-//            System.out.println(events.get(i).getPlayerUsed());
-//            int currRound = events.get(i).getRound();
-//            int nextRound = events.get(i + 1).getRound();
-//        }
-//    }
+    @Test
+    void shuffleEventsWithinRound_shouldShuffleEventsWithinSameRound() {
+        // given
+        GameBoard board = GameBoard.builder().build();
+        List<Event> events = board.getEvents();
+
+        // when
+
+        // then
+        boolean isSorted = true;
+        boolean isMatched = true;
+        for (int i = 0; i < events.size() - 1; i++) {
+            if (events.get(i).getRound() > events.get(i + 1).getRound() ||
+                    events.get(i).getRoundGroup() > events.get(i + 1).getRoundGroup()) {
+                isSorted = false;
+                break;
+            }
+            if(events.get(i).getRoundGroup() == 0 && events.get(i).getRound() != 0 ||
+                    events.get(i).getRoundGroup() != 0 && events.get(i).getRound() != 0){
+                isMatched = false;
+            }
+        }
+        // 정렬 되있는지 확인
+        assertTrue(isSorted);
+        // 라운드 배치가 되어 있는지 확인
+        assertTrue(isMatched);
+    }
+
+    @Test
+    void givenStackActions_whenProcessStackEvent_thenResourceAccumulated() {
+        // given
+        GameBoard board = GameBoard.builder().build();
+        List<Event> events = board.getEvents();
+
+        // when
+        board.processStackEvent(10);
+
+        // then
+        boolean dirtyChk = false;
+        for(Event event : events){
+            if(event.getStacks().size() != 0)
+                dirtyChk = true;
+        }
+        assertTrue(dirtyChk);
+    }
 }

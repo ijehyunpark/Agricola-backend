@@ -53,7 +53,7 @@ public class GameBoard {
         events.add(Event.builder()
                 .actions(actions1)
                 .actionDoType(new ArrayList<>(Arrays.asList(DoType.ANDOR)))
-                .round(0)
+                .roundGroup(0)
                 .build());
 
         // TODO: 2.시작 플레이어 되기 그리고/또는 보조 설비 1개 놓기
@@ -63,7 +63,7 @@ public class GameBoard {
         events.add(Event.builder()
                 .actions(actions2)
                 .actionDoType(new ArrayList<>())
-                .round(0)
+                .roundGroup(0)
                 .build());
 
 
@@ -78,7 +78,7 @@ public class GameBoard {
         events.add(Event.builder()
                 .actions(actions3)
                 .actionDoType(new ArrayList<>())
-                .round(0)
+                .roundGroup(0)
                 .build());
 
         // TODO: 4.직업 1개 놓기
@@ -87,7 +87,7 @@ public class GameBoard {
         events.add(Event.builder()
                 .actions(new ArrayList<>(Arrays.asList(buildActionToTillingFarm())))
                 .actionDoType(new ArrayList<>())
-                .round(0)
+                .roundGroup(0)
                 .build());
 
         // 6.날품팔이 (식량 2개 가져가기)
@@ -101,7 +101,7 @@ public class GameBoard {
         events.add(Event.builder()
                 .actions(actions6)
                 .actionDoType(new ArrayList<>())
-                .round(0)
+                .roundGroup(0)
                 .build());
 
         // 7.누적 나무 3개
@@ -124,7 +124,7 @@ public class GameBoard {
         events.add(Event.builder()
                 .actions(new ArrayList(Arrays.asList(buildActionToFence())))
                 .actionDoType(new ArrayList<>())
-                .round(1)
+                .roundGroup(1)
                 .build());
 
         // TODO: 13. 주요 설비나 보조 설비 1개 놓기
@@ -133,7 +133,7 @@ public class GameBoard {
         events.add(Event.builder()
                 .actions(new ArrayList<>(Arrays.asList(buildActionToCultivation(), buildActionToBake())))
                 .actionDoType(new ArrayList<>(Arrays.asList(DoType.ANDOR)))
-                .round(1)
+                .roundGroup(1)
                 .build());
 
         //  --- 2주기 ---
@@ -151,7 +151,7 @@ public class GameBoard {
         events.add(Event.builder()
                 .actions(actions17)
                 .actionDoType(new ArrayList<>())
-                .round(2)
+                .roundGroup(2)
                 .build());
 
         // --- 3주기 ---
@@ -178,7 +178,7 @@ public class GameBoard {
                         buildActionToTillingFarm(),
                         buildActionToCultivation())))
                 .actionDoType(new ArrayList<>(Arrays.asList(DoType.ANDOR)))
-                .round(5)
+                .roundGroup(5)
                 .build());
 
         // 23.급한 가족 늘리기: 빈 방이 없어도 가족 늘리기
@@ -189,7 +189,7 @@ public class GameBoard {
         events.add(Event.builder()
                 .actions(actions23)
                 .actionDoType(new ArrayList<>())
-                .round(5)
+                .roundGroup(5)
                 .build());
 
         // --- 6주기 ---
@@ -200,11 +200,17 @@ public class GameBoard {
                         buildActionToRoomUpgrade(),
                         buildActionToFence())))
                 .actionDoType(new ArrayList<>(Arrays.asList(DoType.ANDOR)))
-                .round(6)
+                .roundGroup(6)
                 .build());
 
         // 같은 라운드 행동 이벤트끼리는 무작위로 섞는다.
-        shuffleEventsWithinRound();
+        shuffleEventsWithinRoundGroup();
+
+        // 라운드를 지정한다.
+        int round = 1;
+        for (Event event : events) {
+            event.setRound(event.getRoundGroup() == 0 ? 0 : round++);
+        }
 
         // TODO : 주설비 보드판 제작
     }
@@ -213,10 +219,10 @@ public class GameBoard {
      * 단일 stackAction을 구성한다.
      * @param resourceType
      * @param num
-     * @param round
+     * @param roundGroup
      * @return
      */
-    private Event buildEventToSimpleStackAction(ResourceType resourceType, int num, int round) {
+    private Event buildEventToSimpleStackAction(ResourceType resourceType, int num, int roundGroup) {
         List<Action> actions = new ArrayList<>();
         actions.add(StackAction.builder()
                 .resourceType(resourceType)
@@ -225,7 +231,7 @@ public class GameBoard {
         return Event.builder()
                 .actions(actions)
                 .actionDoType(new ArrayList<>())
-                .round(round)
+                .roundGroup(roundGroup)
                 .build();
     }
 
@@ -318,23 +324,25 @@ public class GameBoard {
     /**
      * 이벤트 객체 셔플
      */
-    private void shuffleEventsWithinRound() {
+    private void shuffleEventsWithinRoundGroup() {
         if (this.events == null || this.events.size() == 0)
             throw new RuntimeException("이벤트 객체가 비어 있습니다.");
 
-        // round 값을 기준으로 이전과 다음 Event 객체의 round 값과 비교하기 위한 변수
-        int prevRound = events.get(0).getRound();
+        // roundGroup 값을 기준으로 이전과 다음 Event 객체의 round 값과 비교하기 위한 변수
+        int prevRound = events.get(0).getRoundGroup();
         int startIndex = 0;
         int currRound;
 
 
-        // round 값을 기준으로 정렬된 events 리스트에서 round 값이 같은 Event 객체들을 추출하여 셔플
+        // roundGroup 값을 기준으로 정렬된 events 리스트에서 roundGroup 값이 같은 Event 객체들을 추출하여 셔플
         for (int i = 0; i < events.size(); i++) {
-            currRound = events.get(i).getRound();
+            currRound = events.get(i).getRoundGroup();
 
-            // 셔플할 라운드가 0이 아니고, 이전 Event 객체의 round 값과 비교하여 다른 round 값이라면 셔플
-            if (currRound != prevRound && prevRound != 0) {
-                shuffleByIndex(this.events, startIndex, i - 1);
+            // 셔플할 라운드가 0이 아니고, 이전 Event 객체의 roundGroup 값과 비교하여 다른 roundGroup 값이라면 셔플
+            if (currRound != prevRound) {
+                if(prevRound != 0){
+                    shuffleByIndex(this.events, startIndex, i - 1);
+                }
                 prevRound = currRound;
                 startIndex = i;
             }
@@ -343,6 +351,38 @@ public class GameBoard {
         shuffleByIndex(this.events, startIndex, events.size());
     }
 
+
+    /**
+     * 현재 필드의 모든 누적 액션의 누적자원량을 증가시킨다.
+     * @param round 이벤트를 진행시킬 최대 라운드
+     */
+    public void processStackEvent(int round) {
+        for(Event event : this.events){
+            // 비공개된 이벤트의 경우 스택 처리를 하지 않는다.
+            if (event.getRound() > round){
+                continue;
+            }
+            // 해당 이벤트의 모든 스택 액에 대해 자원을 쌓는다.
+            for (Action action : event.getActions()){
+                if (action instanceof StackAction){
+                    event.stackResource(((StackAction) action).getStackResource());
+                }
+            }
+        }
+    }
+
+    /**
+     * 해당 라운드에 해당하는 이벤트에 쌓인 예약 자원을 플레이어에게 전달한다.
+     * @param round
+     */
+    public void processReservationResource(int round) {
+        this.events.stream()
+                .filter(event -> event.getRound() == round)
+                .findAny()
+                .ifPresent(
+                        event -> event.deliverReservation()
+                );
+    }
     /**
      * 액션을 플레이한다.
      * @param player 액션을 플레이하는 플레이어

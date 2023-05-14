@@ -13,6 +13,7 @@ import java.util.Map;
  * 플레이어가 가진 자원의 상태
  */
 @Getter
+@Deprecated
 public class PlayerResource {
     private Map<ResourceType, Integer> resources;
 

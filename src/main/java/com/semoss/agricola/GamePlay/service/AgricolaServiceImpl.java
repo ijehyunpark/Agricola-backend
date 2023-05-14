@@ -5,7 +5,7 @@ import com.semoss.agricola.GamePlay.domain.GameProgress;
 import com.semoss.agricola.GamePlay.domain.gameboard.GameBoard;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
-import com.semoss.agricola.GameRoom.domain.Game;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.GameRoom.domain.GameRoom;
 import com.semoss.agricola.GameRoom.repository.GameRoomRepository;
 import com.semoss.agricola.GameRoomCommunication.domain.User;
@@ -25,19 +25,9 @@ public class AgricolaServiceImpl implements AgricolaService {
     private final GameRoomRepository gameRoomRepository;
 
     /**
-     * 플레이어 순서 변경
-     * @param gameScripts
-     */
-    private void selectPlayerSequence(Game gameScripts) {
-        //TODO
-
-    }
-
-
-    /**
      * 아그리콜라 게임 추출
-     * @param gameRoomId
-     * @return
+     * @param gameRoomId 게임을 찾을 게임방 고유 식별자
+     * @return 게임방에서 진행 중인 아그리콜라 게임
      */
     private AgricolaGame extractGame(Long gameRoomId){
         // 라운드를 시작할 게임방 검색 및 적합성 검사
@@ -52,11 +42,12 @@ public class AgricolaServiceImpl implements AgricolaService {
     }
 
     /**
-     * 플레이어 게임 객체 생성
-     * @param users
-     * @return
+     * 아그리콜라 플레이어 객체 리스트 생성
+     * @param users 플레이어 객체를 만들 게임방 유저 객체
+     * @param strategy TODO: 플레이어 객체를 만들 떄 사용할 전략(무작위 플레이어 순서 등)
+     * @return 아그리콜라 플레이어 객체 리스트
      */
-    private List<Player> buildGamePlayer(List<User> users){
+    private List<Player> buildGamePlayer(List<User> users, String strategy){
         // 플레이어 객체 생성
         List<Player> players = IntStream.range(0, users.size())
                 .mapToObj(i -> {
@@ -73,7 +64,7 @@ public class AgricolaServiceImpl implements AgricolaService {
 
     /**
      * 게임 시작 매커니즘
-     * @param gameRoomId
+     * @param gameRoomId 게임을 시작할 게임방 고유 식발자
      */
     @Override
     public void start(Long gameRoomId) {
@@ -85,31 +76,29 @@ public class AgricolaServiceImpl implements AgricolaService {
         if (gameRoom.getGame() != null)
             throw new RuntimeException("현재 진행중인 게임이 있습니다.");
 
-        // TODO: 다인용 지원
+        // TODO: 다인용 지원 혹은 제약 결정
 //      if (gameRoom.getParticipants().size() != 4){
 //          throw new RuntimeException("현재 4인용만 지원합니다.");
 //      }
 
         // 새로운 아그리콜라 게임 시스템을 제작한다.
         AgricolaGame game = AgricolaGame.builder()
-                .gameBoard(GameBoard.builder().build()) // TODO: 게임 보드 설계
-                .players(buildGamePlayer(gameRoom.getParticipants()))
+                .gameBoard(GameBoard.builder().build()) // TODO: 주요설비가 나열이 된다.
+                .players(buildGamePlayer(gameRoom.getParticipants(), "NONE"))
                 .build();
-        // 플레이어가 소유자 게임을 알고 있어야 한다. TODO: 개선사항
+
+        // TODO: 개선필요, 플레이어가 소유자 게임을 알고 있어야 한다.
         for (Player player : game.getPlayers()){
             player.setGame(game);
         }
 
-
         // 현재 게임방에 아그리 콜라 게임 시스템 설정
         gameRoom.setGame(game);
 
-
-        // Player 배치도 랜덤이다. & 선공 토큰을 랜덤으로 준다.
-        selectPlayerSequence(gameRoom.getGame());
-        List<Player> players = buildGamePlayer(gameRoom.getParticipants());
-
-        // TODO: 주요설비가 나열이 된다.
+        // 선공 플레이어의 경우 음식 토큰 2개, 아닌 경우 3개를 받는다.
+        game.getPlayers().stream().forEach(
+                player -> player.addResource(ResourceType.FOOD, game.getStartingPlayer() == player ? 2 : 3)
+        );
 
         // 게임 시작 후 최초 라운드 시작을 개시한다.
         roundStart(gameRoomId);
@@ -124,21 +113,24 @@ public class AgricolaServiceImpl implements AgricolaService {
     - 다른 사람의 판을 눌러 그 사람이 가지고 있는 보조 설비 카드와 직업 카드, 자원을 볼 수 있다.
     - 지금까지 게임의 진행사항(로그)을 확인할 수 있다.
     - 지금까지 게임의 플레이어 점수를 확인할 수 있다.
-     * @param gameRoomId
+     * @param gameRoomId 라운드 시작 프로세스를 진행할 게임방 고유 식별자
      */
     private void roundStart(Long gameRoomId) {
         // 아그리콜라 게임 추출
         AgricolaGame game = extractGame(gameRoomId);
 
+        // 이번 라운드의 행동이 공개한다.
+        game.increaseRound();
+
+        // [직업,보조카드] 공개되는 라운드카드에 누적되어있는 자원을 자원을 배치한사람이 가져간다.
+        game.processReservationResource();
+
+        // 자원 누적 칸의 경우 자원을 누적하고 누적되지않는 자원 칸의 경우 비어있는 칸의 자원만 보충한다.
+        game.processStackEvent();
+
         // 현재 게임 상태를 선공 플레이어의 행동 단계로 변경한다.
         game.update(GameProgress.PlayerAction, game.getStartingPlayer().getUserId());
 
-        // 이번 라운드의 행동이 공개한다.
-        game.roundStart();
-
-        // [직업,보조카드] 공개되는 라운드카드에 누적되어있는 자원을 자원을 배치한사람이 가져간다.
-
-        // 자원 누적 칸의 경우 자원을 누적하고 누적되지않는 자원 칸의 경우 비어있는 칸의 자원만 보충한다.
     }
 
     /**

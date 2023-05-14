@@ -34,7 +34,6 @@ public class Player {
     public Player(Long userId, boolean isStartPlayer){
         this.userId = userId;
         this.startingToken = isStartPlayer;
-        this.game = game;
         this.resources = new EnumMap<>(ResourceType.class);
         for (ResourceType resource : ResourceType.values()){
             resources.put(resource,0);
@@ -264,6 +263,13 @@ public class Player {
      * 아기를 입양한다.
      */
     public void addChild() {
-        this.playerBoard.addChard();
+        this.playerBoard.addChild();
+    }
+
+    /**
+     * 가족 개수 반환
+     */
+    public int getFamilyNumber() {
+        return this.playerBoard.getFamilyCount();
     }
 }

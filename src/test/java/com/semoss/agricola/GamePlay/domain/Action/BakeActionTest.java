@@ -1,6 +1,7 @@
 package com.semoss.agricola.GamePlay.domain.Action;
 
 import com.semoss.agricola.GamePlay.domain.action.BakeAction;
+import com.semoss.agricola.GamePlay.domain.gameboard.ImprovementBoard;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class BakeActionTest {
     Player player;
     BakeAction bakeAction;
+
+    String improvement = "IMP-0";
 
     @BeforeEach
     void setUp() {
@@ -23,14 +26,14 @@ class BakeActionTest {
 
     @Test
     void runAction() {
-        assertFalse(bakeAction.checkPrecondition(player));
+        assertFalse(bakeAction.checkPrecondition(player, improvement));
         player.addResource(ResourceType.GRAIN,2);
-        assertTrue(bakeAction.checkPrecondition(player));
+        assertTrue(bakeAction.checkPrecondition(player, improvement));
 
-        bakeAction.runAction(player);
+        bakeAction.runAction(player, improvement);
         assertEquals(2,player.getResource(ResourceType.FOOD));
 
-        bakeAction.runAction(player);
-        assertFalse(bakeAction.checkPrecondition(player));
+        bakeAction.runAction(player, improvement);
+        assertFalse(bakeAction.checkPrecondition(player, improvement));
     }
 }

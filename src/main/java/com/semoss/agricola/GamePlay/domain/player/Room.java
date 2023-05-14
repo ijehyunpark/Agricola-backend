@@ -57,34 +57,36 @@ public class Room implements Field {
     }
 
     /**
+     * 거주자 인원수 반환
+     */
+    public int getResidentNumber(){
+        return this.residents.size();
+    }
+
+    /**
      * 플레이하지 않은 가족말 여부
      * @return
      */
     protected boolean isCompletedPlayed() {
-        for (Resident resident : this.residents){
-            if(resident.isPlayed() == false)
-                return false;
-        }
-        return true;
+        return this.residents.stream()
+                .allMatch(Resident::isPlayed);
     }
 
     /**
      * 플레이 여부 초기화
      */
     protected void initPlayed() {
-        for (Resident resident : this.residents){
-            resident.setPlayed(false);
-        }
+        this.residents.stream()
+            .forEach(resident -> resident.setPlayed(false));
     }
 
     /**
      * 아이 성장
      */
     protected void growUpChild() {
-        for (Resident resident : this.residents){
-            if(resident.getResidentType() == ResidentType.CHILD)
-                resident.growUpChild();
-        }
+        this.residents.stream()
+                .filter(resident -> resident.getResidentType() == ResidentType.CHILD)
+                .forEach(Resident::growUpChild);
     }
 
 
@@ -93,16 +95,15 @@ public class Room implements Field {
      * @return
      */
     public int calculateFoodNeeds() {
-        int result = 0;
-        for (Resident resident : this.residents){
-            if(resident.getResidentType() == ResidentType.ADULT)
-                result += 2;
-            else if(resident.getResidentType() == ResidentType.CHILD)
-                result += 1;
-        }
-        return result;
+        return this.residents.stream()
+                .mapToInt(resident -> resident.getResidentType() == ResidentType.ADULT ? 2 : 1)
+                .sum();
     }
 
+    /**
+     * 빈방 여부 확인
+     * @return
+     */
     public boolean isEmptyRoom() {
         return this.residents.size() == 0;
     }

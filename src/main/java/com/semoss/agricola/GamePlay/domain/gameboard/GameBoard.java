@@ -5,6 +5,7 @@ import com.semoss.agricola.GamePlay.domain.player.FieldType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
+import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -389,12 +390,12 @@ public class GameBoard {
      * @param eventId 플레이할 액션
      * @param acts    액션에 필요한 추가 요청
      */
-    public void playAction(Player player, Long eventId, Object acts) {
+    public void playAction(Player player, Long eventId, List<AgricolaActionRequest.ActionFormat> acts) {
         events.stream()
                 .filter(event -> event.getId().equals(eventId))
                 .findAny()
                 .orElseThrow(() -> new RuntimeException("이벤트가 존재하지 않습니다"))
-                .runActions(acts);
+                .runActions(player, acts);
     }
 
     public void initPlayed() {

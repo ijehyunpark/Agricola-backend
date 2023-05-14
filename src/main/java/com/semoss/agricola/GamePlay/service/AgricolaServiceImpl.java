@@ -6,6 +6,7 @@ import com.semoss.agricola.GamePlay.domain.gameboard.GameBoard;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
+import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
 import com.semoss.agricola.GameRoom.domain.GameRoom;
 import com.semoss.agricola.GameRoom.repository.GameRoomRepository;
 import com.semoss.agricola.GameRoomCommunication.domain.User;
@@ -142,7 +143,7 @@ public class AgricolaServiceImpl implements AgricolaService {
      * @param gameRoomId
      */
     @Override
-    public void playAction(Long gameRoomId, Long eventId, Object acts) {
+    public void playAction(Long gameRoomId, Long eventId, List<AgricolaActionRequest.ActionFormat> acts) {
         log.info("playAction 요청이 입력되었습니다.");
         log.info(eventId);
         log.info(acts.toString());

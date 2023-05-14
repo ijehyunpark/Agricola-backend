@@ -3,6 +3,7 @@ package com.semoss.agricola.GamePlay.domain;
 import com.fasterxml.jackson.annotation.*;
 import com.semoss.agricola.GamePlay.domain.gameboard.GameBoard;
 import com.semoss.agricola.GamePlay.domain.player.Player;
+import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
 import com.semoss.agricola.GameRoom.domain.Game;
 import lombok.Builder;
 import lombok.Getter;
@@ -166,7 +167,7 @@ public class AgricolaGame implements Game {
      * @param eventId 플레이할 액션
      * @param acts 액션에 필요한 추가 요청
      */
-    public void playAction(Long eventId, Object acts) {
+    public void playAction(Long eventId, List<AgricolaActionRequest.ActionFormat> acts) {
         // 거주자 한명을 임의로 뽑아 플레이 시킨다.
         this.getGameState().getPlayer().playAction();
 

@@ -1,7 +1,9 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
+import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.Reservation;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
+import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -41,13 +43,34 @@ public class Event {
 
     /**
      * 입력에 대해 액션 수행
-     * @param acts
+     * @param player 액션을 플레이하는 플레이어
+     * @param acts 액션 수행관련 세부 사항
      */
-    public void runActions(Object acts) {
+    public void runActions(Player player, List<AgricolaActionRequest.ActionFormat> acts) {
         if(isPlayed)
             throw new RuntimeException("이미 플레이한 액션칸입니다.");
 
-        // TODO: 유저 입력을 받아 actions + actionDoTYPE으로 순회하며 구현
+        // TODO: Object 입력 개선 (object acts.acts)
+        try {
+            this.actions.stream()
+                    .filter(action -> acts.get(actions.indexOf(action)).isUsed())
+                    .forEach(action -> {
+                        AgricolaActionRequest.ActionFormat act = acts.get(actions.indexOf(action));
+                        switch (action.getActionType()) {
+                            case BASIC, STARTING, UPGRADE, ADOPT -> {
+                                ((SimpleAction) action).runAction(player);
+                            }
+                            case BAKE, BUILD, PLACE, CULTIVATION -> {
+                                ((MultiInputAction) action).runAction(player, act.getActs());
+                            }
+                            case STACK, EMPTY -> {
+                                throw new RuntimeException("액션 행동을 지원하지 않는 타입입니다.");
+                            }
+                        }
+                    });
+        } catch (Exception ex){
+            throw new RuntimeException(ex.getLocalizedMessage());
+        }
     }
 
     public void stackResource(ResourceStruct resource){

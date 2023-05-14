@@ -90,10 +90,10 @@ public class AgricolaServiceImpl implements AgricolaService {
                 .players(buildGamePlayer(gameRoom.getParticipants(), "NONE"))
                 .build();
 
-        // TODO: 개선필요, 플레이어가 소유자 게임을 알고 있어야 한다.
-        for (Player player : game.getPlayers()){
-            player.setGame(game);
-        }
+        // 플레이어와 게임 보드가 소유자 게임을 알고 있어야 한다.
+        game.getPlayers().stream()
+                .forEach(player -> player.setGame(game));
+        game.getGameBoard().setGame(game);
 
         // 현재 게임방에 아그리 콜라 게임 시스템 설정
         gameRoom.setGame(game);

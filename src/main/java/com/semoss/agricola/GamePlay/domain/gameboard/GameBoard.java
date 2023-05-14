@@ -1,5 +1,7 @@
 package com.semoss.agricola.GamePlay.domain.gameboard;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.semoss.agricola.GamePlay.domain.AgricolaGame;
 import com.semoss.agricola.GamePlay.domain.action.*;
 import com.semoss.agricola.GamePlay.domain.player.FieldType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
@@ -8,19 +10,23 @@ import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.*;
 
 /**
  * 아그리콜라 메인 게임 보드
  */
-@Getter
 public class GameBoard {
+    @JsonIgnore @Setter
+    private AgricolaGame game;
     private List<Event> events;
+    @Getter
     private ImprovementBoard improvementBoard;
 
     @Builder
-    public GameBoard() {
+    public GameBoard(AgricolaGame game) {
+        this.game = game;
         // event를 배치한다.
         events = new ArrayList<>();
         // 1.방 만들기 그리고/또는 외양간 짓기
@@ -304,6 +310,12 @@ public class GameBoard {
         return BuildFenceAction.builder().build();
     }
 
+    public List<Event> getEvents() {
+        return events.stream()
+                .filter(event -> event.getRound() <= game.getRound())
+                .toList();
+    }
+
     /**
      * round group을 기준으로 해당 인덱스 내에서 배열을 셔플한다.
      * round group이 0인 경우 셔플 대상에서 제외된다.
@@ -353,7 +365,6 @@ public class GameBoard {
         }
         shuffleByIndex(this.events, startIndex, events.size());
     }
-
 
     /**
      * 현재 필드의 모든 누적 액션의 누적자원량을 증가시킨다.

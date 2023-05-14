@@ -168,6 +168,11 @@ public class PlayerBoard {
         return false;
     }
 
+    /**
+     * 설치가능한 필드 위치
+     * @param fieldType 확인할 필드
+     * @return 설치가능한 위치를 true 로 나타낸 2차원 필드크기 배열
+     */
     protected boolean[][] availableFieldPos(FieldType fieldType){
         boolean[][] ifFirstField = new boolean[fields.length][fields[0].length];
         boolean[][] ifNthField = new boolean[fields.length][fields[0].length];
@@ -199,6 +204,12 @@ public class PlayerBoard {
         return ifFirstField;
     }
 
+    /**
+     * 개인보드에 필드를 설치 - 설치 명령 전 available함수로 설치가능한 위치를 확인한 후 가능한 위치만 입력받도록 함.
+     * @param y row
+     * @param x col
+     * @param fieldType 설치하고자하는 필드
+     */
     protected void buildField(int y, int x, FieldType fieldType) {
         if (fields[y][x] != null)
             throw new RuntimeException("이미 건설 되어 있습니다.");

@@ -2,14 +2,12 @@ package com.semoss.agricola.GamePlay.service;
 
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
 import com.semoss.agricola.GamePlay.domain.GameProgress;
-import com.semoss.agricola.GamePlay.domain.gameboard.GameBoard;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
 import com.semoss.agricola.GameRoom.domain.GameRoom;
 import com.semoss.agricola.GameRoom.repository.GameRoomRepository;
-import com.semoss.agricola.GameRoomCommunication.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -17,7 +15,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor

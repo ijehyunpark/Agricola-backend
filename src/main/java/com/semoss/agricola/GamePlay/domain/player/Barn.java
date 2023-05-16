@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.player;
 
+import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.Builder;
 import lombok.Getter;
@@ -7,8 +8,7 @@ import lombok.Getter;
 @Getter
 public class Barn implements Field {
     private FieldType fieldType;
-    private ResourceType animalType = ResourceType.EMPTY;
-    private int animalNum = 0;
+    private final ResourceStruct animal;
     private boolean isStable = false;
     private int capacity;
 
@@ -25,6 +25,10 @@ public class Barn implements Field {
         } else {
             capacity = 2;
         }
+        animal = ResourceStruct.builder()
+                .resource(ResourceType.EMPTY)
+                .count(0)
+                .build();
     }
 
     /**
@@ -47,11 +51,11 @@ public class Barn implements Field {
      */
     public int addAnimal(ResourceType animalType, int num){
         if (num < 1) return 0;
-        if (this.animalType == ResourceType.EMPTY) this.animalType = animalType;
-        if (this.animalType != animalType) return 0;
+        if (animal.getResource() == ResourceType.EMPTY) animal.setResource(animalType);
+        if (animal.getResource() != animalType) return 0;
 
-        num = Integer.min(capacity - animalNum,num);
-        animalNum = animalNum + num;
+        num = Integer.min(capacity - animal.getCount(),num);
+        animal.addResource(num);
 
         return num;
     }
@@ -62,11 +66,11 @@ public class Barn implements Field {
      * @return the number of animals removed from the barn.
      */
     public int removeAnimal(int num){
-        if (animalType == ResourceType.EMPTY) return 0;
+        if (animal.getResource() == ResourceType.EMPTY) return 0;
 
-        num = Integer.min(animalNum,num);
-        animalNum = animalNum - num;
-        if (animalNum == 0) animalType = ResourceType.EMPTY;
+        num = Integer.min(animal.getCount(),num);
+        animal.subResource(num);
+        if (animal.getCount() == 0) animal.setResource(ResourceType.EMPTY);
 
         return num;
     }
@@ -76,35 +80,25 @@ public class Barn implements Field {
      * @return the number of animals removed from the barn.
      */
     public int removeAllAnimals(){
-        this.animalType = ResourceType.EMPTY;
-        int num = animalNum;
-        animalNum = 0;
+        animal.setResource(ResourceType.EMPTY);
+        int num = animal.getCount();
+        animal.setCount(0);
         return num;
     }
 
     /**
      * set barn's capacity. just for barn not stable. 2 times each stable.
      * @param numberOfStable the number of stables in the entire area surrounded by same fences
-     * @return method was successful or not.
      */
-    public boolean setCapacity(int numberOfStable) {
-        if (numberOfStable < 1) return false;
+    public void setCapacity(int numberOfStable) {
+        if (numberOfStable < 1) return;
         if (fieldType == FieldType.STABLE) fieldType = FieldType.BARN;
         this.addStable();
         capacity = (int) Math.pow(2,(double)numberOfStable+1);
-        return true;
     }
 
     public boolean isStable() {
         return isStable;
-    }
-
-    public ResourceType getAnimalType() {
-        return animalType;
-    }
-
-    public int getAnimalNum() {
-        return animalNum;
     }
 
 }

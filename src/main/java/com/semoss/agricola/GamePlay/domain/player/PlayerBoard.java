@@ -1,14 +1,12 @@
 package com.semoss.agricola.GamePlay.domain.player;
 
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import jdk.jshell.spi.ExecutionControl;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * 아그리콜라 플레이어 게임 보드
@@ -24,6 +22,7 @@ public class PlayerBoard {
     private Field[][] fields = new Field[3][5];
     private boolean[][] colFence = new boolean[3][6];
     private boolean[][] rowFence = new boolean[4][5];
+    private ResourceStruct[] moveAnimalArr = new ResourceStruct[3];
 
     @Builder
     public PlayerBoard() {
@@ -52,6 +51,10 @@ public class PlayerBoard {
         fieldStatus[2][0] = FieldType.ROOM;
 
         this.roomCount = 2;
+
+        moveAnimalArr[0] = ResourceStruct.builder().resource(ResourceType.SHEEP).count(0).build();
+        moveAnimalArr[1] = ResourceStruct.builder().resource(ResourceType.WILD_BOAR).count(0).build();
+        moveAnimalArr[2] = ResourceStruct.builder().resource(ResourceType.CATTLE).count(0).build();
     }
 
     /**
@@ -394,16 +397,16 @@ public class PlayerBoard {
                             explorer.push(pos.clone());
                             pos[0] -= 1;
                         }
+                        else if ((pos[0]==0 && !tmpRow[pos[0]][pos[1]]) || (pos[1]==0 && !tmpCol[pos[0]][pos[1]]) ||
+                                (pos[0]==check.length-1 && !tmpRow[pos[0]+1][pos[1]]) || (pos[1]==check[0].length-1 && !tmpCol[pos[0]][pos[1]+1])) {
+                            explorer.removeAllElements();
+                            break;
+                        }
                         else if (pos[0] == i && pos[1] == j){
                             buildPos.push(pos.clone());
                             break;
                         }
                         else if (explorer.empty()) return false;
-                        else if ((pos[0]==0 && !tmpRow[pos[0]][pos[1]]) || (pos[1]==0 && !tmpCol[pos[0]][pos[1]]) ||
-                        (pos[0]==check.length-1 && !tmpRow[pos[0]+1][pos[1]]) || (pos[1]==check[0].length-1 && !tmpCol[pos[0]][pos[1]+1])) {
-                            explorer.removeAllElements();
-                            break;
-                        }
                         else {
                             if (fieldStatus[pos[0]][pos[1]] != FieldType.EMPTY && ((Barn)(fields[pos[0]][pos[1]])).isStable()) stableNum++;
                             buildPos.push(pos.clone());
@@ -414,6 +417,7 @@ public class PlayerBoard {
                     while (!buildPos.empty()){
                         pos = buildPos.pop();
                         if (fieldStatus[pos[0]][pos[1]] == FieldType.EMPTY) {
+                            fieldStatus[pos[0]][pos[1]] = FieldType.BARN;
                             fields[pos[0]][pos[1]] = Barn.builder()
                                     .fieldType(FieldType.BARN)
                                     .build();
@@ -452,6 +456,142 @@ public class PlayerBoard {
                     return;
                 }
             }
+        }
+    }
+
+    /**
+     * 선택한 동물이 있는 위치와 마리 수 반환
+     * @param resourceType 동물 타입
+     * @return 내용물이 [row, col, count]인 list
+     */
+    protected List<int[]> animalPos(ResourceType resourceType){
+        Barn barn;
+        List<int[]> pos = new ArrayList<>();
+        // 애완동물 집 확인
+        if (((Room)fields[1][0]).getResource().getResource() == resourceType) pos.add(new int[]{1,0,1});
+
+        for (int i=0;i<fields.length;i++){
+            for (int j=0;j< fields[0].length;j++){
+                if (fieldStatus[i][j] == FieldType.BARN || fieldStatus[i][j] == FieldType.STABLE){
+                    barn = (Barn)fields[i][j];
+                    if(barn.getAnimal().getResource() == resourceType) pos.add(new int[]{i,j, barn.getAnimal().getCount()});
+                }
+            }
+        }
+        return pos;
+    }
+
+    /**
+     * 동물을 제거합니다.
+     * @param row row
+     * @param col col
+     * @param animalNum 제거할 동물 수
+     * @return 제거된 동물 수
+     */
+    protected int removeAnimal(int row, int col, int animalNum){
+        if (fieldStatus[row][col] != FieldType.BARN && fieldStatus[row][col] != FieldType.STABLE) return 0;
+        ResourceType animalType = ((Barn)fields[row][col]).getAnimal().getResource();
+        int num = ((Barn)fields[row][col]).removeAnimal(animalNum);
+        moveAnimalArr[animalType.getValue()-9].addResource(num);
+        return num;
+    }
+
+    /**
+     * 해당 칸의 모든 동물을 제거합니다.
+     * @param row row
+     * @param col col
+     * @return 제거된 동물 수
+     */
+    protected int removeALLAnimals(int row, int col){
+        if (fieldStatus[row][col] != FieldType.BARN && fieldStatus[row][col] != FieldType.STABLE) return 0;
+        ResourceType animalType = ((Barn)fields[row][col]).getAnimal().getResource();
+        int num = ((Barn)fields[row][col]).removeAllAnimals();
+        moveAnimalArr[animalType.getValue()-9].addResource(num);
+        return num;
+    }
+
+    /**
+     * 이동 스택에 쌓아둔 동물들을 특정 위치로 재배치하는 함수
+     * @param row row
+     * @param col col
+     * @param animalType 추가할 동물의 타입
+     * @param animalNum 추가할 동물 수
+     * @return 이동한 동물 수(수용가능한 동물 양에 따라 결과값이 달라짐)
+     */
+    protected int addRemovedAnimal(int row, int col, ResourceType animalType, int animalNum){
+        if (fieldStatus[row][col] != FieldType.BARN && fieldStatus[row][col] != FieldType.STABLE) return 0;
+        animalNum = Integer.min(animalNum,moveAnimalArr[animalType.getValue()-9].getCount());
+        int num = ((Barn)fields[row][col]).addAnimal(animalType, animalNum);
+        moveAnimalArr[animalType.getValue()-9].subResource(num);
+        return num;
+    }
+
+    /**
+     * 행동칸이나 수확행동을 통해 동물을 추가 하였을때 자동으로 배치하는 함수
+     * @param animalType 동물 타입
+     * @param animalNum 동물 수
+     * @return 행동 성공 여부
+     */
+    protected boolean addAnimal(ResourceType animalType, int animalNum){
+        Barn barn;
+        for (int i=0;i<fields.length;i++){
+            for (int j=0;j< fields[0].length;j++){
+                if (fieldStatus[i][j] == FieldType.BARN || fieldStatus[i][j] == FieldType.STABLE){
+                    barn = (Barn)fields[i][j];
+                    animalNum -= barn.addAnimal(animalType,animalNum);
+                }
+                if (animalNum == 0) return true;
+            }
+        }
+        if (animalNum == 1 && (((Room)fields[1][0]).getPet() == animalType || ((Room)fields[1][0]).getPet() == ResourceType.EMPTY)){
+            return ((Room)fields[1][0]).addPet(animalType);
+        }
+
+        return false;
+    }
+
+    /** TODO
+     * 비워둔 동물들 자동으로 다시 채우기(힘들면 전부 삭제), 비워둔 동물을 저장해둔 Map 초기화
+     */
+
+    /**
+     * 보드에 있는 모든 동물 제거
+     */
+    protected void removeAllBarn(){
+        Barn barn;
+        ResourceType animalType;
+        int num;
+        for (int i=0;i<fields.length;i++){
+            for (int j=0;j< fields[0].length;j++){
+                if (fieldStatus[i][j] == FieldType.BARN || fieldStatus[i][j] == FieldType.STABLE){
+                    barn = (Barn)fields[i][j];
+                    animalType = barn.getAnimal().getResource();
+                    num = barn.removeAllAnimals();
+                    moveAnimalArr[animalType.getValue()-9].addResource(num);
+                }
+            }
+        }
+        //애완동물
+        animalType = ((Room)fields[1][0]).removePet();
+        if(animalType != ResourceType.EMPTY) moveAnimalArr[animalType.getValue()-9].addResource(1);
+    }
+
+    /**
+     * 필드에서 임시적으로 제거해둔 동물 배열을 초기화 (동물 삭제)
+     */
+    protected void initMoveAnimalArr(){
+        for (ResourceStruct resourceStruct : moveAnimalArr) {
+            resourceStruct.setCount(0);
+        }
+    }
+
+
+    /**
+     * test 함수
+     */
+    public void printField(){
+        for (int i=0;i<fieldStatus.length;i++){
+            System.out.println(Arrays.toString(fieldStatus[i]));
         }
     }
 }

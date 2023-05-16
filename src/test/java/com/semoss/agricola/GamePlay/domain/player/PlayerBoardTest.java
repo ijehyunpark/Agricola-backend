@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.player;
 
+import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -126,5 +127,31 @@ class PlayerBoardTest {
         for (i=0;i<tmpField.length;i++){
             assertArrayEquals(tmpField[i],pb3_AvailableFarm[i]);
         }
+    }
+
+    @Test
+    void testAnimalMove() {
+        //TODO 보완해야합니다. add, delete 누락되있음
+        playerBoard1.buildFence(fence1[0],fence1[1]);
+        playerBoard2.buildFence(fence2[0],fence2[1]);
+        playerBoard3.buildFence(fence3_1[0],fence3_1[1]);
+        playerBoard3.buildFence(fence3_2[0],fence3_2[1]);
+        playerBoard3.buildFence(fence3_3[0],fence3_3[1]);
+
+        assertTrue(playerBoard1.addAnimal(ResourceType.SHEEP,10));
+        assertTrue(playerBoard1.addAnimal(ResourceType.CATTLE,1));
+        assertFalse(playerBoard1.addAnimal(ResourceType.WILD_BOAR,1));
+
+        int[][] sheepPos1 = new int[][]{{0, 3, 2}, {1, 2, 2}, {1, 3, 2}, {1, 4, 2}, {2, 3, 2}};
+        int[][] cattlePos1 = new int[][]{{1, 0, 1}};
+        int[][] result = playerBoard1.animalPos(ResourceType.SHEEP).toArray(sheepPos1);
+        for (int i=0;i<sheepPos1.length;i++) {
+            assertArrayEquals(sheepPos1[i],result[i]);
+        }
+        result = playerBoard1.animalPos(ResourceType.CATTLE).toArray(cattlePos1);
+        for (int i=0;i<cattlePos1.length;i++) {
+            assertArrayEquals(cattlePos1[i],result[i]);
+        }
+
     }
 }

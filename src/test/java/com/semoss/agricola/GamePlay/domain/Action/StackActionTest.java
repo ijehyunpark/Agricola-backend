@@ -2,12 +2,14 @@ package com.semoss.agricola.GamePlay.domain.Action;
 
 import com.semoss.agricola.GamePlay.domain.action.StackAction;
 import com.semoss.agricola.GamePlay.domain.player.Player;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Disabled
 class StackActionTest {
@@ -23,21 +25,9 @@ class StackActionTest {
         stackAction = new StackAction(ResourceType.WOOD,3);
     }
 
-//    @Test
-//    void runAction() {
-//        stackAction.runAction();
-//        assertEquals(6,stackAction.getStackResource());
-//        stackAction.runAction(player);
-//        assertEquals(0,stackAction.getStackResource());
-//    }
-
-//    @Test
-//    void testRunAction() {
-//        stackAction.runAction(player);
-//        assertEquals(3,player.getResource(ResourceType.WOOD));
-//        stackAction.runAction();
-//        stackAction.runAction();
-//        stackAction.runAction(player);
-//        assertEquals(9, player.getResource(ResourceType.WOOD));
-//    }
+    @Test
+    void testStackResource() {
+        assertEquals(ResourceType.WOOD,stackAction.getStackResource().getResource());
+        assertEquals(3,stackAction.getStackResource().getCount());
+    }
 }

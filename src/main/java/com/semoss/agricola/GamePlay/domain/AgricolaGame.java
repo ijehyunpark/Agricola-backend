@@ -94,7 +94,7 @@ public class AgricolaGame implements Game {
     /**
      * 새로운 라운드를 시작한다
      */
-    public void roundStart() {
+    public void increaseRound() {
         // 라운드를 증가시킨다.
         this.round++;
     }
@@ -127,6 +127,20 @@ public class AgricolaGame implements Game {
         for(Player player : players){
             player.growUpChild();
         }
+    }
+
+    /**
+     * 현재 게임보드의 모든 누적 액션의 누적자원량을 증가시킨다.
+     */
+    public void processStackEvent() {
+        this.gameBoard.processStackEvent(this.round);
+    }
+
+    /**
+     * 현재 게임보드에 예약된 자원량을 플레이어에게 선물한다.
+     */
+    public void processReservationResource() {
+        this.gameBoard.processReservationResource(this.round);
     }
 
     //로그 기능

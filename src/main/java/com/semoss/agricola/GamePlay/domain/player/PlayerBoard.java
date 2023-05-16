@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 아그리콜라 플레이어 게임 보드
@@ -73,62 +74,44 @@ public class PlayerBoard {
      * @return
      */
     protected boolean isCompletedPlayed() {
-        for (int i = 0; i < 3; i++){
-            for(int j = 0; j < 5; j++){
-                Field field = fields[i][j];
-                if (field instanceof Room) {
-                    if(((Room) field).isCompletedPlayed() == false)
-                        return false;
-                }
-            }
-        }
-        return true;
+        return Arrays.stream(fields)
+                .flatMap(Arrays::stream)
+                .filter(field -> field instanceof Room)
+                .allMatch(field -> ((Room) field).isCompletedPlayed());
     }
 
     /**
      * 플레이여부 초기화
      */
     protected void initPlayed() {
-        for (int i = 0; i < 3; i++){
-            for(int j = 0; j < 5; j++){
-                Field field = fields[i][j];
-                if (field instanceof Room) {
-                    ((Room) field).initPlayed();
-                }
-            }
-        }
+        Arrays.stream(fields)
+                .flatMap(Arrays::stream)
+                .filter(field -> field instanceof Room)
+                .map(field -> (Room) field)
+                .forEach(Room::initPlayed);
     }
 
     /**
      * 아이 성장
      */
     protected void growUpChild() {
-        for (int i = 0; i < 3; i++){
-            for(int j = 0; j < 5; j++){
-                Field field = fields[i][j];
-                if (field instanceof Room) {
-                    ((Room) field).growUpChild();
-                }
-            }
-        }
+        Arrays.stream(fields)
+                .flatMap(Arrays::stream)
+                .filter(field -> field instanceof Room)
+                .map(field -> (Room)field)
+                .forEach(Room::growUpChild);
     }
 
     /**
      * 모든 밭에서 곡식 및 채소를 수확한다.
      */
     protected List<ResourceStruct> harvest() {
-        List<ResourceStruct> outputs = new ArrayList<>();
-        for (int i = 0; i < 3; i++){
-            for(int j = 0; j < 5; j++){
-                Field field = fields[i][j];
-                if (field instanceof Farm) {
-                    ResourceStruct output = ((Farm) field).harvest();
-                    if(output != null)
-                        outputs.add(output);
-                }
-            }
-        }
-        return outputs;
+        return Arrays.stream(fields)
+                .flatMap(Arrays::stream)
+                .filter(field -> field instanceof Farm)
+                .map(field -> ((Farm) field).harvest())
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -142,16 +125,11 @@ public class PlayerBoard {
      * 필요한 음식 토큰 개수 계산
      */
     protected int calculateFoodNeeds() {
-        int result = 0;
-        for (int i = 0; i < 3; i++){
-            for(int j = 0; j < 5; j++){
-                Field field = fields[i][j];
-                if (field instanceof Room) {
-                    result += ((Room) field).calculateFoodNeeds();
-                }
-            }
-        }
-        return result;
+        return Arrays.stream(fields)
+                .flatMap(Arrays::stream)
+                .filter(field -> field instanceof Room)
+                .mapToInt(field -> ((Room) field).calculateFoodNeeds())
+                .sum();
     }
 
     /**
@@ -159,16 +137,11 @@ public class PlayerBoard {
      * @return 만약 빈 방이 존재할 경우, true를 반환한다.
      */
     protected boolean hasEmptyRoom() {
-        for (int i = 0; i < 3; i++){
-            for(int j = 0; j < 5; j++){
-                Field field = fields[i][j];
-                if (field instanceof Room) {
-                    if(((Room) field).isEmptyRoom())
-                        return true;
-                }
-            }
-        }
-        return false;
+        return Arrays.stream(fields)
+                .flatMap(Arrays::stream)
+                .filter(field -> field instanceof Room)
+                .map(room -> (Room) room)
+                .anyMatch(Room::isEmptyRoom);
     }
 
     /**
@@ -433,30 +406,38 @@ public class PlayerBoard {
     /**
      * 아기를 입양한다.
      */
-    protected void addChard() {
+    protected void addChild() {
         // 빈 방에 우선 추가
-        for (int i = 0; i < 3; i++){
-            for(int j = 0; j < 5; j++){
-                Field field = fields[i][j];
-                if (field instanceof Room) {
-                    if(((Room) field).isEmptyRoom()){
-                        ((Room) field).addResident(ResidentType.CHILD);
-                        return;
-                    }
-                }
-            }
+        Optional<Room> emptyRoom = Arrays.stream(fields)
+                .flatMap(Arrays::stream)
+                .filter(field -> field instanceof Room && ((Room) field).isEmptyRoom())
+                .map(field -> (Room) field)
+                .findFirst();
+
+        if (emptyRoom.isPresent()) {
+            emptyRoom.get().addResident(ResidentType.CHILD);
+            return;
         }
 
         // 없으면 아무 방에 추가
-        for (int i = 0; i < 3; i++){
-            for(int j = 0; j < 5; j++){
-                Field field = fields[i][j];
-                if (field instanceof Room) {
-                    ((Room) field).addResident(ResidentType.CHILD);
-                    return;
-                }
-            }
-        }
+        Arrays.stream(fields)
+                .flatMap(Arrays::stream)
+                .filter(field -> field instanceof Room)
+                .map(field -> (Room) field)
+                .findFirst()
+                .ifPresent(room -> room.addResident(ResidentType.CHILD));
+    }
+
+    /**
+     * 가족 개수 반환
+     * @return
+     */
+    protected int getFamilyCount(){
+        return Arrays.stream(fields)
+                .flatMap(Arrays::stream)
+                .filter(Room.class::isInstance)
+                .mapToInt(field -> ((Room) field).getResidentNumber())
+                .sum();
     }
 
     /**

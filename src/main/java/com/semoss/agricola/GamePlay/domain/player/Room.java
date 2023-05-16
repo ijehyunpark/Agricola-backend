@@ -9,8 +9,6 @@ import java.util.List;
 
 @Getter
 public class Room implements Field {
-    @Getter
-    private final FieldType fieldType = FieldType.ROOM;
 
     @Getter
     private class PetRoom {

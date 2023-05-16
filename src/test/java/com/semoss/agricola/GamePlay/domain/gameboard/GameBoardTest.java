@@ -1,26 +1,37 @@
 package com.semoss.agricola.GamePlay.domain.gameboard;
 
+import com.semoss.agricola.GamePlay.domain.AgricolaGame;
 import com.semoss.agricola.GamePlay.domain.action.Event;
+import com.semoss.agricola.GameRoomCommunication.domain.User;
 import jakarta.validation.constraints.AssertTrue;
+import org.junit.Before;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GameBoardTest {
-
     @Test
     void shuffleEventsWithinRound_shouldShuffleEventsWithinSameRound() {
         // given
-        GameBoard board = GameBoard.builder().build();
-        List<Event> events = board.getEvents();
+        AgricolaGame game = AgricolaGame.builder()
+                .users(List.of(User.builder().username("test1").build()))
+                .build();
+        // 아그리콜라 이벤트가 현재 라운드보다 작을 경우 은닉되어 증가한 후에 검증
+        for (int i = 0; i < 12; i++)
+            game.increaseRound();
+        List<Event> events = game.getGameBoard().getEvents();
 
         // when
 
         // then
         boolean isSorted = true;
         boolean isMatched = true;
+
         for (int i = 0; i < events.size() - 1; i++) {
             if (events.get(i).getRound() > events.get(i + 1).getRound() ||
                     events.get(i).getRoundGroup() > events.get(i + 1).getRoundGroup()) {
@@ -43,7 +54,13 @@ class GameBoardTest {
     @Test
     void givenStackActions_whenProcessStackEvent_thenResourceAccumulated() {
         // given
-        GameBoard board = GameBoard.builder().build();
+        AgricolaGame game = AgricolaGame.builder()
+                .users(List.of(User.builder().username("test1").build()))
+                .build();
+        // 아그리콜라 이벤트가 현재 라운드보다 작을 경우 은닉되어 증가한 후에 검증
+        for (int i = 0; i < 12; i++)
+            game.increaseRound();
+        GameBoard board = game.getGameBoard();
         List<Event> events = board.getEvents();
 
         // when

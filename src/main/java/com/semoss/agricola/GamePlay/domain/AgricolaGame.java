@@ -9,6 +9,7 @@ import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
 import com.semoss.agricola.GameRoom.domain.Game;
+import com.semoss.agricola.GameRoomCommunication.domain.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,6 +18,7 @@ import lombok.extern.log4j.Log4j2;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 /**
  * 아그리콜라 게임
@@ -50,10 +52,24 @@ public class AgricolaGame implements Game {
     private GameState gameState;
 
     @Builder
-    public AgricolaGame(GameBoard gameBoard, List<Player> players) {
-        this.gameBoard = gameBoard;
-        this.players = players;
-        this.startingPlayer = players.size() > 0 ? players.get(0) : null;
+    public AgricolaGame(List<User> users, String strategy) {
+        if(users.size() == 0)
+            throw new RuntimeException("아그리콜라에 필요한 최소 인원수를 충족하지 않았습니다.");
+
+        this.gameBoard = GameBoard.builder().game(this).build();
+
+        // 게임방 유저 객체로 아그리 콜라 게임 플레이어 객체를 생성
+        this.players = IntStream.range(0, users.size())
+                .mapToObj(i -> {
+                    boolean isFirst = i == 0;
+                    return Player.builder()
+                            .game(this)
+                            .userId(users.get(i).getId())
+                            .isStartPlayer(isFirst)
+                            .build();
+                })
+                .toList();
+        this.startingPlayer = players.get(0);
         this.round = -1;
         gameState = new GameState();
     }

@@ -44,27 +44,6 @@ public class AgricolaServiceImpl implements AgricolaService {
     }
 
     /**
-     * 아그리콜라 플레이어 객체 리스트 생성
-     * @param users 플레이어 객체를 만들 게임방 유저 객체
-     * @param strategy TODO: 플레이어 객체를 만들 떄 사용할 전략(무작위 플레이어 순서 등)
-     * @return 아그리콜라 플레이어 객체 리스트
-     */
-    private List<Player> buildGamePlayer(List<User> users, String strategy){
-        // 플레이어 객체 생성
-        List<Player> players = IntStream.range(0, users.size())
-                .mapToObj(i -> {
-                    boolean isFirst = i == 0;
-                    return Player.builder()
-                            .userId(users.get(i).getId())
-                            .isStartPlayer(isFirst)
-                            .build();
-                })
-                .toList();
-
-        return players;
-    }
-
-    /**
      * 게임 시작 매커니즘
      * @param gameRoomId 게임을 시작할 게임방 고유 식발자
      */
@@ -86,17 +65,9 @@ public class AgricolaServiceImpl implements AgricolaService {
 
         // 새로운 아그리콜라 게임 시스템을 제작한다.
         AgricolaGame game = AgricolaGame.builder()
-                .gameBoard(GameBoard.builder().build()) // TODO: 주요설비가 나열이 된다.
-                .players(buildGamePlayer(gameRoom.getParticipants(), "NONE"))
+                .users(gameRoom.getParticipants())
+                .strategy("NONE") // TODO : 플레이어 선택 전략
                 .build();
-
-        // 플레이어와 게임 보드가 소유자 게임을 알고 있어야 한다.
-        game.getPlayers().stream()
-                .forEach(player -> player.setGame(game));
-        game.getGameBoard().setGame(game);
-
-        // 현재 게임방에 아그리 콜라 게임 시스템 설정
-        gameRoom.setGame(game);
 
         // 선공 플레이어의 경우 음식 토큰 2개, 아닌 경우 3개를 받는다.
         game.getPlayers().stream().forEach(

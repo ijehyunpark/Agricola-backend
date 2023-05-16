@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 
 @Getter
 public class Event {
+    private final Long id;
+    private static Long nextEventID = 1L;
     private final List<Action> actions;
     private final List<DoType> actionDoType;
     private final List<ResourceStruct> stacks; // 누적 쌓인 자원
@@ -28,6 +30,7 @@ public class Event {
 
     @Builder
     public Event(List<Action> actions, List<DoType> actionDoType, int roundGroup) {
+        this.id = nextEventID++;
         this.actions = actions;
         this.actionDoType = actionDoType;
         this.stacks = new ArrayList<>();

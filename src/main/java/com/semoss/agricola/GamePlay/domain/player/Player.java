@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.player;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
@@ -21,7 +22,7 @@ import java.util.Objects;
 @Getter
 public class Player {
     private Long userId;
-    @Setter
+    @Setter @JsonIgnore
     private AgricolaGame game;
     private boolean startingToken;
     private final EnumMap<ResourceType,Integer> resources;

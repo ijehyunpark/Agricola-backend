@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain;
 
+import com.fasterxml.jackson.annotation.*;
 import com.semoss.agricola.GamePlay.domain.gameboard.GameBoard;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GameRoom.domain.Game;
@@ -31,6 +32,10 @@ public class AgricolaGame implements Game {
 
     private final GameBoard gameBoard;
     private final List<Player> players;
+
+    @JsonProperty("startingPlayerUserId")
+    @JsonIdentityReference(alwaysAsId = true)
+    @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@userId")
     private Player startingPlayer;
     private int round;
     private GameState gameState;
@@ -41,6 +46,7 @@ public class AgricolaGame implements Game {
         this.players = players;
         this.startingPlayer = players.size() > 0 ? players.get(0) : null;
         this.round = -1;
+        this.gameState = new GameState();
     }
 
     /**
@@ -77,7 +83,7 @@ public class AgricolaGame implements Game {
 
 
 
-    public Player getNextPlayer() {
+    public Player findNextPlayer() {
         // 현재 차례의 플레이어 인덱스 검색
         int index = players.indexOf(findPlayerByUserId(gameState.getUserId()));
         if (index == -1 || players.size() == 0)
@@ -103,6 +109,7 @@ public class AgricolaGame implements Game {
      * 모든 플레이어가 해당 라운드에 플레이를 모두 완료했는지 검증
      * @return
      */
+    @JsonIgnore
     public boolean isAllPlayerPlayed(){
         for(Player player : players){
             if(player.isCompletedPlayed() == false)

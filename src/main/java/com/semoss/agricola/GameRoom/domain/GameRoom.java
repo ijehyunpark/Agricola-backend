@@ -1,5 +1,6 @@
 package com.semoss.agricola.GameRoom.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.semoss.agricola.GameRoomCommunication.domain.User;
 import lombok.Builder;
 import lombok.Getter;

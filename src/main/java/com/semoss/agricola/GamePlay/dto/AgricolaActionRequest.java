@@ -13,5 +13,12 @@ public class AgricolaActionRequest {
     @NotNull(message = "eventId는 필수 입니다.")
     private Long eventId;
 
-    private List<Object> acts;
+    @Getter
+    public static class ActionFormat {
+        @NotNull(message = "필수 입력")
+        private Boolean use;
+        private Object acts;
+    }
+
+    private List<ActionFormat> acts;
 }

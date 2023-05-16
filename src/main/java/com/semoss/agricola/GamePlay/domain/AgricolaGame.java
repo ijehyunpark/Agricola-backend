@@ -1,12 +1,18 @@
 package com.semoss.agricola.GamePlay.domain;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.semoss.agricola.GamePlay.domain.gameboard.GameBoard;
 import com.semoss.agricola.GamePlay.domain.player.Player;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
+import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
 import com.semoss.agricola.GameRoom.domain.Game;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -17,23 +23,26 @@ import java.util.Optional;
  */
 
 @Getter
+@Log4j2
 public class AgricolaGame implements Game {
-
     @Getter
     @Setter
     public class GameState {
         private GameProgress gameProgress;
-        private Long userId;
-        private void update(GameProgress gameProgress, Long userId) {
+        @JsonProperty("playerId")
+        @JsonIdentityReference(alwaysAsId = true)
+        @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@userId")
+        private Player player;
+        private void update(GameProgress gameProgress, Player player) {
             this.gameProgress = gameProgress;
-            this.userId = userId;
+            this.player = player;
         }
     }
 
     private final GameBoard gameBoard;
     private final List<Player> players;
 
-    @JsonProperty("startingPlayerUserId")
+    @JsonProperty("startingPlayerId")
     @JsonIdentityReference(alwaysAsId = true)
     @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@userId")
     private Player startingPlayer;
@@ -46,16 +55,16 @@ public class AgricolaGame implements Game {
         this.players = players;
         this.startingPlayer = players.size() > 0 ? players.get(0) : null;
         this.round = -1;
-        this.gameState = new GameState();
+        gameState = new GameState();
     }
 
     /**
      * 현재 게임의 진행사항을 업데이트한다.
      * @param gameProgress 현재 진행사항
-     * @param userId 다음 진행해야 할 유저 고유 식별자
+     * @param player 게임 진행사항에서 요청을 보내 플레이할 플레이어
      */
-    public void update(GameProgress gameProgress, Long userId) {
-        this.gameState.update(gameProgress, userId);
+    public void update(GameProgress gameProgress, Player player) {
+        this.gameState.update(gameProgress, player);
     }
 
     /**
@@ -81,19 +90,36 @@ public class AgricolaGame implements Game {
         return targetPlayer.orElseThrow(NoSuchElementException::new);
     }
 
-
-
-    public Player findNextPlayer() {
+    /**
+     * 기준 플레이어의 다음 플레이할 플레이어를 찾는다.
+     * @param player 기준 플레이어
+     * @return 다음 플레이어
+     */
+    public Player findNextPlayer(Player player) {
         // 현재 차례의 플레이어 인덱스 검색
-        int index = players.indexOf(findPlayerByUserId(gameState.getUserId()));
+        int index = players.indexOf(player);
         if (index == -1 || players.size() == 0)
             throw new RuntimeException("다음 유저를 찾을 수 없습니다.");
 
         // 다음플레이어 반환
-        if (index == players.size())
+        if (index + 1 == players.size())
             return players.get(0);
 
         return players.get(index + 1);
+    }
+
+    /**
+     * 플레이를 하지 않은 다음 플레이어를 찾는다.
+     * @param player 현재 플레이를 진행한 플레이어
+     * @return 모든 플레이어가 플레이를 마친 경우 null, 아닌 경우 다음 플레이어
+     */
+    public Optional<Player> findNextActionPlayer(Player player){
+        Player nextPlayer = findNextPlayer(player);
+        do{
+            if(!nextPlayer.isCompletedPlayed())
+                return Optional.of(nextPlayer);
+        }while (nextPlayer != player);
+        return Optional.empty();
     }
 
 
@@ -106,25 +132,16 @@ public class AgricolaGame implements Game {
     }
 
     /**
-     * 모든 플레이어가 해당 라운드에 플레이를 모두 완료했는지 검증
-     * @return
-     */
-    @JsonIgnore
-    public boolean isAllPlayerPlayed(){
-        for(Player player : players){
-            if(player.isCompletedPlayed() == false)
-                return false;
-        }
-        return true;
-    }
-
-    /**
      * 모든 플레리어의 행동 여부를 초기화한다.
      */
     public void initPlayerPlayed() {
+        // 플레이어 플레이 초기화
         for(Player player : players){
             player.initPlayed();
         }
+
+        // 액션 초기화
+        this.gameBoard.initPlayed();
     }
 
     /**
@@ -148,6 +165,38 @@ public class AgricolaGame implements Game {
      */
     public void processReservationResource() {
         this.gameBoard.processReservationResource(this.round);
+    }
+
+    /**
+     * 액션을 플레이한다.
+     * @param eventId 플레이할 액션
+     * @param acts 액션에 필요한 추가 요청
+     */
+    public void playAction(Long eventId, List<AgricolaActionRequest.ActionFormat> acts) {
+        // 액션 플레이를 수행한다.
+        this.gameBoard.playAction(this.getGameState().getPlayer(), eventId, acts);
+
+        // 거주자 한명을 임의로 뽑아 플레이 시킨다.
+        this.getGameState().getPlayer().playAction();
+    }
+
+    /**
+     * 교환을 플레이한다.
+     * @param improvementId 자원 교환 작업 시 사용할 주설비 식별자
+     * @param resource 교환할 자원의 종류와 개수
+     */
+    public void playExchange(String improvementId, ResourceStruct resource) {
+        Player player = this.getGameState().getPlayer();
+
+        // TODO: 플레이어가 해당 주설비를 가지고 있는지 검증한다.
+
+        // 플레이어가 교환할 자원을 가지고 있는지 검증한다.
+        if(player.getResource(resource.getResource()) < resource.getCount())
+            throw new RuntimeException("자원이 부족합니다.");
+
+        // 주설비와 교환 요청 자원을 사용하여 교환 작업을 수행한다.
+        // TODO: 교환 후 자원 획득
+        player.useResource(resource);
     }
 
     //로그 기능

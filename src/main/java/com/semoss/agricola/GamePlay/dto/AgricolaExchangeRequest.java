@@ -17,8 +17,6 @@ public class AgricolaExchangeRequest {
         private String improvementId;
         @NotNull(message = "필수 입력")
         private ResourceStruct resource;
-        @NotNull(message = "필수 입력")
-        private int count;
     }
     @NotNull(message = "필수 입력")
     private List<ExchangeFormat> exchange;

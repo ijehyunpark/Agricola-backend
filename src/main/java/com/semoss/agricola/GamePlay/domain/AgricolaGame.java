@@ -55,6 +55,8 @@ public class AgricolaGame implements Game {
     public AgricolaGame(List<User> users, String strategy) {
         if(users.size() == 0)
             throw new RuntimeException("아그리콜라에 필요한 최소 인원수를 충족하지 않았습니다.");
+        if(users.size() > 4)
+            throw new RuntimeException("아그리콜라에 필요한 최대 인원수를 초과하였습니다.");
 
         this.gameBoard = GameBoard.builder().game(this).build();
 

@@ -16,24 +16,15 @@ import java.util.stream.Collectors;
 public class PlayerBoard {
     private int roomCount;
     private FieldType roomType;
-//    private int farmCount;
-//    private int fenceCount;
-//    private int stableCount;
-    private FieldType[][] fieldStatus = new FieldType[3][5];
     private Field[][] fields = new Field[3][5];
     private boolean[][] colFence = new boolean[3][6];
     private boolean[][] rowFence = new boolean[4][5];
-    private ResourceStruct[] moveAnimalArr = new ResourceStruct[3];
+    private AnimalStruct[] moveAnimalArr = new AnimalStruct[3];
 
     @Builder
     public PlayerBoard() {
         //초기 나무집 설정
         roomType = FieldType.WOOD;
-
-        //필드 초기화
-        for (int i=0;i< fieldStatus.length;i++){
-            Arrays.fill(fieldStatus[i],FieldType.EMPTY);
-        }
 
         // 애완 동물 나무집
         Room petRoom = Room.builder()
@@ -41,7 +32,6 @@ public class PlayerBoard {
                 .build();
         petRoom.addResident(ResidentType.ADULT);
         this.fields[1][0] = petRoom;
-        fieldStatus[1][0] = FieldType.ROOM;
 
         // 일반 나무집
         Room room = Room.builder()
@@ -49,13 +39,12 @@ public class PlayerBoard {
                 .build();
         room.addResident(ResidentType.ADULT);
         this.fields[2][0] = room;
-        fieldStatus[2][0] = FieldType.ROOM;
 
         this.roomCount = 2;
 
-        moveAnimalArr[0] = ResourceStruct.builder().resource(ResourceType.SHEEP).count(0).build();
-        moveAnimalArr[1] = ResourceStruct.builder().resource(ResourceType.WILD_BOAR).count(0).build();
-        moveAnimalArr[2] = ResourceStruct.builder().resource(ResourceType.CATTLE).count(0).build();
+        moveAnimalArr[0] = AnimalStruct.builder().animal(AnimalType.SHEEP).count(0).build();
+        moveAnimalArr[1] = AnimalStruct.builder().animal(AnimalType.WILD_BOAR).count(0).build();
+        moveAnimalArr[2] = AnimalStruct.builder().animal(AnimalType.CATTLE).count(0).build();
     }
 
     /**
@@ -156,7 +145,7 @@ public class PlayerBoard {
 
         for (i=0;i<fields.length;i++) {
             for (j = 0; j < fields[0].length; j++) {
-                if (fieldStatus[i][j] == FieldType.EMPTY) ifFirstField[i][j] = true;
+                if (fields[i][j] == null) ifFirstField[i][j] = true;
             }
         }
 
@@ -165,12 +154,12 @@ public class PlayerBoard {
         boolean isIt = false;
         for (i=0;i<fields.length;i++){
             for (j=0;j<fields[0].length;j++){
-                if (fieldStatus[i][j] == fieldType){
+                if (fields[i][j] != null && fields[i][j].getFieldType() == fieldType){
                     isIt = true;
-                    if (i != 0) ifNthField[i-1][j] = fieldStatus[i-1][j] == FieldType.EMPTY;
-                    if (i != fields.length-1) ifNthField[i+1][j] = fieldStatus[i+1][j] == FieldType.EMPTY;
-                    if (j != 0) ifNthField[i][j-1] = fieldStatus[i][j-1] == FieldType.EMPTY;
-                    if (j != fields[0].length-1) ifNthField[i][j+1] = fieldStatus[i][j+1] == FieldType.EMPTY;
+                    if (i != 0) ifNthField[i-1][j] = (fields[i-1][j] == null);
+                    if (i != fields.length-1) ifNthField[i+1][j] = (fields[i+1][j] == null);
+                    if (j != 0) ifNthField[i][j-1] = (fields[i][j-1] == null);
+                    if (j != fields[0].length-1) ifNthField[i][j+1] = (fields[i][j+1] == null);
                 }
             }
         }
@@ -212,7 +201,6 @@ public class PlayerBoard {
                 throw new RuntimeException("hello");
             }
         }
-        fieldStatus[y][x] = fieldType;
     }
 
     /**
@@ -225,30 +213,30 @@ public class PlayerBoard {
         int i,j;
 
         boolean nowStatus;
-        for (i=0;i<fieldStatus.length;i++) {
-            for (j=0;j<fieldStatus[0].length;j++) {
-                nowStatus = fieldStatus[i][j] == FieldType.EMPTY || fieldStatus[i][j] == FieldType.BARN || fieldStatus[i][j] == FieldType.STABLE;
+        for (i=0;i<fields.length;i++) {
+            for (j=0;j<fields[0].length;j++) {
+                nowStatus = fields[i][j] == null || fields[i][j].getFieldType() == FieldType.BARN || fields[i][j].getFieldType() == FieldType.STABLE;
                 row[i + 1][j] = !rowFence[i + 1][j] &&
-                        (i != fieldStatus.length - 1 &&
-                                (fieldStatus[i + 1][j] == FieldType.EMPTY || fieldStatus[i + 1][j] == FieldType.BARN || fieldStatus[i + 1][j] == FieldType.STABLE ||
+                        (i != fields.length - 1 &&
+                                (fields[i + 1][j] == null || fields[i + 1][j].getFieldType() == FieldType.BARN || fields[i + 1][j].getFieldType() == FieldType.STABLE ||
                                         nowStatus));
                 col[i][j + 1] = !colFence[i][j + 1] &&
-                        (j != fieldStatus[0].length - 1 &&
-                                (fieldStatus[i][j + 1] == FieldType.EMPTY || fieldStatus[i][j + 1] == FieldType.BARN || fieldStatus[i][j + 1] == FieldType.STABLE ||
+                        (j != fields[0].length - 1 &&
+                                (fields[i][j + 1] == null || fields[i][j + 1].getFieldType() == FieldType.BARN || fields[i][j + 1].getFieldType() == FieldType.STABLE ||
                                         nowStatus));
             }
         }
-        for (j=0;j<fieldStatus[0].length;j++) {
+        for (j=0;j<fields[0].length;j++) {
             row[0][j] = !rowFence[0][j] &&
-                    (fieldStatus[0][j] == FieldType.EMPTY || fieldStatus[0][j] == FieldType.BARN || fieldStatus[0][j] == FieldType.STABLE);
-            row[fieldStatus.length][j] = !rowFence[fieldStatus.length][j] &&
-                    (fieldStatus[fieldStatus.length-1][j] == FieldType.EMPTY || fieldStatus[fieldStatus.length - 1][j] == FieldType.BARN || fieldStatus[fieldStatus.length - 1][j] == FieldType.STABLE);
+                    (fields[0][j] == null || fields[0][j].getFieldType() == FieldType.BARN || fields[0][j].getFieldType() == FieldType.STABLE);
+            row[fields.length][j] = !rowFence[fields.length][j] &&
+                    (fields[fields.length-1][j] == null || fields[fields.length - 1][j].getFieldType() == FieldType.BARN || fields[fields.length - 1][j].getFieldType() == FieldType.STABLE);
         }
-        for (i=0;i<fieldStatus.length;i++) {
+        for (i=0;i<fields.length;i++) {
             col[i][0] = !colFence[i][0] &&
-                    (fieldStatus[i][0] == FieldType.EMPTY || fieldStatus[i][0] == FieldType.BARN || fieldStatus[i][0] == FieldType.STABLE);
-            col[i][fieldStatus[0].length] = !colFence[i][fieldStatus[0].length] &&
-                    (fieldStatus[i][fieldStatus[0].length-1] == FieldType.EMPTY || fieldStatus[i][fieldStatus[0].length-1] == FieldType.BARN || fieldStatus[i][fieldStatus[0].length-1] == FieldType.STABLE);
+                    (fields[i][0] == null || fields[i][0].getFieldType() == FieldType.BARN || fields[i][0].getFieldType() == FieldType.STABLE);
+            col[i][fields[0].length] = !colFence[i][fields[0].length] &&
+                    (fields[i][fields[0].length-1] == null || fields[i][fields[0].length-1].getFieldType() == FieldType.BARN || fields[i][fields[0].length-1].getFieldType() == FieldType.STABLE);
         }
         return new boolean[][][]{row,col};
     }
@@ -274,16 +262,16 @@ public class PlayerBoard {
             tmpCol[colPos[i][0]][colPos[i][1]] = true;
         }
         // 설치된 울타리 적합성 검사
-        boolean[][] check = new boolean[fieldStatus.length][fieldStatus[0].length];//false
+        boolean[][] check = new boolean[fields.length][fields[0].length];//false
         boolean[][] checkCol = new boolean[tmpCol.length][tmpCol[0].length];
         Stack<int[]> explorer = new Stack<>();
         Stack<int[]> buildPos = new Stack<>();
-        int fieldRow = fieldStatus.length;
-        int fieldCol = fieldStatus[0].length;
+        int fieldRow = fields.length;
+        int fieldCol = fields[0].length;
         int[] pos = new int[2];
         for (i=0;i<tmpRow.length-1;i++){
             for (j=0;j<tmpRow[0].length;j++){
-                if(tmpRow[i][j] && !check[i][j] && (fieldStatus[i][j] == FieldType.EMPTY || fieldStatus[i][j] == FieldType.BARN || fieldStatus[i][j] == FieldType.STABLE)){
+                if(tmpRow[i][j] && !check[i][j] && (fields[i][j] == null || fields[i][j].getFieldType() == FieldType.BARN || fields[i][j].getFieldType() == FieldType.STABLE)){
                     //조건 만족시 탐색시작
                     pos[0] = i; pos[1] = j;
                     while(true) {
@@ -340,12 +328,12 @@ public class PlayerBoard {
 
         buildPos = new Stack<>();
         explorer = new Stack<>();
-        check = new boolean[fieldStatus.length][fieldStatus[0].length];
+        check = new boolean[fields.length][fields[0].length];
         int stableNum = 0;
 
         for (i=0;i<tmpRow.length-1;i++){
             for (j=0;j<tmpRow[0].length;j++){
-                if(tmpRow[i][j] && !check[i][j] && (fieldStatus[i][j] == FieldType.EMPTY || fieldStatus[i][j] == FieldType.BARN || fieldStatus[i][j] == FieldType.STABLE)){
+                if(tmpRow[i][j] && !check[i][j] && (fields[i][j] == null || fields[i][j].getFieldType() == FieldType.BARN || fields[i][j].getFieldType() == FieldType.STABLE)){
                     //조건 만족시 탐색시작
                     pos[0] = i; pos[1] = j;
                     while(true) {
@@ -381,7 +369,7 @@ public class PlayerBoard {
                         }
                         else if (explorer.empty()) return false;
                         else {
-                            if (fieldStatus[pos[0]][pos[1]] != FieldType.EMPTY && ((Barn)(fields[pos[0]][pos[1]])).isStable()) stableNum++;
+                            if (fields[pos[0]][pos[1]] != null && ((Barn)(fields[pos[0]][pos[1]])).isStable()) stableNum++;
                             buildPos.push(pos.clone());
                             pos = explorer.pop();
                         }
@@ -389,8 +377,7 @@ public class PlayerBoard {
                     // 헛간 지정
                     while (!buildPos.empty()){
                         pos = buildPos.pop();
-                        if (fieldStatus[pos[0]][pos[1]] == FieldType.EMPTY) {
-                            fieldStatus[pos[0]][pos[1]] = FieldType.BARN;
+                        if (fields[pos[0]][pos[1]] == null) {
                             fields[pos[0]][pos[1]] = Barn.builder()
                                     .fieldType(FieldType.BARN)
                                     .build();
@@ -442,20 +429,20 @@ public class PlayerBoard {
 
     /**
      * 선택한 동물이 있는 위치와 마리 수 반환
-     * @param resourceType 동물 타입
+     * @param animalType 동물 타입
      * @return 내용물이 [row, col, count]인 list
      */
-    protected List<int[]> animalPos(ResourceType resourceType){
+    protected List<int[]> animalPos(AnimalType animalType){
         Barn barn;
         List<int[]> pos = new ArrayList<>();
         // 애완동물 집 확인
-        if (((Room)fields[1][0]).getResource().getResource() == resourceType) pos.add(new int[]{1,0,1});
+        if (((Room)fields[1][0]).getPet() == animalType) pos.add(new int[]{1,0,1});
 
         for (int i=0;i<fields.length;i++){
             for (int j=0;j< fields[0].length;j++){
-                if (fieldStatus[i][j] == FieldType.BARN || fieldStatus[i][j] == FieldType.STABLE){
+                if (fields[i][j].getFieldType() == FieldType.BARN || fields[i][j].getFieldType() == FieldType.STABLE){
                     barn = (Barn)fields[i][j];
-                    if(barn.getAnimal().getResource() == resourceType) pos.add(new int[]{i,j, barn.getAnimal().getCount()});
+                    if(barn.getAnimal().getAnimal() == animalType) pos.add(new int[]{i,j, barn.getAnimal().getCount()});
                 }
             }
         }
@@ -470,8 +457,8 @@ public class PlayerBoard {
      * @return 제거된 동물 수
      */
     protected int removeAnimal(int row, int col, int animalNum){
-        if (fieldStatus[row][col] != FieldType.BARN && fieldStatus[row][col] != FieldType.STABLE) return 0;
-        ResourceType animalType = ((Barn)fields[row][col]).getAnimal().getResource();
+        if (fields[row][col].getFieldType() != FieldType.BARN && fields[row][col].getFieldType() != FieldType.STABLE) return 0;
+        AnimalType animalType = ((Barn)fields[row][col]).getAnimal().getAnimal();
         int num = ((Barn)fields[row][col]).removeAnimal(animalNum);
         moveAnimalArr[animalType.getValue()-9].addResource(num);
         return num;
@@ -484,7 +471,7 @@ public class PlayerBoard {
      * @return 제거된 동물 수
      */
     protected int removeALLAnimals(int row, int col){
-        if (fieldStatus[row][col] != FieldType.BARN && fieldStatus[row][col] != FieldType.STABLE) return 0;
+        if (fields[row][col].getFieldType() != FieldType.BARN && fields[row][col].getFieldType() != FieldType.STABLE) return 0;
         ResourceType animalType = ((Barn)fields[row][col]).getAnimal().getResource();
         int num = ((Barn)fields[row][col]).removeAllAnimals();
         moveAnimalArr[animalType.getValue()-9].addResource(num);
@@ -500,7 +487,7 @@ public class PlayerBoard {
      * @return 이동한 동물 수(수용가능한 동물 양에 따라 결과값이 달라짐)
      */
     protected int addRemovedAnimal(int row, int col, ResourceType animalType, int animalNum){
-        if (fieldStatus[row][col] != FieldType.BARN && fieldStatus[row][col] != FieldType.STABLE) return 0;
+        if (fields[row][col].getFieldType() != FieldType.BARN && fields[row][col].getFieldType() != FieldType.STABLE) return 0;
         animalNum = Integer.min(animalNum,moveAnimalArr[animalType.getValue()-9].getCount());
         int num = ((Barn)fields[row][col]).addAnimal(animalType, animalNum);
         moveAnimalArr[animalType.getValue()-9].subResource(num);
@@ -517,7 +504,7 @@ public class PlayerBoard {
         Barn barn;
         for (int i=0;i<fields.length;i++){
             for (int j=0;j< fields[0].length;j++){
-                if (fieldStatus[i][j] == FieldType.BARN || fieldStatus[i][j] == FieldType.STABLE){
+                if (fields[i][j].getFieldType() == FieldType.BARN || fields[i][j].getFieldType() == FieldType.STABLE){
                     barn = (Barn)fields[i][j];
                     animalNum -= barn.addAnimal(animalType,animalNum);
                 }
@@ -540,13 +527,13 @@ public class PlayerBoard {
      */
     protected void removeAllBarn(){
         Barn barn;
-        ResourceType animalType;
+        AnimalType animalType;
         int num;
         for (int i=0;i<fields.length;i++){
             for (int j=0;j< fields[0].length;j++){
-                if (fieldStatus[i][j] == FieldType.BARN || fieldStatus[i][j] == FieldType.STABLE){
+                if (fields[i][j].getFieldType() == FieldType.BARN || fields[i][j].getFieldType() == FieldType.STABLE){
                     barn = (Barn)fields[i][j];
-                    animalType = barn.getAnimal().getResource();
+                    animalType = barn.getAnimal().getAnimal();
                     num = barn.removeAllAnimals();
                     moveAnimalArr[animalType.getValue()-9].addResource(num);
                 }
@@ -561,8 +548,8 @@ public class PlayerBoard {
      * 필드에서 임시적으로 제거해둔 동물 배열을 초기화 (동물 삭제)
      */
     protected void initMoveAnimalArr(){
-        for (ResourceStruct resourceStruct : moveAnimalArr) {
-            resourceStruct.setCount(0);
+        for (AnimalStruct animalStruct : moveAnimalArr) {
+            animalStruct.setCount(0);
         }
     }
 
@@ -571,8 +558,12 @@ public class PlayerBoard {
      * test 함수
      */
     public void printField(){
-        for (int i=0;i<fieldStatus.length;i++){
-            System.out.println(Arrays.toString(fieldStatus[i]));
+        for (int i=0;i<fields.length;i++){
+            for (int j=0;j<fields[0].length;j++){
+                System.out.print(fields[i][j].getFieldType().toString());
+                System.out.print(" ");
+            }
+            System.out.println();
         }
     }
 }

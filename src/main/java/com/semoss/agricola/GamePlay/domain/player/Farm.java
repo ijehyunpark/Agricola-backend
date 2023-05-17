@@ -7,6 +7,7 @@ import lombok.Getter;
 @Getter
 public class Farm implements Field {
     private Seed seed;
+    private FieldType fieldType;
 
     public Farm() {
         seed = Seed.seedBuilder()

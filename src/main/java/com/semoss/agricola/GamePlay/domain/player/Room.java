@@ -29,37 +29,38 @@ public class Room implements Field {
 
     @Getter
     private class PetRoom {
-        private ResourceStruct animal;
+        private AnimalStruct animal;
         public PetRoom(){
-            animal = ResourceStruct.builder().resource(ResourceType.EMPTY).count(0).build();
+            animal = AnimalStruct.builder().animal(null).count(0).build();
         }
 
         public boolean isEmpty() {
             return animal.getCount() == 0;
         }
 
-        public ResourceType getAnimalType(){
-            return animal.getResource();
+        public AnimalType getAnimalType(){
+            return animal.getAnimal();
         }
 
-        public boolean addPet(ResourceType animalType){
+        public boolean addPet(AnimalType animalType){
             if(isEmpty()) {
-                animal.setResource(animalType);
+                animal.setAnimal(animalType);
                 animal.setCount(1);
                 return true;
             }
             return false;
         }
 
-        public ResourceType removePet(){
-            ResourceType animalType = resource.getResource();
-            resource.setResource(ResourceType.EMPTY);
-            resource.setCount(0);
+        public AnimalType removePet(){
+            AnimalType animalType = animal.getAnimal();
+            animal.setAnimal(null);
+            animal.setCount(0);
             return animalType;
         }
     }
 
     private PetRoom petRoom;
+    private FieldType fieldType;
     private final boolean isPetRoom;
     private final List<Resident> residents;
     private final ResourceStruct resource;
@@ -137,18 +138,18 @@ public class Room implements Field {
         return this.residents.size() == 0;
     }
 
-    public boolean addPet(ResourceType animalType){
-        if (!isPetRoom) return false;
+    public boolean addPet(AnimalType animalType){
+        if (!isPetRoom) throw new RuntimeException("펫이 없는 집입니다.");
         return petRoom.addPet(animalType);
     }
 
-    public ResourceType removePet() {
-        if (!isPetRoom) return ResourceType.EMPTY;
+    public AnimalType removePet() {
+        if (!isPetRoom) throw new RuntimeException("펫이 없는 집입니다.");
         return petRoom.removePet();
     }
 
-    public ResourceType getPet() {
-        if (!isPetRoom) return ResourceType.EMPTY;
+    public AnimalType getPet() {
+        if (!isPetRoom) throw new RuntimeException("펫이 없는 집입니다.");
         return petRoom.getAnimalType();
     }
 }

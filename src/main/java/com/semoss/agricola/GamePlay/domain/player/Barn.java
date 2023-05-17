@@ -1,6 +1,5 @@
 package com.semoss.agricola.GamePlay.domain.player;
 
-import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -12,8 +11,8 @@ public class Barn implements Field {
     private int capacity;
 
     /**
-     * capacity 1 when there is only a stable, and capacity 2 when surrounded by a fence.
-     * @param fieldType stable(just 1 stable on field) or barn(fenced without a stable)
+     * 외양간만 있으면 수용량이 1, 헛간만 있으면 수용량이 2, 같은 범위내 외양간 하나당 수용량 2배
+     * @param fieldType stable or barn (개발중에 Stable 과 barn 이 하나로 합쳐질수도있음)
      */
     @Builder
     public Barn(FieldType fieldType){
@@ -31,11 +30,11 @@ public class Barn implements Field {
     }
 
     /**
-     * Add stable to the barn.
+     * 헛간에 외양간 추가
      * @return method was successful or not.
      */
     public boolean addStable(){
-        if (isStable) return false;
+        if (isStable) throw new RuntimeException("이미 외양간이 지어져 있습니다.");
 
         isStable = true;
         capacity = capacity * 2;
@@ -43,10 +42,10 @@ public class Barn implements Field {
     }
 
     /**
-     * Add animals to the barn.
-     * @param animalType type of animal to add
-     * @param num the number of animal to add
-     * @return the number of newly accepted animals to the barn.
+     * 동물 추가
+     * @param animalType 추가할 동물 타입
+     * @param num 추가할 동물 수
+     * @return 이번 명령으로 수용한 동물 수
      */
     public int addAnimal(AnimalType animalType, int num){
         if (num < 1) return 0;
@@ -60,23 +59,23 @@ public class Barn implements Field {
     }
 
     /**
-     * Remove animals from the barn.
-     * @param num the number of animal to remove
-     * @return the number of animals removed from the barn.
+     * 동물 제거
+     * @param num 제거할 동물 수
+     * @return 제거된 동물 수
      */
     public int removeAnimal(int num){
         if (animal.getAnimal() == null) return 0;
 
         num = Integer.min(animal.getCount(),num);
         animal.subResource(num);
-        if (animal.getCount() == 0) animal.setAnimal(ResourceType.EMPTY);
+        if (animal.getCount() == 0) animal.setAnimal(null);
 
         return num;
     }
 
     /**
-     * Remove all animals from the barn.
-     * @return the number of animals removed from the barn.
+     * 모든 동물 제거
+     * @return 제거된 동물 수
      */
     public int removeAllAnimals(){
         animal.setAnimal(null);
@@ -86,8 +85,8 @@ public class Barn implements Field {
     }
 
     /**
-     * set barn's capacity. just for barn not stable. 2 times each stable.
-     * @param numberOfStable the number of stables in the entire area surrounded by same fences
+     * 헛간의 수용량을 재설정 - 외양간에 사용시 헛간으로 변경
+     * @param numberOfStable 현재 같은 공간에 있는 외양간 수
      */
     public void setCapacity(int numberOfStable) {
         if (numberOfStable < 1) return;

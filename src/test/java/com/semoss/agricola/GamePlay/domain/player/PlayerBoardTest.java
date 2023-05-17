@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
-
 class PlayerBoardTest {
     PlayerBoard playerBoard1;
     PlayerBoard playerBoard2;
@@ -138,17 +137,17 @@ class PlayerBoardTest {
         playerBoard3.buildFence(fence3_2[0],fence3_2[1]);
         playerBoard3.buildFence(fence3_3[0],fence3_3[1]);
 
-        assertTrue(playerBoard1.addAnimal(ResourceType.SHEEP,10));
-        assertTrue(playerBoard1.addAnimal(ResourceType.CATTLE,1));
-        assertFalse(playerBoard1.addAnimal(ResourceType.WILD_BOAR,1));
+        assertTrue(playerBoard1.addAnimal(AnimalType.SHEEP,10));
+        assertTrue(playerBoard1.addAnimal(AnimalType.CATTLE,1));
+        assertFalse(playerBoard1.addAnimal(AnimalType.WILD_BOAR,1));
 
         int[][] sheepPos1 = new int[][]{{0, 3, 2}, {1, 2, 2}, {1, 3, 2}, {1, 4, 2}, {2, 3, 2}};
         int[][] cattlePos1 = new int[][]{{1, 0, 1}};
-        int[][] result = playerBoard1.animalPos(ResourceType.SHEEP).toArray(sheepPos1);
+        int[][] result = playerBoard1.animalPos(AnimalType.SHEEP).toArray(sheepPos1);
         for (int i=0;i<sheepPos1.length;i++) {
             assertArrayEquals(sheepPos1[i],result[i]);
         }
-        result = playerBoard1.animalPos(ResourceType.CATTLE).toArray(cattlePos1);
+        result = playerBoard1.animalPos(AnimalType.CATTLE).toArray(cattlePos1);
         for (int i=0;i<cattlePos1.length;i++) {
             assertArrayEquals(cattlePos1[i],result[i]);
         }

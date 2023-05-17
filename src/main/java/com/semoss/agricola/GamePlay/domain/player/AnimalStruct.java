@@ -17,5 +17,7 @@ public class AnimalStruct {
     public void addResource(int count) {
         this.count += count;
     }
-    public void subResource(int count) { this.count -= count; }
+    public void subResource(int count) { if (this.count - count < 0) throw new RuntimeException("동물 수는 음수가 될 수 없습니다.");
+        this.count -= count;
+    }
 }

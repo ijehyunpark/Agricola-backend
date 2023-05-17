@@ -472,7 +472,7 @@ public class PlayerBoard {
      */
     protected int removeALLAnimals(int row, int col){
         if (fields[row][col].getFieldType() != FieldType.BARN && fields[row][col].getFieldType() != FieldType.STABLE) return 0;
-        ResourceType animalType = ((Barn)fields[row][col]).getAnimal().getResource();
+        AnimalType animalType = ((Barn)fields[row][col]).getAnimal().getAnimal();
         int num = ((Barn)fields[row][col]).removeAllAnimals();
         moveAnimalArr[animalType.getValue()-9].addResource(num);
         return num;
@@ -486,7 +486,7 @@ public class PlayerBoard {
      * @param animalNum 추가할 동물 수
      * @return 이동한 동물 수(수용가능한 동물 양에 따라 결과값이 달라짐)
      */
-    protected int addRemovedAnimal(int row, int col, ResourceType animalType, int animalNum){
+    protected int addRemovedAnimal(int row, int col, AnimalType animalType, int animalNum){
         if (fields[row][col].getFieldType() != FieldType.BARN && fields[row][col].getFieldType() != FieldType.STABLE) return 0;
         animalNum = Integer.min(animalNum,moveAnimalArr[animalType.getValue()-9].getCount());
         int num = ((Barn)fields[row][col]).addAnimal(animalType, animalNum);
@@ -500,7 +500,7 @@ public class PlayerBoard {
      * @param animalNum 동물 수
      * @return 행동 성공 여부
      */
-    protected boolean addAnimal(ResourceType animalType, int animalNum){
+    protected boolean addAnimal(AnimalType animalType, int animalNum){
         Barn barn;
         for (int i=0;i<fields.length;i++){
             for (int j=0;j< fields[0].length;j++){
@@ -511,7 +511,7 @@ public class PlayerBoard {
                 if (animalNum == 0) return true;
             }
         }
-        if (animalNum == 1 && (((Room)fields[1][0]).getPet() == animalType || ((Room)fields[1][0]).getPet() == ResourceType.EMPTY)){
+        if (animalNum == 1 && (((Room)fields[1][0]).getPet() == animalType || ((Room)fields[1][0]).getPet() == null)){
             return ((Room)fields[1][0]).addPet(animalType);
         }
 
@@ -529,19 +529,21 @@ public class PlayerBoard {
         Barn barn;
         AnimalType animalType;
         int num;
-        for (int i=0;i<fields.length;i++){
-            for (int j=0;j< fields[0].length;j++){
-                if (fields[i][j].getFieldType() == FieldType.BARN || fields[i][j].getFieldType() == FieldType.STABLE){
-                    barn = (Barn)fields[i][j];
+        for (Field[] field : fields) {
+            for (int j = 0; j < fields[0].length; j++) {
+                if (field[j].getFieldType() == FieldType.BARN || field[j].getFieldType() == FieldType.STABLE) {
+                    barn = (Barn) field[j];
                     animalType = barn.getAnimal().getAnimal();
                     num = barn.removeAllAnimals();
-                    moveAnimalArr[animalType.getValue()-9].addResource(num);
+                    moveAnimalArr[animalType.getValue()].addResource(num);
                 }
             }
         }
         //애완동물
-        animalType = ((Room)fields[1][0]).removePet();
-        if(animalType != ResourceType.EMPTY) moveAnimalArr[animalType.getValue()-9].addResource(1);
+        if(((Room)fields[1][0]).getPet() != null) {
+            animalType = ((Room)fields[1][0]).removePet();
+            moveAnimalArr[animalType.getValue()].addResource(1);
+        }
     }
 
     /**

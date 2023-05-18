@@ -7,8 +7,8 @@ import lombok.Getter;
 /**
  * increase family action
  */
+@Getter
 public class IncreaseFamily implements SimpleAction {
-    @Getter
     private final ActionType actionType = ActionType.ADOPT;
     private final boolean precondition;
 

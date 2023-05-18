@@ -13,8 +13,6 @@ public class User {
     private final Long id;
     @Setter
     private String username;
-    @Setter
-    private Long gameRoomId;
 
     @Builder
     public User(String username) {

@@ -1,12 +1,12 @@
 package com.semoss.agricola.GamePlay.domain.player;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
 import com.semoss.agricola.GamePlay.domain.card.Card;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
-import jdk.jshell.spi.ExecutionControl;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Getter
 public class Player {
     private Long userId;
-    @Setter
+    @Setter @JsonIgnore
     private AgricolaGame game;
     private boolean startingToken;
     private final EnumMap<ResourceType,Integer> resources;
@@ -88,12 +88,19 @@ public class Player {
      * use resource
      * @param resourceType resource type to use
      * @param num amount of resource
-     * @return Whether to use
      */
     public void useResource(ResourceType resourceType, int num){
         if (resources.get(resourceType) < num)
             throw new RuntimeException("자원이 부족합니다.");
         resources.compute(resourceType, (key, value) -> value - num);
+    }
+
+    /**
+     * use resource
+     * @param resource resource type and amount to use
+     */
+    public void useResource(ResourceStruct resource){
+        useResource(resource.getResource(), resource.getCount());
     }
 
     /**
@@ -132,7 +139,7 @@ public class Player {
      * 현재 필드 단계를 반환한다.
      * @return
      */
-    public FieldType getRoomType() {
+    public RoomType getRoomType() {
         return playerBoard.getRoomType();
     }
 
@@ -140,6 +147,7 @@ public class Player {
      * 현재 게임 보드의 방 개수를 반환한다.
      * @return
      */
+    @JsonIgnore
     public int getRoomCount() {
         return playerBoard.getRoomCount();
     }
@@ -193,6 +201,7 @@ public class Player {
     /**
      * 카드 획득은 card 에서 담당
      */
+    @JsonIgnore
     public void getMajorCard(Long cardID){
         cardField.add(cardID);
     }
@@ -201,6 +210,7 @@ public class Player {
      * 모든 플레이어가 행동을 완했는지 확인
      * @return 만약 행동이 완료되었다면, true를 반환
      */
+    @JsonIgnore
     public boolean isCompletedPlayed(){
         return playerBoard.isCompletedPlayed();
     }
@@ -236,11 +246,7 @@ public class Player {
      * 내 보드판에서 같은 종류의 동물이 2마리 이상 있는 경우 한 마리가 늘어난다(종류별 최대1마리).
      */
     public void breeding() {
-        try {
-            this.playerBoard.breeding();
-        } catch (ExecutionControl.NotImplementedException e) {
-            throw new RuntimeException(e);
-        }
+        this.playerBoard.breeding();
     }
 
     /**
@@ -316,7 +322,15 @@ public class Player {
     /**
      * 가족 개수 반환
      */
+    @JsonIgnore
     public int getFamilyNumber() {
         return this.playerBoard.getFamilyCount();
+    }
+
+    /**
+     * 액션을 플레이한다.
+     */
+    public void playAction() {
+        this.playerBoard.playAction();
     }
 }

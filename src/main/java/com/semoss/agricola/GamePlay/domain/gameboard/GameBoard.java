@@ -1,25 +1,33 @@
 package com.semoss.agricola.GamePlay.domain.gameboard;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.semoss.agricola.GamePlay.domain.AgricolaGame;
 import com.semoss.agricola.GamePlay.domain.action.*;
 import com.semoss.agricola.GamePlay.domain.player.AnimalType;
 import com.semoss.agricola.GamePlay.domain.player.FieldType;
+import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
+import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.*;
 
 /**
  * 아그리콜라 메인 게임 보드
  */
-@Getter
 public class GameBoard {
+    @JsonIgnore @Setter
+    private AgricolaGame game;
     private List<Event> events;
+    @Getter
     private ImprovementBoard improvementBoard;
 
     @Builder
-    public GameBoard() {
+    public GameBoard(AgricolaGame game) {
+        this.game = game;
         // event를 배치한다.
         events = new ArrayList<>();
         // 1.방 만들기 그리고/또는 외양간 짓기
@@ -316,8 +324,16 @@ public class GameBoard {
         return BuildFenceAction.builder().build();
     }
 
+    public List<Event> getEvents() {
+        return events.stream()
+                .filter(event -> event.getRound() <= game.getRound())
+                .toList();
+    }
+
     /**
-     * 해당 인덱스 내에서 배열을 셔플하고 저장하는 함수
+     * round group을 기준으로 해당 인덱스 내에서 배열을 셔플한다.
+     * round group이 0인 경우 셔플 대상에서 제외된다.
+     * round group이 0이 아닌 경우 같은 round group까리 셔플된다.
      * @param lst 셔플할 배열
      * @param start 셔플할 배열 시작 위치
      * @param end 셔플할 배열 끝 위치
@@ -335,7 +351,7 @@ public class GameBoard {
     }
 
     /**
-     * 이벤트 객체 셔플
+     * roundGroup을 기준으로 이벤트 객체를 셔플한다.
      */
     private void shuffleEventsWithinRoundGroup() {
         if (this.events == null || this.events.size() == 0)
@@ -363,7 +379,6 @@ public class GameBoard {
         }
         shuffleByIndex(this.events, startIndex, events.size());
     }
-
 
     /**
      * 현재 필드의 모든 누적 액션의 누적자원량을 증가시킨다.
@@ -395,5 +410,26 @@ public class GameBoard {
                 .ifPresent(
                         event -> event.deliverReservation()
                 );
+    }
+    /**
+     * 액션을 플레이한다.
+     * @param player 액션을 플레이하는 플레이어
+     * @param eventId 플레이할 액션
+     * @param acts    액션에 필요한 추가 요청
+     */
+    public void playAction(Player player, Long eventId, List<AgricolaActionRequest.ActionFormat> acts) {
+        events.stream()
+                .filter(event -> event.getId().equals(eventId))
+                .findAny()
+                .orElseThrow(() -> new RuntimeException("이벤트가 존재하지 않습니다"))
+                .runActions(player, acts);
+    }
+
+    /**
+     * 이벤트의 플레이 여부를 초기화한다.
+     */
+    public void initPlayed() {
+        events.stream()
+                .forEach(event -> event.initPlayed());
     }
 }

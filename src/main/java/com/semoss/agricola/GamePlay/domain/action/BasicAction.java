@@ -4,9 +4,12 @@ import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 
+@Getter
+@Log4j2
 public class BasicAction implements SimpleAction {
-    @Getter
     private final ActionType actionType = ActionType.BASIC;
     private final ResourceStruct resource;
 

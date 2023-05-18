@@ -14,12 +14,11 @@ import java.util.List;
  * 1개의 빈 필드에 새로운 건축물을 건설한다.
  * e.g 밭 일구기, 집 건설
  */
+@Getter
 public class BuildSimpleAction implements MultiInputAction {
-    @Getter
     private final ActionType actionType = ActionType.BUILD;
     private final FieldType fieldType;
     private final List<ResourceStruct> requirements;
-    @Getter
     private final int buildMaxCount;
 
     @Builder

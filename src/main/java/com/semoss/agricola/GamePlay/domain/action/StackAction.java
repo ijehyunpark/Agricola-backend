@@ -9,10 +9,9 @@ import lombok.Getter;
 /**
  * 자원이 누적해서 쌓이는 행동
  */
+@Getter
 public class StackAction implements SimpleAction {
-    @Getter
     private final ActionType actionType = ActionType.STACK;
-    @Getter
     private final ResourceStruct stackResource;
 
     /**

@@ -77,5 +77,6 @@ public class MajorCard implements Card{
         for (ResourceStruct ingredient : ingredients){
             player.useResource(ingredient.getResource(), ingredient.getCount());
         }
+        player.getMajorCard(cardID);
     }
 }

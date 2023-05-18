@@ -2,6 +2,7 @@ package com.semoss.agricola.GamePlay.domain.action;
 
 import com.semoss.agricola.GamePlay.domain.card.Card;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
+import com.semoss.agricola.GamePlay.domain.card.CardType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,12 +35,12 @@ public class PlaceAction implements SimpleAction {
     }
 
     /**
-     * player place own card(occupation,minor) or get major card
+     * 플레이어가 카드를 내려놓는다.
      * @param player player who place card
      * @param cardID card ID
      * @return result
      */
-    public boolean runAction(Player player, String cardID){
+    public boolean runAction(Player player, Long cardID){
         Card card = CardDictionary.cardDict.get((cardID));
 //        if(card.getCardType() != cardType)
 //            return false;
@@ -51,11 +52,14 @@ public class PlaceAction implements SimpleAction {
 //        return player.placeCard(cardID);
 
         // TODO: 해당 card의 소유주가 있는지 확인
+        if (!(card.getCardType() == CardType.MAJOR && card.getOwner() == null)) return false;
 
         // TODO: 해당 card의 전제조건 및 비용을 만족하는지 확인
+        if (!card.checkPrerequisites(player)) return false;
 
         // TODO: 해당 card의 소유주를 player로 변경
-
+        // card.useResource 에서 재료 사용 및 소유자 이전을 모두 수행
+        card.useResource(player);
         return true;
     }
 }

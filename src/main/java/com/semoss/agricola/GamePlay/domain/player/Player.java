@@ -190,16 +190,11 @@ public class Player {
         return false;
     }
 
-    /** TODO
-     * get major improvement card.
-     * @param cardID card ID
-     * @return result
+    /**
+     * 카드 획득은 card 에서 담당
      */
-    public boolean getMajorCard(Long cardID){
-        if (!Objects.equals(CardDictionary.cardDict.get(cardID).getOwner(),null)) throw new RuntimeException("이미 누군가 소유중인 주설비입니다.");
+    public void getMajorCard(Long cardID){
         cardField.add(cardID);
-        CardDictionary.cardDict.get(cardID).setOwner(userId);
-        return true;
     }
 
     /**

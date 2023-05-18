@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
+@Builder
 public class MajorCard implements Card{
 
     private final CardType cardType = CardType.MAJOR;
@@ -36,17 +37,14 @@ public class MajorCard implements Card{
     @Setter
     private Long owner;
 
-    @Builder
-    public MajorCard(long cardID){
-        this.cardID = cardID;
-    }
-
     /**
      * 플레이어가 카드를 가져가기에 충분한 자원을 가지고 있는지 확인
      * @param player 확인할 플레이어
      * @return 확인 결과
      */
-    public boolean checkResourcesBeforePlace(Player player){
+    @Override
+    public boolean checkPrerequisites(Player player){
+        if (owner != null) return false;
         boolean result = true;
         for (ResourceStruct ingredient : ingredients){
             result &= player.getResource(ingredient.getResource()) >= ingredient.getCount();
@@ -60,6 +58,7 @@ public class MajorCard implements Card{
      * @return 점수
      */
     public int checkPoint(int num){
+        if (resourceNumToPoints == null) return 0;
         int result = 0;
         for (int[] point : resourceNumToPoints){
             if(point[0] > num) return result;
@@ -68,14 +67,15 @@ public class MajorCard implements Card{
         return result;
     }
 
-    @Override
-    public boolean checkPrerequisites(Player player) {
-        return true;
-    }
-
-    /**??*/
+    /**
+     * 카드를 가져가는데 필요한 자원만큼 player 의 자원을 가져감
+     * @param player 카드를 가져갈 플레이어
+     */
     @Override
     public void useResource(Player player) {
-
+        setOwner(player.getUserId());
+        for (ResourceStruct ingredient : ingredients){
+            player.useResource(ingredient.getResource(), ingredient.getCount());
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.semoss.agricola.GamePlay.domain.gameboard;
 
 import com.semoss.agricola.GamePlay.domain.action.*;
+import com.semoss.agricola.GamePlay.domain.player.AnimalType;
 import com.semoss.agricola.GamePlay.domain.player.FieldType;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
@@ -117,7 +118,7 @@ public class GameBoard {
 
         // --- 1주기 ---
         // 11. 양 시장 (누적 양 1개)
-        events.add(buildEventToSimpleStackAction(ResourceType.SHEEP, 1, 1));
+        events.add(buildEventToSimpleStackAction(AnimalType.SHEEP, 1, 1));
 
         // 12. 울타리 치기
         events.add(Event.builder()
@@ -156,7 +157,7 @@ public class GameBoard {
         // --- 3주기 ---
 
         // 18.돼지 시장: 누적 돼지 1개
-        events.add(buildEventToSimpleStackAction(ResourceType.WILD_BOAR, 1, 3));
+        events.add(buildEventToSimpleStackAction(AnimalType.WILD_BOAR, 1, 3));
 
         // 19.채소 종자: 채소 1개
         events.add(buildEventToSimpleStackAction(ResourceType.VEGETABLE, 1, 3));
@@ -164,7 +165,7 @@ public class GameBoard {
         // --- 4주기 ---
 
         // 20.소 시장: 누적 소 1개
-        events.add(buildEventToSimpleStackAction(ResourceType.CATTLE, 1, 4));
+        events.add(buildEventToSimpleStackAction(AnimalType.CATTLE, 1, 4));
 
         // 21.동부 채석장: 누적 돌 1개
         events.add(buildEventToSimpleStackAction(ResourceType.STONE, 1, 4));
@@ -225,6 +226,19 @@ public class GameBoard {
         List<Action> actions = new ArrayList<>();
         actions.add(StackAction.builder()
                 .resourceType(resourceType)
+                .stackCount(num)
+                .build());
+        return Event.builder()
+                .actions(actions)
+                .actionDoType(new ArrayList<>())
+                .roundGroup(roundGroup)
+                .build();
+    }
+
+    private Event buildEventToSimpleStackAction(AnimalType animalType, int num, int roundGroup) {
+        List<Action> actions = new ArrayList<>();
+        actions.add(StackAnimalAction.builder()
+                .animalType(animalType)
                 .stackCount(num)
                 .build());
         return Event.builder()

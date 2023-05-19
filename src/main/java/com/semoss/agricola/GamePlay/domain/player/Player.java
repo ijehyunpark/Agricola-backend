@@ -333,4 +333,7 @@ public class Player {
     public void playAction() {
         this.playerBoard.playAction();
     }
+
+    public int numField(FieldType fieldType) { return playerBoard.numField(fieldType); }
+
 }

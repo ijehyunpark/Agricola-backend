@@ -564,6 +564,12 @@ public class PlayerBoard {
         }
     }
 
+    public int numField(FieldType fieldType){
+        return (int)Arrays.stream(fields)
+                .flatMap(Arrays::stream)
+                .filter(field -> field.getFieldType().equals(fieldType))
+                .count();
+    }
 
     /**
      * test 함수
@@ -571,7 +577,9 @@ public class PlayerBoard {
     public void printField() {
         for (int i = 0; i < fields.length; i++) {
             for (int j = 0; j < fields[0].length; j++) {
-                System.out.print(fields[i][j].getFieldType().toString());
+                if (fields[i][j] == null) System.out.print("null");
+                else if (fields[i][j] != null) System.out.print(fields[i][j].getFieldType().toString());
+                else System.out.print("error");
                 System.out.print(" ");
             }
             System.out.println();

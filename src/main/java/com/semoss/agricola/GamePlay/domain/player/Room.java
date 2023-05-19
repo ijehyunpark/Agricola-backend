@@ -43,7 +43,7 @@ public class Room implements Field {
     }
 
     private PetRoom petRoom;
-    private FieldType fieldType;
+    private FieldType fieldType = FieldType.ROOM;
     private final boolean isPetRoom;
     private final List<Resident> residents;
 

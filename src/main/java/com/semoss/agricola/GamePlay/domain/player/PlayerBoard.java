@@ -449,7 +449,7 @@ public class PlayerBoard {
 
         for (int i=0;i<fields.length;i++){
             for (int j=0;j< fields[0].length;j++){
-                if (fields[i][j].getFieldType() == FieldType.BARN || fields[i][j].getFieldType() == FieldType.STABLE){
+                if (fields[i][j] != null && (fields[i][j].getFieldType() == FieldType.BARN || fields[i][j].getFieldType() == FieldType.STABLE)){
                     barn = (Barn)fields[i][j];
                     if(barn.getAnimal().getAnimal() == animalType) pos.add(new int[]{i,j, barn.getAnimal().getCount()});
                 }
@@ -466,7 +466,7 @@ public class PlayerBoard {
      * @return 제거된 동물 수
      */
     protected int removeAnimal(int row, int col, int animalNum){
-        if (fields[row][col].getFieldType() != FieldType.BARN && fields[row][col].getFieldType() != FieldType.STABLE) return 0;
+        if (fields[row][col] == null || fields[row][col].getFieldType() != FieldType.BARN && fields[row][col].getFieldType() != FieldType.STABLE) throw new RuntimeException("해당 필드는 헛간이 아닙니다.");
         AnimalType animalType = ((Barn)fields[row][col]).getAnimal().getAnimal();
         int num = ((Barn)fields[row][col]).removeAnimal(animalNum);
         moveAnimalArr[animalType.getValue()-9].addResource(num);
@@ -480,7 +480,7 @@ public class PlayerBoard {
      * @return 제거된 동물 수
      */
     protected int removeALLAnimals(int row, int col){
-        if (fields[row][col].getFieldType() != FieldType.BARN && fields[row][col].getFieldType() != FieldType.STABLE) return 0;
+        if (fields[row][col] == null || fields[row][col].getFieldType() != FieldType.BARN && fields[row][col].getFieldType() != FieldType.STABLE) throw new RuntimeException("해당 필드는 헛간이 아닙니다.");
         AnimalType animalType = ((Barn)fields[row][col]).getAnimal().getAnimal();
         int num = ((Barn)fields[row][col]).removeAllAnimals();
         moveAnimalArr[animalType.getValue()-9].addResource(num);
@@ -496,7 +496,7 @@ public class PlayerBoard {
      * @return 이동한 동물 수(수용가능한 동물 양에 따라 결과값이 달라짐)
      */
     protected int addRemovedAnimal(int row, int col, AnimalType animalType, int animalNum){
-        if (fields[row][col].getFieldType() != FieldType.BARN && fields[row][col].getFieldType() != FieldType.STABLE) return 0;
+        if (fields[row][col] == null || fields[row][col].getFieldType() != FieldType.BARN && fields[row][col].getFieldType() != FieldType.STABLE) throw new RuntimeException("해당 필드는 헛간이 아닙니다.");
         animalNum = Integer.min(animalNum,moveAnimalArr[animalType.getValue()-9].getCount());
         int num = ((Barn)fields[row][col]).addAnimal(animalType, animalNum);
         moveAnimalArr[animalType.getValue()-9].subResource(num);
@@ -511,11 +511,11 @@ public class PlayerBoard {
      */
     protected boolean addAnimal(AnimalType animalType, int animalNum){
         Barn barn;
-        for (int i=0;i<fields.length;i++){
-            for (int j=0;j< fields[0].length;j++){
-                if (fields[i][j].getFieldType() == FieldType.BARN || fields[i][j].getFieldType() == FieldType.STABLE){
-                    barn = (Barn)fields[i][j];
-                    animalNum -= barn.addAnimal(animalType,animalNum);
+        for (Field[] field : fields) {
+            for (int j = 0; j < fields[0].length; j++) {
+                if (field[j] != null && (field[j].getFieldType() == FieldType.BARN || field[j].getFieldType() == FieldType.STABLE)) {
+                    barn = (Barn) field[j];
+                    animalNum -= barn.addAnimal(animalType, animalNum);
                 }
                 if (animalNum == 0) return true;
             }
@@ -540,7 +540,7 @@ public class PlayerBoard {
         int num;
         for (Field[] field : fields) {
             for (int j = 0; j < fields[0].length; j++) {
-                if (field[j].getFieldType() == FieldType.BARN || field[j].getFieldType() == FieldType.STABLE) {
+                if (field[j] != null && (field[j].getFieldType() == FieldType.BARN || field[j].getFieldType() == FieldType.STABLE)) {
                     barn = (Barn) field[j];
                     animalType = barn.getAnimal().getAnimal();
                     num = barn.removeAllAnimals();
@@ -564,6 +564,11 @@ public class PlayerBoard {
         }
     }
 
+    /**
+     *
+     * @param fieldType
+     * @return
+     */
     public int numField(FieldType fieldType){
         return (int)Arrays.stream(fields)
                 .flatMap(Arrays::stream)

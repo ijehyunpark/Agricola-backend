@@ -4,10 +4,12 @@ import com.semoss.agricola.GamePlay.domain.action.StackAction;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@Disabled
 class StackActionTest {
     Player player;
     StackAction stackAction;

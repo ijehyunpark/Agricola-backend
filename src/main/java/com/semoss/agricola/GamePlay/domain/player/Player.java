@@ -2,6 +2,7 @@ package com.semoss.agricola.GamePlay.domain.player;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
+import com.semoss.agricola.GamePlay.domain.card.Card;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
@@ -11,10 +12,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 게임 플레이어
@@ -27,8 +26,8 @@ public class Player {
     private boolean startingToken;
     private final EnumMap<ResourceType,Integer> resources;
     private final PlayerBoard playerBoard;
-    private final List<Integer> cardHand;
-    private final List<String> cardField;
+    private final List<Long> cardHand;
+    private final List<Long> cardField;
 
     @Builder
     public Player(Long userId, AgricolaGame game, boolean isStartPlayer){
@@ -167,16 +166,25 @@ public class Player {
     }
 
     /** TODO
-     * does player have cards of card type in hand
+     * 플레이어의 핸드에 해당 타입의 카드가 있는지 확인
      * @param cardType card type
      * @return result
      */
     public boolean hasCardInHand(CardType cardType) {
-        for (Integer id : cardHand){
+        for (Long id : cardHand){
             if (CardDictionary.cardDict.get(id).getCardType() == cardType)
                 return true;
         }
         return false;
+    }
+
+    /**
+     * 해당 ID의 카드를 필드에 깔아두었는지 확인
+     * @param cardID 확인할 카드 ID
+     * @return 확인결과
+     */
+    public boolean hasCardInField(Long cardID) {
+        return cardField.contains(cardID);
     }
 
     /** TODO
@@ -184,7 +192,7 @@ public class Player {
      * @param cardID card ID
      * @return result
      */
-    public boolean placeCard(String cardID){
+    public boolean placeCard(Long cardID){
         if(cardHand.remove(cardID)) {
             cardField.add(cardID);
             return true;
@@ -192,17 +200,12 @@ public class Player {
         return false;
     }
 
-    /** TODO
-     * get major improvement card.
-     * @param cardID card ID
-     * @return result
+    /**
+     * 카드 획득은 card 에서 담당
      */
     @JsonIgnore
-    public boolean getMajorCard(String cardID){
-        if (!Objects.equals(CardDictionary.cardDict.get(cardID).getOwner(),"")) return false;
+    public void getMajorCard(Long cardID){
         cardField.add(cardID);
-        CardDictionary.cardDict.get(cardID).setOwner(userId);
-        return true;
     }
 
     /**
@@ -260,6 +263,51 @@ public class Player {
     }
 
     /**
+     * 수확 때 1회 사용가능한 음식 교환을 모두 반환 (동물 제외)
+     * @return (사용할 자원, 변환될 음식 양)인 튜플을 가지는 리스트
+     */
+    public List<ResourceStruct> resourceToFoodHarvest() {
+        return cardField.stream()
+                .map(CardDictionary.cardDict::get)
+                .map(Card::getResourceToFoodHarvest)
+                .toList();
+    }
+
+    /**
+     * 카드 중 언제든 음식 교환이 있는 경우 가장 좋은 효율을 가진 경우들을 모아서 반환
+     * @return (사용할 자원, 변환될 음식 양)인 튜플을 가지는 리스트
+     */
+    public List<ResourceStruct> resourceToFoodAnytime() {
+        return cardField.stream()
+                .map(CardDictionary.cardDict::get)
+                .flatMap(card -> Arrays.stream(card.getResourcesToFoodAnytime()))
+                .collect(Collectors.groupingBy(ResourceStruct::getResource))
+                .values().stream()
+                .map(tuples -> tuples.stream()
+                        .max(Comparator.comparingInt(ResourceStruct::getCount))
+                        .orElse(null))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 카드 중 언제든 음식 교환이 있는 경우 가장 좋은 효율을 가진 경우들을 모아서 반환
+     * @return (사용할 동물, 변환될 음식 양)인 튜플을 가지는 리스트
+     */
+    public List<AnimalStruct> animalToFoodAnytime(){
+        return cardField.stream()
+                .map(CardDictionary.cardDict::get)
+                .flatMap(card -> Arrays.stream(card.getAnimalsToFoodAnytime()))
+                .collect(Collectors.groupingBy(AnimalStruct::getAnimal))
+                .values().stream()
+                .map(tuples -> tuples.stream()
+                        .max(Comparator.comparingInt(AnimalStruct::getCount))
+                        .orElse(null))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * 방 업그레이드
      */
     public void upgradeRoom() {
@@ -287,4 +335,7 @@ public class Player {
     public void playAction() {
         this.playerBoard.playAction();
     }
+
+    public int numField(FieldType fieldType) { return playerBoard.numField(fieldType); }
+
 }

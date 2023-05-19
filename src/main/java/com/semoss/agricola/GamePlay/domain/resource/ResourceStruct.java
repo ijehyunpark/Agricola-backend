@@ -17,4 +17,5 @@ public class ResourceStruct {
     public void addResource(int count) {
         this.count += count;
     }
+    public void subResource(int count) { this.count -= count; }
 }

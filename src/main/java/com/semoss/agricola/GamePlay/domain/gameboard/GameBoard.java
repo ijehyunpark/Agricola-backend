@@ -33,6 +33,7 @@ public class GameBoard {
         this.game = game;
         this.cardDictionary = new CardDictionary();
 
+        // TODO : OCP에 의해 외부에서 event 생성하여 사용하도록 변경
         // event를 배치한다.
         // 1.방 만들기 그리고/또는 외양간 짓기
         List<Action> actions1 = new ArrayList<>();
@@ -285,7 +286,7 @@ public class GameBoard {
      */
     private Event buildEventToSimpleStackAction(ResourceType resourceType, int num, int roundGroup) {
         List<Action> actions = new ArrayList<>();
-        actions.add(StackAction.builder()
+        actions.add(StackResourceAction.builder()
                 .resourceType(resourceType)
                 .stackCount(num)
                 .build());
@@ -435,20 +436,14 @@ public class GameBoard {
 
     /**
      * 현재 필드의 모든 누적 액션의 누적자원량을 증가시킨다.
-     * @param round 이벤트를 진행시킬 최대 라운드
      */
-    public void processStackEvent(int round) {
-        for(Event event : this.events){
-            // 비공개된 이벤트의 경우 스택 처리를 하지 않는다.
-            if (event.getRound() > round){
-                continue;
-            }
+    public void processStackEvent() {
+        for(Event event : getEvents()){
             // 해당 이벤트의 모든 스택 액에 대해 자원을 쌓는다.
-            for (Action action : event.getActions()){
-                if (action instanceof StackAction){
-                    event.stackResource(((StackAction) action).getStackResource());
-                }
-            }
+            event.getActions().stream()
+                    .filter(action -> action.getActionType() == ActionType.STACK)
+                    .map(action -> ((StackResourceAction) action).getStackResource())
+                    .forEach(event::stackResource);
         }
     }
 
@@ -460,9 +455,7 @@ public class GameBoard {
         this.events.stream()
                 .filter(event -> event.getRound() == round)
                 .findAny()
-                .ifPresent(
-                        Event::deliverReservation
-                );
+                .ifPresent(Event::deliverReservation);
     }
     /**
      * 액션을 플레이한다.

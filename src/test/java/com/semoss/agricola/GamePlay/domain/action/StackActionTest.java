@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Disabled
 class StackActionTest {
     Player player;
-    StackAction stackAction;
+    StackResourceAction stackAction;
 
     @BeforeEach
     void setUp() {
@@ -19,7 +19,7 @@ class StackActionTest {
                 .userId(1234L)
                 .isStartPlayer(true)
                 .build();
-        stackAction = new StackAction(ResourceType.WOOD,3);
+        stackAction = new StackResourceAction(ResourceType.WOOD,3);
     }
 
     @Test

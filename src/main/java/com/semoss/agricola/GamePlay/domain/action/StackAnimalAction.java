@@ -9,9 +9,9 @@ import lombok.Getter;
 /**
  * 자원이 누적해서 쌓이는 행동
  */
-public class StackAnimalAction implements SimpleAction {
+public class StackAnimalAction implements StackAction {
     @Getter
-    private final ActionType actionType = ActionType.STACK;
+    private final ActionType actionType = ActionType.STACK_ANIMAL;
     @Getter
     private final AnimalStruct stackAnimal;
 
@@ -26,15 +26,6 @@ public class StackAnimalAction implements SimpleAction {
                 .animal(animalType)
                 .count(stackCount)
                 .build();
-    }
-
-    /**
-     * stack resource action - do nothing, Stack actions do not do any additional work on player actions.
-     *
-     * @param player player who get resource
-     */
-    @Override
-    public void runAction(Player player) {
     }
 }
 

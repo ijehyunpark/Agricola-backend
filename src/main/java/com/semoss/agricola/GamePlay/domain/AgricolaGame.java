@@ -178,7 +178,7 @@ public class AgricolaGame implements Game {
      * 현재 게임보드의 모든 누적 액션의 누적자원량을 증가시킨다.
      */
     public void processStackEvent() {
-        this.gameBoard.processStackEvent(this.round);
+        this.gameBoard.processStackEvent();
     }
 
     /**

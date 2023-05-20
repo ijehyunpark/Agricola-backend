@@ -64,6 +64,7 @@ public class PlayerBoard {
     protected boolean isCompletedPlayed() {
         return Arrays.stream(fields)
                 .flatMap(Arrays::stream)
+                .filter(Objects::nonNull)
                 .filter(field -> field.getFieldType() == FieldType.ROOM)
                 .allMatch(field -> ((Room) field).isCompletedPlayed());
     }

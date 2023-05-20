@@ -12,7 +12,7 @@ import java.util.Optional;
 @Getter
 public class Farm implements Field {
     private Seed seed;
-    private FieldType fieldType = FieldType.FARM;
+    private final FieldType fieldType = FieldType.FARM;
 
     public Farm() {
         seed = Seed.seedBuilder()

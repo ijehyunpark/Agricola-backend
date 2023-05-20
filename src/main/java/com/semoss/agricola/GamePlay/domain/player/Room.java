@@ -11,7 +11,7 @@ import java.util.List;
 public class Room implements Field {
 
     @Getter
-    private class PetRoom {
+    public class PetRoom {
         private AnimalStruct animal;
         public PetRoom(){
             animal = AnimalStruct.builder().animal(null).count(0).build();
@@ -45,7 +45,7 @@ public class Room implements Field {
     }
 
     private PetRoom petRoom;
-    private FieldType fieldType = FieldType.ROOM;
+    private final FieldType fieldType = FieldType.ROOM;
     private final boolean isPetRoom;
     private final List<Resident> residents;
 

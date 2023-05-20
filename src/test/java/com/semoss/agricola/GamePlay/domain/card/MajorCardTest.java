@@ -9,13 +9,14 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MajorCardTest {
-    ImprovementBoard improvementBoard = new ImprovementBoard();
+    CardDictionary cardDictionary = new CardDictionary();
+    ImprovementBoard improvementBoard = new ImprovementBoard(cardDictionary);
 
     @Test
     void checkPrerequisites() {
         //given
-        MajorCard oven = improvementBoard.getCard(0);
-        MajorCard basket = improvementBoard.getCard(8);
+        MajorCard oven = (MajorCard) cardDictionary.getCard(1L);
+        MajorCard basket = (MajorCard) cardDictionary.getCard(8L);
 
         Player player1 = Player.builder().userId(123L).build();
         player1.addResource(ResourceStruct.builder().resource(ResourceType.CLAY).count(2).build());
@@ -39,8 +40,8 @@ class MajorCardTest {
     @Test
     void checkPoint() {
         //given
-        MajorCard oven = improvementBoard.getCard(0);
-        MajorCard basket = improvementBoard.getCard(8);
+        MajorCard oven = (MajorCard) cardDictionary.getCard(1L);
+        MajorCard basket = (MajorCard) cardDictionary.getCard(8L);
 
         Player player1 = Player.builder().userId(123L).build();
         player1.addResource(ResourceStruct.builder().resource(ResourceType.REED).count(5).build());

@@ -3,6 +3,8 @@ package com.semoss.agricola.GamePlay.domain.gameboard;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
 import com.semoss.agricola.GamePlay.domain.action.*;
+import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
+import com.semoss.agricola.GamePlay.domain.card.CardType;
 import com.semoss.agricola.GamePlay.domain.player.AnimalType;
 import com.semoss.agricola.GamePlay.domain.player.FieldType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
@@ -22,11 +24,15 @@ public class GameBoard {
     private AgricolaGame game;
     private List<Event> events;
     @Getter
-    private ImprovementBoard improvementBoard; // TODO: 주요설비가 나열이 된다.
+    CardDictionary cardDictionary;
+    @Getter
+    private ImprovementBoard improvementBoard;
 
     @Builder
     public GameBoard(AgricolaGame game) {
         this.game = game;
+        this.cardDictionary = new CardDictionary();
+
         // event를 배치한다.
         events = new ArrayList<>();
         // 1.방 만들기 그리고/또는 외양간 짓기
@@ -58,18 +64,24 @@ public class GameBoard {
                 .requirements(requirements1_2)
                 .build());
         events.add(Event.builder()
+                .gameBoard(this)
                 .actions(actions1)
                 .actionDoType(new ArrayList<>(Arrays.asList(DoType.ANDOR)))
                 .roundGroup(0)
                 .build());
 
-        // TODO: 2.시작 플레이어 되기 그리고/또는 보조 설비 1개 놓기
+        // 2.시작 플레이어 되기 그리고/또는 보조 설비 1개 놓기
         // 2-1. 시작 플레이어 되기
         List<Action> actions2 = new ArrayList<>();
         actions2.add(GetStartingPositionAction.builder().build());
+        // 2-1. 보조 설비 1개 놓기
+        actions2.add(PlaceAction.builder()
+                .cardType(CardType.MINOR)
+                .build());
         events.add(Event.builder()
+                .gameBoard(this)
                 .actions(actions2)
-                .actionDoType(new ArrayList<>())
+                .actionDoType(new ArrayList<>(Arrays.asList(DoType.ANDOR)))
                 .roundGroup(0)
                 .build());
 
@@ -83,17 +95,26 @@ public class GameBoard {
                         .build())
                 .build());
         events.add(Event.builder()
+                .gameBoard(this)
                 .actions(actions3)
-                .actionDoType(new ArrayList<>())
                 .roundGroup(0)
                 .build());
 
-        // TODO: 4.직업 1개 놓기
+        // 4.직업 1개 놓기
+        List<Action> actions4 = new ArrayList<>();
+        actions4.add(PlaceAction.builder()
+                .cardType(CardType.OCCUPATION)
+                .build());
+        events.add(Event.builder()
+                .gameBoard(this)
+                .actions(actions4)
+                .roundGroup(0)
+                .build());
 
         // 5.밭 1개 일구기
         events.add(Event.builder()
+                .gameBoard(this)
                 .actions(new ArrayList<>(Arrays.asList(buildActionToTillingFarm())))
-                .actionDoType(new ArrayList<>())
                 .roundGroup(0)
                 .build());
 
@@ -106,8 +127,8 @@ public class GameBoard {
                         .build())
                 .build());
         events.add(Event.builder()
+                .gameBoard(this)
                 .actions(actions6)
-                .actionDoType(new ArrayList<>())
                 .roundGroup(0)
                 .build());
 
@@ -129,15 +150,29 @@ public class GameBoard {
 
         // 12. 울타리 치기
         events.add(Event.builder()
+                .gameBoard(this)
                 .actions(new ArrayList(Arrays.asList(buildActionToFence())))
-                .actionDoType(new ArrayList<>())
                 .roundGroup(1)
                 .build());
 
-        // TODO: 13. 주요 설비나 보조 설비 1개 놓기
+        // 13. 주요 설비나 보조 설비 1개 놓기
+        List<Action> action13 = new ArrayList<>();
+        action13.add(PlaceAction.builder()
+                .cardType(CardType.MAJOR)
+                .build());
+        action13.add(PlaceAction.builder()
+                .cardType(CardType.MINOR)
+                .build());
+        events.add(Event.builder()
+                .gameBoard(this)
+                .actions(action13)
+                .actionDoType(new ArrayList(Arrays.asList(DoType.OR)))
+                .roundGroup(0)
+                .build());
 
         // 14. 씨 뿌리기 그리고/또는 빵 굽기
         events.add(Event.builder()
+                .gameBoard(this)
                 .actions(new ArrayList<>(Arrays.asList(buildActionToCultivation(), buildActionToBake())))
                 .actionDoType(new ArrayList<>(Arrays.asList(DoType.ANDOR)))
                 .roundGroup(1)
@@ -145,19 +180,37 @@ public class GameBoard {
 
         //  --- 2주기 ---
 
-        // TODO: 15. 집 개조: 집 한번 고치기 그 후에 주요 설비 / 보조 설비 중 1개 내려놓기
+        // 15. 집 개조: 집 한번 고치기 그 후에 주요 설비 / 보조 설비 중 1개 내려놓기
+        List<Action> action15 = new ArrayList<>();
+        action15.add(buildActionToRoomUpgrade());
+        action15.add(PlaceAction.builder()
+                .cardType(CardType.MAJOR)
+                .build());
+        action15.add(PlaceAction.builder()
+                .cardType(CardType.MINOR)
+                .build());
+        events.add(Event.builder()
+                .gameBoard(this)
+                .actions(action15)
+                .actionDoType(new ArrayList(Arrays.asList(DoType.ANDOR, DoType.OR)))
+                .roundGroup(0)
+                .build());
 
         // 16. 서부 채석장: 누적 돌 1개
         events.add(buildEventToSimpleStackAction(ResourceType.STONE, 1, 2));
 
-        // TODO: 17. 급하지 않은 가족 늘리기: 빈 방이 있어야만 가족 늘리기 그 후에 보조 설비 1개
+        // 17. 급하지 않은 가족 늘리기: 빈 방이 있어야만 가족 늘리기 그 후에 보조 설비 1개
         List<Action> actions17 = new ArrayList<>();
         actions17.add(IncreaseFamily.builder()
                         .precondition(true)
                         .build());
+        actions17.add(PlaceAction.builder()
+                .cardType(CardType.MINOR)
+                .build());
         events.add(Event.builder()
+                .gameBoard(this)
                 .actions(actions17)
-                .actionDoType(new ArrayList<>())
+                .actionDoType(new ArrayList(Arrays.asList(DoType.After)))
                 .roundGroup(2)
                 .build());
 
@@ -181,6 +234,7 @@ public class GameBoard {
 
         // 22.밭 농사: 밭 하나 일구기 그리고/또는 씨 뿌리기
         events.add(Event.builder()
+                .gameBoard(this)
                 .actions(new ArrayList<>(Arrays.asList(
                         buildActionToTillingFarm(),
                         buildActionToCultivation())))
@@ -194,15 +248,16 @@ public class GameBoard {
                 .precondition(false)
                 .build());
         events.add(Event.builder()
+                .gameBoard(this)
                 .actions(actions23)
-                .actionDoType(new ArrayList<>())
                 .roundGroup(5)
                 .build());
 
         // --- 6주기 ---
 
-        // \24. 농장 개조: 집 한번 고치기 그 후에 울타리 치기
+        // 24. 농장 개조: 집 한번 고치기 그 후에 울타리 치기
         events.add(Event.builder()
+                .gameBoard(this)
                 .actions(new ArrayList<>(Arrays.asList(
                         buildActionToRoomUpgrade(),
                         buildActionToFence())))
@@ -219,7 +274,8 @@ public class GameBoard {
             event.setRound(event.getRoundGroup() == 0 ? 0 : round++);
         }
 
-        // TODO : 주설비 보드판 제작
+        // 주설비 보드판 제작
+        improvementBoard = new ImprovementBoard(this.cardDictionary);
     }
 
     /**
@@ -236,8 +292,8 @@ public class GameBoard {
                 .stackCount(num)
                 .build());
         return Event.builder()
+                .gameBoard(this)
                 .actions(actions)
-                .actionDoType(new ArrayList<>())
                 .roundGroup(roundGroup)
                 .build();
     }
@@ -249,8 +305,8 @@ public class GameBoard {
                 .stackCount(num)
                 .build());
         return Event.builder()
+                .gameBoard(this)
                 .actions(actions)
-                .actionDoType(new ArrayList<>())
                 .roundGroup(roundGroup)
                 .build();
     }

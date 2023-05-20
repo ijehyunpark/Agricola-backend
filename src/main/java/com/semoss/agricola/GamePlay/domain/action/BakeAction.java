@@ -17,12 +17,6 @@ public class BakeAction implements MultiInputAction {
     public BakeAction(){
     }
 
-    @Override
-    public boolean checkPrecondition(Player player, Object ImprovementCard) {
-        // TODO: 플레이어가 화로, 화덕, 흙가마 주설비를 가지고 있는지 확인 (필요 없을지도)
-        return false;
-    }
-
     private boolean checkPrecondition(Player player, ImprovementBoard improvementBoard) {
         // TODO: 플레이어가 해당 주설비를 가지고 있는지 확인
         return false;
@@ -34,9 +28,9 @@ public class BakeAction implements MultiInputAction {
      * @param ImprovementCard
      * @return
      */
-    public boolean runAction(Player player, Object ImprovementCard) {
+    public void runAction(Player player, Object ImprovementCard) {
         // TODO: 플레이어가 해당 주설비를 사용하여 자원을 교환한다.
         // TODO: ImprovementCard 보단 1. ImprovementBoardType을 만들어 화로, 화덕, 흙가마, 돌가마만 받아 player에서 가져와 확인 || 2. cardId를 가져와 검증
-        return true;
+        throw new RuntimeException("미구현");
     }
 }

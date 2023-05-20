@@ -2,53 +2,44 @@ package com.semoss.agricola.GamePlay.domain.player;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
-import com.semoss.agricola.GamePlay.domain.card.Card;
-import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
-import com.semoss.agricola.GameRoom.domain.Game;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * 게임 플레이어
  */
 @Getter
+@NoArgsConstructor
 public class Player {
     private Long userId;
     @JsonIgnore
     private AgricolaGame game;
     private boolean startingToken;
-    private final EnumMap<ResourceType,Integer> resources;
-    private final PlayerBoard playerBoard;
-    private final List<Long> cardHand;
-    private final List<Long> cardField;
+    private final EnumMap<ResourceType,Integer> resources = new EnumMap<>(ResourceType.class);
+    private final PlayerBoard playerBoard = PlayerBoard.builder().build();
+    private final List<Long> cardHand = new ArrayList<>();
+    private final List<Long> cardField = new ArrayList<>();
 
     @Builder
     public Player(Long userId, AgricolaGame game, boolean isStartPlayer){
         this.userId = userId;
         this.game = game;
         this.startingToken = isStartPlayer;
-        this.resources = new EnumMap<>(ResourceType.class);
         for (ResourceType resource : ResourceType.values()){
             resources.put(resource,0);
         }
-        this.playerBoard = PlayerBoard.builder().build();
-        this.cardHand = new ArrayList<>();
-        this.cardField = new ArrayList<>();
     }
 
     /**
-     * increase family action's precondition
-     * @return if player has empty room, return true
+     * 빈 방 존재 여부 확인
+     * @return 만약 플레이어가 빈 방을 가지고 있다면 true를 반환한다.아닌 경우 false를 반환한다.
      */
-    public boolean familyPrecondition(){
-        return playerBoard.hasEmptyRoom();
+    public boolean existEmptyRoom(){
+        return playerBoard.existEmptyRoom();
     }
 
     /**
@@ -171,10 +162,10 @@ public class Player {
      * @return result
      */
     public boolean hasCardInHand(CardType cardType) {
-        for (Long id : cardHand){
-            if (CardDictionary.cardDict.get(id).getCardType() == cardType)
-                return true;
-        }
+//        for (Long id : cardHand){
+//            if (CardDictionary.cardDict.get(id).getCardType() == cardType)
+//                return true;
+//        }
         return false;
     }
 
@@ -203,8 +194,7 @@ public class Player {
     /**
      * 카드 획득은 card 에서 담당
      */
-    @JsonIgnore
-    public void getMajorCard(Long cardID){
+    public void addMajorCard(Long cardID){
         cardField.add(cardID);
     }
 
@@ -262,32 +252,34 @@ public class Player {
             throw new RuntimeException("음식 토큰 부족");
     }
 
-    /**
+    /** TODO
      * 수확 때 1회 사용가능한 음식 교환을 모두 반환 (동물 제외)
      * @return (사용할 자원, 변환될 음식 양)인 튜플을 가지는 리스트
      */
     public List<ResourceStruct> resourceToFoodHarvest() {
-        return cardField.stream()
-                .map(CardDictionary.cardDict::get)
-                .map(Card::getResourceToFoodHarvest)
-                .toList();
+        return null;
+//        return cardField.stream()
+//                .map(CardDictionary.cardDict::get)
+//                .map(Card::getResourceToFoodHarvest)
+//                .toList();
     }
 
-    /**
+    /** TODO
      * 카드 중 언제든 음식 교환이 있는 경우 가장 좋은 효율을 가진 경우들을 모아서 반환
      * @return (사용할 자원, 변환될 음식 양)인 튜플을 가지는 리스트
      */
     public List<ResourceStruct> resourceToFoodAnytime() {
-        return cardField.stream()
-                .map(CardDictionary.cardDict::get)
-                .flatMap(card -> Arrays.stream(card.getResourcesToFoodAnytime()))
-                .collect(Collectors.groupingBy(ResourceStruct::getResource))
-                .values().stream()
-                .map(tuples -> tuples.stream()
-                        .max(Comparator.comparingInt(ResourceStruct::getCount))
-                        .orElse(null))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+        return null;
+//        return cardField.stream()
+//                .map(CardDictionary.cardDict::get)
+//                .flatMap(card -> Arrays.stream(card.getResourcesToFoodAnytime()))
+//                .collect(Collectors.groupingBy(ResourceStruct::getResource))
+//                .values().stream()
+//                .map(tuples -> tuples.stream()
+//                        .max(Comparator.comparingInt(ResourceStruct::getCount))
+//                        .orElse(null))
+//                .filter(Objects::nonNull)
+//                .collect(Collectors.toList());
     }
 
     /**
@@ -295,16 +287,17 @@ public class Player {
      * @return (사용할 동물, 변환될 음식 양)인 튜플을 가지는 리스트
      */
     public List<AnimalStruct> animalToFoodAnytime(){
-        return cardField.stream()
-                .map(CardDictionary.cardDict::get)
-                .flatMap(card -> Arrays.stream(card.getAnimalsToFoodAnytime()))
-                .collect(Collectors.groupingBy(AnimalStruct::getAnimal))
-                .values().stream()
-                .map(tuples -> tuples.stream()
-                        .max(Comparator.comparingInt(AnimalStruct::getCount))
-                        .orElse(null))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+        return null;
+//        return cardField.stream()
+//                .map(CardDictionary.cardDict::get)
+//                .flatMap(card -> Arrays.stream(card.getAnimalsToFoodAnytime()))
+//                .collect(Collectors.groupingBy(AnimalStruct::getAnimal))
+//                .values().stream()
+//                .map(tuples -> tuples.stream()
+//                        .max(Comparator.comparingInt(AnimalStruct::getCount))
+//                        .orElse(null))
+//                .filter(Objects::nonNull)
+//                .collect(Collectors.toList());
     }
 
     /**

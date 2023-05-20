@@ -17,14 +17,13 @@ public class BuildFenceAction implements MultiInputAction {
     public BuildFenceAction() {
 
     }
-    
-    @Override
+
     public boolean checkPrecondition(Player player, Object detail) {
         return false;
     }
 
     @Override
-    public boolean runAction(Player player, Object detail) {
-        return false;
+    public void runAction(Player player, Object detail) {
+        throw new RuntimeException("미구현");
     }
 }

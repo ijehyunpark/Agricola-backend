@@ -16,27 +16,17 @@ public class IncreaseFamily implements SimpleAction {
     public IncreaseFamily(boolean precondition) {
         this.precondition = precondition;
     }
-
-    /**
-     * Check if the player satisfies the precondition
-     * @return if the precondition is satisfied, return true.
-     */
-    @Override
-    public boolean checkPrecondition(Player player) {
-        return (!precondition || player.familyPrecondition());
-    }
-
     /**
      * increase family
+     *
      * @param player player who increase family
-     * @return false if there is a precondition and the precondition is not satisfied.
      */
     @Override
-    public boolean runAction(Player player){
-        if (checkPrecondition(player)){
+    public void runAction(Player player){
+        if (!precondition || player.existEmptyRoom()){
             player.addChild();
-            return true;
+        } else {
+            throw new RuntimeException("가족 늘리기 조건 불만족");
         }
-        return false;
     }
 }

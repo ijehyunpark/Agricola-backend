@@ -1,6 +1,8 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
 import com.fasterxml.jackson.annotation.*;
+import com.semoss.agricola.GamePlay.domain.card.Card;
+import com.semoss.agricola.GamePlay.domain.gameboard.GameBoard;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.Reservation;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
@@ -15,12 +17,13 @@ import java.util.stream.Collectors;
 
 @Getter
 public class Event {
+    private GameBoard gameBoard;
     private final Long id;
     private static Long nextEventID = 1L;
-    private final List<Action> actions;
-    private final List<DoType> actionDoType;
-    private final List<ResourceStruct> stacks; // 누적 쌓인 자원
-    private final List<Reservation> reservations; // 예약으로 쌓인 자원
+    private final List<Action> actions = new ArrayList<>();
+    private final List<DoType> actionDoType = new ArrayList<>();
+    private final List<ResourceStruct> stacks = new ArrayList<>(); // 누적 쌓인 자원
+    private final List<Reservation> reservations = new ArrayList<>(); // 예약으로 쌓인 자원
 
     @JsonIgnore
     private int roundGroup;
@@ -33,12 +36,13 @@ public class Event {
     private Player isPlayed;
 
     @Builder
-    public Event(List<Action> actions, List<DoType> actionDoType, int roundGroup) {
+    public Event(GameBoard gameBoard, List<Action> actions, List<DoType> actionDoType, int roundGroup) {
+        this.gameBoard = gameBoard;
         this.id = nextEventID++;
-        this.actions = actions;
-        this.actionDoType = actionDoType;
-        this.stacks = new ArrayList<>();
-        this.reservations = new ArrayList<>();
+        actions.stream()
+                .forEach(action -> this.actions.add(action));
+        actionDoType.stream()
+                .forEach(doType -> this.actionDoType.add(doType));
         this.roundGroup = roundGroup;
         this.isPlayed = null;
     }
@@ -64,8 +68,12 @@ public class Event {
                         case BASIC, STARTING, UPGRADE, ADOPT -> {
                             ((SimpleAction) action).runAction(player);
                         }
-                        case BAKE, BUILD, PLACE, CULTIVATION -> {
+                        case BAKE, BUILD, CULTIVATION -> {
                             ((MultiInputAction) action).runAction(player, act.getActs());
+                        }
+                        case PLACE -> {
+                            Card card = gameBoard.getCardDictionary().getCard((Long) act.getActs());
+                            ((PlaceAction) action).runAction(player, card);
                         }
                         case STACK -> {
                             throw new RuntimeException("액션 행동을 지원하지 않는 타입입니다.");

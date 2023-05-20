@@ -1,8 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.player;
 
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
-import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
-import jdk.jshell.spi.ExecutionControl;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -127,7 +125,7 @@ public class PlayerBoard {
      * 빈 방을 확인한다.
      * @return 만약 빈 방이 존재할 경우, true를 반환한다.
      */
-    protected boolean hasEmptyRoom() {
+    protected boolean existEmptyRoom() {
         return Arrays.stream(fields)
                 .flatMap(Arrays::stream)
                 .filter(field -> field instanceof Room)

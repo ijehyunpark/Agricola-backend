@@ -10,7 +10,7 @@ import lombok.Getter;
  * 자원이 누적해서 쌓이는 행동
  */
 @Getter
-public class StackAction implements SimpleAction {
+public class StackAction implements Action {
     private final ActionType actionType = ActionType.STACK;
     private final ResourceStruct stackResource;
 
@@ -25,24 +25,5 @@ public class StackAction implements SimpleAction {
                 .resource(resourceType)
                 .count(stackCount)
                 .build();
-    }
-
-    /**
-     * Check if the player satisfies the precondition
-     * @return always true
-     */
-    @Override
-    public boolean checkPrecondition(Player player) {
-        return true;
-    }
-
-    /**
-     * stack resource action - do nothing, Stack actions do not do any additional work on player actions.
-     * @param player player who get resource
-     * @return always true
-     */
-    @Override
-    public boolean runAction(Player player) {
-        return true;
     }
 }

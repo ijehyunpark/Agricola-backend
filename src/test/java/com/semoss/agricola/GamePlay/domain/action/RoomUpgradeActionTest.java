@@ -1,17 +1,17 @@
-package com.semoss.agricola.GamePlay.domain.Action;
+package com.semoss.agricola.GamePlay.domain.action;
 
-import com.semoss.agricola.GamePlay.domain.action.RoomUpgradeAction;
-import com.semoss.agricola.GamePlay.domain.player.FieldType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.player.RoomType;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class RoomUpgradeActionTest {
     Player player;
@@ -54,38 +54,32 @@ class RoomUpgradeActionTest {
     }
 
     @Test
-    void checkPrecondition() {
-        player.upgradeRoom();
-        assertEquals(RoomType.CLAY,player.getRoomType());
-        assertFalse(roomUpgradeAction.checkPrecondition(player));
-
-        player.addResource(ResourceType.REED,4);
-        player.addResource(ResourceType.STONE,4);
-        assertTrue(roomUpgradeAction.checkPrecondition(player));
-
-        player.upgradeRoom();
-        assertEquals(RoomType.STONE,player.getRoomType());
-        assertFalse(roomUpgradeAction.checkPrecondition(player));
-
-        player.upgradeRoom();
-        assertEquals(RoomType.STONE,player.getRoomType());
-    }
-
-    @Test
-    void runAction() {
+    @DisplayName("runAction: 방 업그레이드 성공")
+    void runAction1() {
+        // given
         player.addResource(ResourceType.REED,4);
         player.addResource(ResourceType.CLAY,4);
         player.addResource(ResourceType.STONE,4);
 
-        if(roomUpgradeAction.checkPrecondition(player))
-            roomUpgradeAction.runAction(player);
-        assertEquals(RoomType.CLAY,player.getRoomType());
-
-        if(roomUpgradeAction.checkPrecondition(player))
-            roomUpgradeAction.runAction(player);
-        assertEquals(RoomType.STONE,player.getRoomType());
-
+        // when
         roomUpgradeAction.runAction(player);
-        assertEquals(RoomType.STONE,player.getRoomType());
+        RoomType result1 = player.getRoomType();
+        roomUpgradeAction.runAction(player);
+        RoomType result2 = player.getRoomType();
+
+        // then
+        assertEquals(RoomType.CLAY, result1);
+        assertEquals(RoomType.STONE, result2);
+    }
+
+    @Test
+    @DisplayName("runAction: 비용 부족으로 방 업그레이드 실패")
+    void runAction2() {
+        // given
+
+        // when
+        assertThrows(RuntimeException.class, () -> roomUpgradeAction.runAction(player));
+
+        // then
     }
 }

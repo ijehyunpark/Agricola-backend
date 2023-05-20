@@ -4,12 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CardDictionary {
-    public static Map<Long,Card> cardDict = new HashMap<>();;
+    public Map<Long,Card> cardDict = new HashMap<>();;
 
-    public static void init(){
+    public void init(){
         cardDict = new HashMap<>();
     }
-    public static void addCard(Long id,Card card){
+    public void addCard(Long id,Card card){
         cardDict.put(id,card);
     }
+    public Card getCard(Long id) {return cardDict.get(id); }
 }

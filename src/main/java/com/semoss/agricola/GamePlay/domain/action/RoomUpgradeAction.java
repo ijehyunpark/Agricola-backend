@@ -20,7 +20,6 @@ public class RoomUpgradeAction implements SimpleAction {
         this.costs = costs;
     }
 
-    @Override
     public boolean checkPrecondition(Player player) {
         // 다음 room rank를 찾는다, 최고 랭크일 경우 false 반환
         ResourceType needResource;
@@ -42,9 +41,9 @@ public class RoomUpgradeAction implements SimpleAction {
     }
 
     @Override
-    public boolean runAction(Player player) {
+    public void runAction(Player player) {
         if(!checkPrecondition(player))
-            return false;
+            throw new RuntimeException("방 업그레이드가 불가능합니다.");
 
         // 업그레이드할 방을 찾는다.
         ResourceType needResource;
@@ -52,7 +51,7 @@ public class RoomUpgradeAction implements SimpleAction {
             case WOOD -> needResource = ResourceType.CLAY;
             case CLAY -> needResource = ResourceType.STONE;
             default -> {
-                return false;
+                throw new RuntimeException("잘못된 방 형식입니다.");
             }
         }
 
@@ -63,6 +62,5 @@ public class RoomUpgradeAction implements SimpleAction {
 
         // 방을 업그레이드 한다.
         player.upgradeRoom();
-        return true;
     }
 }

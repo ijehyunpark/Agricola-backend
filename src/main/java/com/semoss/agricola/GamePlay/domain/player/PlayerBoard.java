@@ -74,6 +74,7 @@ public class PlayerBoard {
     protected void initPlayed() {
         Arrays.stream(fields)
                 .flatMap(Arrays::stream)
+                .filter(Objects::nonNull)
                 .filter(field -> field.getFieldType() == FieldType.ROOM)
                 .map(field -> (Room) field)
                 .forEach(Room::initPlayed);
@@ -85,6 +86,7 @@ public class PlayerBoard {
     protected void growUpChild() {
         Arrays.stream(fields)
                 .flatMap(Arrays::stream)
+                .filter(Objects::nonNull)
                 .filter(field -> field.getFieldType() == FieldType.ROOM)
                 .map(field -> (Room)field)
                 .forEach(Room::growUpChild);
@@ -96,6 +98,7 @@ public class PlayerBoard {
     protected List<ResourceStruct> harvest() {
         return Arrays.stream(fields)
                 .flatMap(Arrays::stream)
+                .filter(Objects::nonNull)
                 .filter(field -> field.getFieldType() == FieldType.BARN)
                 .map(field -> ((Farm) field).harvest())
                 .filter(Optional::isPresent)
@@ -112,15 +115,17 @@ public class PlayerBoard {
         // 모든 가축 개수 계산
         Arrays.stream(fields)
                 .flatMap(Arrays::stream)
+                .filter(Objects::nonNull)
                 .filter(field -> field.getFieldType() == FieldType.BARN)
                 .map(field -> ((Barn) field).getAnimal())
                 .forEach(animalStruct -> animals.put(animalStruct.getAnimal(), animalStruct.getCount()));
 
         Arrays.stream(fields)
                 .flatMap(Arrays::stream)
+                .filter(Objects::nonNull)
                 .filter(field -> field.getFieldType() == FieldType.ROOM)
                 .map(field -> ((Room) field))
-                .filter(Room::isPetRoom)
+                .filter(room -> room.getPetRoom() == null)
                 .map(room -> room.getPetRoom().getAnimal())
                 .forEach(animalStruct -> animals.put(animalStruct.getAnimal(), animalStruct.getCount()));
 
@@ -139,6 +144,7 @@ public class PlayerBoard {
     protected int calculateFoodNeeds() {
         return Arrays.stream(fields)
                 .flatMap(Arrays::stream)
+                .filter(Objects::nonNull)
                 .filter(field -> field.getFieldType() == FieldType.ROOM)
                 .mapToInt(field -> ((Room) field).calculateFoodNeeds())
                 .sum();
@@ -151,6 +157,7 @@ public class PlayerBoard {
     protected boolean existEmptyRoom() {
         return Arrays.stream(fields)
                 .flatMap(Arrays::stream)
+                .filter(Objects::nonNull)
                 .filter(field -> field.getFieldType() == FieldType.ROOM)
                 .map(room -> (Room) room)
                 .anyMatch(Room::isEmptyRoom);
@@ -420,6 +427,7 @@ public class PlayerBoard {
         // 빈 방에 우선 추가
         Optional<Room> emptyRoom = Arrays.stream(fields)
                 .flatMap(Arrays::stream)
+                .filter(Objects::nonNull)
                 .filter(field -> field.getFieldType() == FieldType.ROOM && ((Room) field).isEmptyRoom())
                 .map(field -> (Room) field)
                 .findFirst();
@@ -432,6 +440,7 @@ public class PlayerBoard {
         // 없으면 아무 방에 추가
         Arrays.stream(fields)
                 .flatMap(Arrays::stream)
+                .filter(Objects::nonNull)
                 .filter(field -> field.getFieldType() == FieldType.ROOM)
                 .map(field -> (Room) field)
                 .findFirst()
@@ -445,7 +454,8 @@ public class PlayerBoard {
     protected int getFamilyCount(){
         return Arrays.stream(fields)
                 .flatMap(Arrays::stream)
-                .filter(Room.class::isInstance)
+                .filter(Objects::nonNull)
+                .filter(field -> field.getFieldType() == FieldType.ROOM)
                 .mapToInt(field -> ((Room) field).getResidentNumber())
                 .sum();
     }

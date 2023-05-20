@@ -75,7 +75,7 @@ public class Event {
                             ((MultiInputAction) action).runAction(player, act.getActs());
                         }
                         case PLACE -> {
-                            Card card = gameBoard.getCardDictionary().getCard((Long) act.getActs());
+                            Card card = gameBoard.getGame().getCardDictionary().getCard((Long) act.getActs());
                             ((PlaceAction) action).runAction(player, card);
                         }
                         case STACK -> {

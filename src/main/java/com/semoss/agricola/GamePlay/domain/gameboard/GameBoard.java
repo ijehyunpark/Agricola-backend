@@ -21,17 +21,15 @@ import java.util.*;
  */
 public class GameBoard {
     @JsonIgnore
-    private AgricolaGame game;
-    private final List<Event> events = new ArrayList<>();;
     @Getter
-    CardDictionary cardDictionary;
+    private AgricolaGame game;
+    private final List<Event> events = new ArrayList<>();
     @Getter
     private ImprovementBoard improvementBoard;
 
     @Builder
-    public GameBoard(AgricolaGame game) {
+    public GameBoard(AgricolaGame game, CardDictionary cardDictionary) {
         this.game = game;
-        this.cardDictionary = new CardDictionary();
 
         // TODO : OCP에 의해 외부에서 event 생성하여 사용하도록 변경
         // event를 배치한다.
@@ -274,7 +272,7 @@ public class GameBoard {
         }
 
         // 주설비 보드판 제작
-        improvementBoard = new ImprovementBoard(this.cardDictionary);
+        improvementBoard = new ImprovementBoard(cardDictionary);
     }
 
     /**

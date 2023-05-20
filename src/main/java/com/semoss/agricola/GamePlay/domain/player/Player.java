@@ -2,12 +2,14 @@ package com.semoss.agricola.GamePlay.domain.player;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
+import com.semoss.agricola.GamePlay.domain.card.Card;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 게임 플레이어
@@ -162,10 +164,10 @@ public class Player {
      * @return result
      */
     public boolean hasCardInHand(CardType cardType) {
-//        for (Long id : cardHand){
-//            if (CardDictionary.cardDict.get(id).getCardType() == cardType)
-//                return true;
-//        }
+        for (Long id : cardHand){
+            if (game.getCardDictionary().cardDict.get(id).getCardType() == cardType)
+                return true;
+        }
         return false;
     }
 
@@ -257,11 +259,10 @@ public class Player {
      * @return (사용할 자원, 변환될 음식 양)인 튜플을 가지는 리스트
      */
     public List<ResourceStruct> resourceToFoodHarvest() {
-        return null;
-//        return cardField.stream()
-//                .map(CardDictionary.cardDict::get)
-//                .map(Card::getResourceToFoodHarvest)
-//                .toList();
+        return cardField.stream()
+                .map(game.getCardDictionary().getCardDict()::get)
+                .map(Card::getResourceToFoodHarvest)
+                .toList();
     }
 
     /** TODO
@@ -269,17 +270,16 @@ public class Player {
      * @return (사용할 자원, 변환될 음식 양)인 튜플을 가지는 리스트
      */
     public List<ResourceStruct> resourceToFoodAnytime() {
-        return null;
-//        return cardField.stream()
-//                .map(CardDictionary.cardDict::get)
-//                .flatMap(card -> Arrays.stream(card.getResourcesToFoodAnytime()))
-//                .collect(Collectors.groupingBy(ResourceStruct::getResource))
-//                .values().stream()
-//                .map(tuples -> tuples.stream()
-//                        .max(Comparator.comparingInt(ResourceStruct::getCount))
-//                        .orElse(null))
-//                .filter(Objects::nonNull)
-//                .collect(Collectors.toList());
+        return cardField.stream()
+                .map(game.getCardDictionary().cardDict::get)
+                .flatMap(card -> Arrays.stream(card.getResourcesToFoodAnytime()))
+                .collect(Collectors.groupingBy(ResourceStruct::getResource))
+                .values().stream()
+                .map(tuples -> tuples.stream()
+                        .max(Comparator.comparingInt(ResourceStruct::getCount))
+                        .orElse(null))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -287,17 +287,16 @@ public class Player {
      * @return (사용할 동물, 변환될 음식 양)인 튜플을 가지는 리스트
      */
     public List<AnimalStruct> animalToFoodAnytime(){
-        return null;
-//        return cardField.stream()
-//                .map(CardDictionary.cardDict::get)
-//                .flatMap(card -> Arrays.stream(card.getAnimalsToFoodAnytime()))
-//                .collect(Collectors.groupingBy(AnimalStruct::getAnimal))
-//                .values().stream()
-//                .map(tuples -> tuples.stream()
-//                        .max(Comparator.comparingInt(AnimalStruct::getCount))
-//                        .orElse(null))
-//                .filter(Objects::nonNull)
-//                .collect(Collectors.toList());
+        return cardField.stream()
+                .map(game.getCardDictionary().cardDict::get)
+                .flatMap(card -> Arrays.stream(card.getAnimalsToFoodAnytime()))
+                .collect(Collectors.groupingBy(AnimalStruct::getAnimal))
+                .values().stream()
+                .map(tuples -> tuples.stream()
+                        .max(Comparator.comparingInt(AnimalStruct::getCount))
+                        .orElse(null))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     /**

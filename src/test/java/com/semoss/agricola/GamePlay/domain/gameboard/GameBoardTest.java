@@ -3,6 +3,7 @@ package com.semoss.agricola.GamePlay.domain.gameboard;
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
 import com.semoss.agricola.GamePlay.domain.action.Event;
 import com.semoss.agricola.GamePlay.domain.action.GetStartingPositionAction;
+import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GameRoomCommunication.domain.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +24,8 @@ import static org.mockito.Mockito.when;
 class GameBoardTest {
     @Mock
     AgricolaGame game;
+    @Mock
+    CardDictionary cardDictionary;
     @InjectMocks
     GameBoard board;
 
@@ -30,6 +33,7 @@ class GameBoardTest {
     void setUp() {
         board = GameBoard.builder()
                 .game(game)
+                .cardDictionary(cardDictionary)
                 .build();
     }
     @Test

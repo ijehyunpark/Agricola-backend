@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.gameboard.GameBoard;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
@@ -28,7 +29,6 @@ import java.util.stream.IntStream;
 @Getter
 @Log4j2
 public class AgricolaGame implements Game {
-    @Getter
     private final GameType gameType = GameType.Agricola;
     @Getter
     @Setter
@@ -45,6 +45,7 @@ public class AgricolaGame implements Game {
     }
 
     private final GameBoard gameBoard;
+    private final CardDictionary cardDictionary;
     private final List<Player> players;
 
     @JsonProperty("startingPlayerId")
@@ -61,7 +62,11 @@ public class AgricolaGame implements Game {
         if(users.size() > 4)
             throw new RuntimeException("아그리콜라에 필요한 최대 인원수를 초과하였습니다.");
 
-        this.gameBoard = GameBoard.builder().game(this).build();
+        cardDictionary = new CardDictionary();
+        this.gameBoard = GameBoard.builder()
+                .game(this)
+                .cardDictionary(cardDictionary)
+                .build();
 
         // 게임방 유저 객체로 아그리 콜라 게임 플레이어 객체를 생성
         this.players = IntStream.range(0, users.size())

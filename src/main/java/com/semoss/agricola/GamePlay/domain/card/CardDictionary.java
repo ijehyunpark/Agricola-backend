@@ -1,5 +1,8 @@
 package com.semoss.agricola.GamePlay.domain.card;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,8 +10,13 @@ import java.util.Map;
 public class CardDictionary {
     public Map<Long,Card> cardDict = new HashMap<>();
 
-    public List<Card> getCardDict(){
+    @JsonAlias("cardDict")
+    public List<Card> getCardDictList(){
         return cardDict.values().stream().toList();
+    }
+    @JsonIgnore
+    public Map<Long,Card> getCardDict() {
+        return cardDict;
     }
 
     public void clear(){

@@ -22,7 +22,7 @@ import java.util.*;
 public class GameBoard {
     @JsonIgnore
     private AgricolaGame game;
-    private List<Event> events;
+    private final List<Event> events = new ArrayList<>();;
     @Getter
     CardDictionary cardDictionary;
     @Getter
@@ -34,7 +34,6 @@ public class GameBoard {
         this.cardDictionary = new CardDictionary();
 
         // event를 배치한다.
-        events = new ArrayList<>();
         // 1.방 만들기 그리고/또는 외양간 짓기
         List<Action> actions1 = new ArrayList<>();
         // 1-1. 방만들기
@@ -66,7 +65,7 @@ public class GameBoard {
         events.add(Event.builder()
                 .gameBoard(this)
                 .actions(actions1)
-                .actionDoType(new ArrayList<>(Arrays.asList(DoType.ANDOR)))
+                .actionDoType(new ArrayList<>(List.of(DoType.ANDOR)))
                 .roundGroup(0)
                 .build());
 
@@ -151,7 +150,7 @@ public class GameBoard {
         // 12. 울타리 치기
         events.add(Event.builder()
                 .gameBoard(this)
-                .actions(new ArrayList(Arrays.asList(buildActionToFence())))
+                .actions(new ArrayList<>(Arrays.asList(buildActionToFence())))
                 .roundGroup(1)
                 .build());
 
@@ -166,15 +165,15 @@ public class GameBoard {
         events.add(Event.builder()
                 .gameBoard(this)
                 .actions(action13)
-                .actionDoType(new ArrayList(Arrays.asList(DoType.OR)))
-                .roundGroup(0)
+                .actionDoType(new ArrayList(List.of(DoType.OR)))
+                .roundGroup(1)
                 .build());
 
         // 14. 씨 뿌리기 그리고/또는 빵 굽기
         events.add(Event.builder()
                 .gameBoard(this)
                 .actions(new ArrayList<>(Arrays.asList(buildActionToCultivation(), buildActionToBake())))
-                .actionDoType(new ArrayList<>(Arrays.asList(DoType.ANDOR)))
+                .actionDoType(new ArrayList<>(List.of(DoType.ANDOR)))
                 .roundGroup(1)
                 .build());
 
@@ -192,8 +191,8 @@ public class GameBoard {
         events.add(Event.builder()
                 .gameBoard(this)
                 .actions(action15)
-                .actionDoType(new ArrayList(Arrays.asList(DoType.ANDOR, DoType.OR)))
-                .roundGroup(0)
+                .actionDoType(new ArrayList<>(List.of(DoType.ANDOR, DoType.OR)))
+                .roundGroup(2)
                 .build());
 
         // 16. 서부 채석장: 누적 돌 1개
@@ -210,7 +209,6 @@ public class GameBoard {
         events.add(Event.builder()
                 .gameBoard(this)
                 .actions(actions17)
-                .actionDoType(new ArrayList(Arrays.asList(DoType.After)))
                 .roundGroup(2)
                 .build());
 
@@ -238,7 +236,7 @@ public class GameBoard {
                 .actions(new ArrayList<>(Arrays.asList(
                         buildActionToTillingFarm(),
                         buildActionToCultivation())))
-                .actionDoType(new ArrayList<>(Arrays.asList(DoType.ANDOR)))
+                .actionDoType(new ArrayList<>(List.of(DoType.ANDOR)))
                 .roundGroup(5)
                 .build());
 
@@ -261,7 +259,7 @@ public class GameBoard {
                 .actions(new ArrayList<>(Arrays.asList(
                         buildActionToRoomUpgrade(),
                         buildActionToFence())))
-                .actionDoType(new ArrayList<>(Arrays.asList(DoType.ANDOR)))
+                .actionDoType(new ArrayList<>(List.of(DoType.ANDOR)))
                 .roundGroup(6)
                 .build());
 
@@ -409,7 +407,7 @@ public class GameBoard {
      * roundGroup을 기준으로 이벤트 객체를 셔플한다.
      */
     private void shuffleEventsWithinRoundGroup() {
-        if (this.events == null || this.events.size() == 0)
+        if (this.events.size() == 0)
             throw new RuntimeException("이벤트 객체가 비어 있습니다.");
 
         // roundGroup 값을 기준으로 이전과 다음 Event 객체의 round 값과 비교하기 위한 변수
@@ -463,7 +461,7 @@ public class GameBoard {
                 .filter(event -> event.getRound() == round)
                 .findAny()
                 .ifPresent(
-                        event -> event.deliverReservation()
+                        Event::deliverReservation
                 );
     }
     /**
@@ -485,6 +483,6 @@ public class GameBoard {
      */
     public void initPlayed() {
         events.stream()
-                .forEach(event -> event.initPlayed());
+                .forEach(Event::initPlayed);
     }
 }

@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.player;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -16,10 +17,12 @@ public class Room implements Field {
             animal = AnimalStruct.builder().animal(null).count(0).build();
         }
 
+        @JsonIgnore
         public boolean isEmpty() {
             return animal.getCount() == 0;
         }
 
+        @JsonIgnore
         public AnimalType getAnimalType(){
             return animal.getAnimal();
         }
@@ -122,6 +125,7 @@ public class Room implements Field {
      * 거주자가 없는 빈방 여부를 확인한다.
      * @return 거주자가 없을 경우 true를 반환한다.
      */
+    @JsonIgnore
     public boolean isEmptyRoom() {
         return this.residents.size() == 0;
     }
@@ -136,6 +140,7 @@ public class Room implements Field {
         return petRoom.removePet();
     }
 
+    @JsonIgnore
     public AnimalType getPet() {
         if (!isPetRoom) throw new RuntimeException("펫이 없는 집입니다.");
         return petRoom.getAnimalType();

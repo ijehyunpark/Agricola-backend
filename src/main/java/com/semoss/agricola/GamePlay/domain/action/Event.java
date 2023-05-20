@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 @Getter
 public class Event {
+    @JsonIgnore
     private GameBoard gameBoard;
     private final Long id;
     private static Long nextEventID = 1L;
@@ -39,10 +40,12 @@ public class Event {
     public Event(GameBoard gameBoard, List<Action> actions, List<DoType> actionDoType, int roundGroup) {
         this.gameBoard = gameBoard;
         this.id = nextEventID++;
-        actions.stream()
-                .forEach(action -> this.actions.add(action));
-        actionDoType.stream()
-                .forEach(doType -> this.actionDoType.add(doType));
+        if(actions != null)
+            actions.stream()
+                    .forEach(this.actions::add);
+        if(actionDoType != null)
+            actionDoType.stream()
+                    .forEach(this.actionDoType::add);
         this.roundGroup = roundGroup;
         this.isPlayed = null;
     }
@@ -76,7 +79,8 @@ public class Event {
                             ((PlaceAction) action).runAction(player, card);
                         }
                         case STACK -> {
-                            throw new RuntimeException("액션 행동을 지원하지 않는 타입입니다.");
+                            player.addResource(this.stacks);
+                            this.stacks.clear();
                         }
                     }
                 });

@@ -31,14 +31,13 @@ class GameBoardTest {
             if (events.get(i).getRound() > events.get(i + 1).getRound() ||
                     events.get(i).getRoundGroup() > events.get(i + 1).getRoundGroup()) {
                 isSorted = false;
-                break;
             }
             if(events.get(i).getRoundGroup() == 0 && events.get(i).getRound() != 0 ||
                     events.get(i).getRoundGroup() != 0 && events.get(i).getRound() == 0){
                 isMatched = false;
             }
-//            System.out.print(events.get(i).getRound());
-//            System.out.println(events.get(i).getRoundGroup());
+            System.out.print("round: " + events.get(i).getRound() + "  ::  ");
+            System.out.println("roundGroup: " + events.get(i).getRoundGroup());
         }
         // 정렬 되있는지 확인
         assertTrue(isSorted);

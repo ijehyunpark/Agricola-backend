@@ -11,8 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class PlaceActionTest {
     Player player;
@@ -47,6 +46,7 @@ class PlaceActionTest {
                 .resource(ResourceType.CLAY)
                 .count(2)
                 .build());
+        assertEquals(2, player.getResource(ResourceType.CLAY));
 
 
         // when
@@ -54,6 +54,7 @@ class PlaceActionTest {
 
         // then
         assertTrue(player.hasCardInField(majorCard.getCardID()));
+        assertEquals(0, player.getResource(ResourceType.CLAY));
     }
 
     @Test

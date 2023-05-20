@@ -9,6 +9,7 @@ import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
 import com.semoss.agricola.GameRoom.domain.Game;
+import com.semoss.agricola.GameRoom.domain.GameType;
 import com.semoss.agricola.GameRoomCommunication.domain.User;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,6 +28,8 @@ import java.util.stream.IntStream;
 @Getter
 @Log4j2
 public class AgricolaGame implements Game {
+    @Getter
+    private final GameType gameType = GameType.Agricola;
     @Getter
     @Setter
     public class GameState {

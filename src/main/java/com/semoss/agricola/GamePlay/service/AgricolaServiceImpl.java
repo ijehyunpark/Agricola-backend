@@ -7,6 +7,7 @@ import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
 import com.semoss.agricola.GameRoom.domain.GameRoom;
+import com.semoss.agricola.GameRoom.domain.GameType;
 import com.semoss.agricola.GameRoom.repository.GameRoomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -33,7 +34,7 @@ public class AgricolaServiceImpl implements AgricolaService {
         GameRoom gameRoom =  gameRoomRepository.findById(gameRoomId).orElseThrow(
                 () -> new NoSuchElementException("해당 id를 가진 게임방이 존재하지 않습니다.")
         );
-        if (!(gameRoom.getGame() instanceof AgricolaGame)){
+        if (gameRoom.getGame().getGameType() != GameType.Agricola){
             throw new RuntimeException("해당 게임방은 아그리콜라를 플레이하고 있지 않습니다.");
         }
 
@@ -66,6 +67,8 @@ public class AgricolaServiceImpl implements AgricolaService {
                 .strategy("NONE") // TODO : 플레이어 선택 전략
                 .build();
 
+        gameRoom.setGame(game);
+
         // 선공 플레이어의 경우 음식 토큰 2개, 아닌 경우 3개를 받는다.
         game.getPlayers().stream().forEach(
                 player -> player.addResource(ResourceType.FOOD, game.getStartingPlayer() == player ? 2 : 3)
@@ -77,7 +80,6 @@ public class AgricolaServiceImpl implements AgricolaService {
 
     /**
      * 라운드 시작 매커니즘 : 게임 시작시 & 모든 플레이어 행동 종료시 실행
-     [ROW TEXT: TODO 개선]
      * -보드판에 모인 공용 주요 설비 카드를 확인할 수 있다.
     - 내 보드판을 눌러 내가 가지고 있는 보조 설비 카드를 확인할 수 있다.
     - 내 보드판을 눌러 내가 가지고 있는 직업 카드를 확인할 수 있다.

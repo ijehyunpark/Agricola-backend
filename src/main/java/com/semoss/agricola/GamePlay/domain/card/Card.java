@@ -19,5 +19,5 @@ public interface Card {
     CardType getCardType();
     Long getOwner();
     void setOwner(Long userID);
-    void useResource(Player player);
+    void place(Player player);
 }

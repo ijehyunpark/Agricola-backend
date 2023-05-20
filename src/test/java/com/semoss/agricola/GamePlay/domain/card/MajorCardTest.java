@@ -26,7 +26,7 @@ class MajorCardTest {
         Long expectOwner = 123L;
 
         //when
-        oven.useResource(player1);
+        oven.place(player1);
         int actualClay = player1.getResource(ResourceType.CLAY);
         boolean actualResult = basket.checkPrerequisites(player1);
         Long actualOwner = oven.getOwner();

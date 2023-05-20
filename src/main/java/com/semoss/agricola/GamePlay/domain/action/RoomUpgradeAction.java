@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
+import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
@@ -41,7 +42,7 @@ public class RoomUpgradeAction implements SimpleAction {
     }
 
     @Override
-    public void runAction(Player player) {
+    public void runAction(Player player, History history) {
         if(!checkPrecondition(player))
             throw new RuntimeException("방 업그레이드가 불가능합니다.");
 

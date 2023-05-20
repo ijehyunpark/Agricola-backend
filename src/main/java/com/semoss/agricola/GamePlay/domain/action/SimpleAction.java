@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
+import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 
 /**
@@ -9,5 +10,5 @@ public interface SimpleAction extends Action {
     /**
      * when players select this action
      */
-    void runAction(Player player);
+    void runAction(Player player, History history);
 }

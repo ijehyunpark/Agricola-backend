@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.card.Occupation;
 
+import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
@@ -11,15 +12,19 @@ import org.springframework.stereotype.Component;
 @Getter
 @Component
 @Scope("prototype")
-public class LandAgent extends DefaultOccupation {
-    private Long id = 100L;
+public class LandAgent extends DefaultOccupation implements ActionTrigger{
+    private Long id;
     private String name;
-    private int playerRequirement = 3;
+    private int playerRequirement;
     private String description;
 
-    public LandAgent(@Value("${landAgent.name}") String name,
+    public LandAgent(@Value("${landAgent.id}") Long id,
+                     @Value("${landAgent.name}") String name,
+                     @Value("${landAgent.players}") Integer playerRequirement,
                      @Value("${landAgent.description}") String description) {
+        this.id = id;
         this.name = name;
+        this.playerRequirement = playerRequirement;
         this.description = description;
     }
 
@@ -33,7 +38,12 @@ public class LandAgent extends DefaultOccupation {
         super.setOwner(player);
     }
 
-    public void actionTrigger(Player player){
+    @Override
+    public void actionTrigger(Player player, History history){
+        // 곡식 가져오기일 경우에만 실행
+        if (history.getEventId() != 3)
+            return;
+
         player.addResource(ResourceStruct.builder()
                 .resource(ResourceType.GRAIN)
                 .count(1)
@@ -43,6 +53,7 @@ public class LandAgent extends DefaultOccupation {
     @Override
     public void place(Player player) {
         setOwner(player);
+        player.addOccupations(this);
         player.addResource(ResourceStruct.builder()
                 .resource(ResourceType.VEGETABLE)
                 .count(1)

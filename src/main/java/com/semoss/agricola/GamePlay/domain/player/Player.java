@@ -2,8 +2,12 @@ package com.semoss.agricola.GamePlay.domain.player;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
+import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.card.Card;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
+import com.semoss.agricola.GamePlay.domain.card.Occupation.ActionTrigger;
+import com.semoss.agricola.GamePlay.domain.card.Occupation.FinishTrigger;
+import com.semoss.agricola.GamePlay.domain.card.Occupation.Occupation;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.*;
@@ -25,6 +29,7 @@ public class Player {
     private final PlayerBoard playerBoard = PlayerBoard.builder().build();
     private final List<Long> cardHand = new ArrayList<>();
     private final List<Long> cardField = new ArrayList<>();
+    private final List<Occupation> occupations = new ArrayList<>();
 
     @Builder
     public Player(Long userId, AgricolaGame game, boolean isStartPlayer){
@@ -324,10 +329,34 @@ public class Player {
     /**
      * 액션을 플레이한다.
      */
-    public void playAction() {
+    public void playAction(History history) {
         this.playerBoard.playAction();
+        // 액션 트리거 발동
+        this.occupations.stream()
+                .filter(occupation -> occupation instanceof ActionTrigger)
+                .map(occupation -> (ActionTrigger) occupation)
+                .forEach(occupation -> occupation.actionTrigger(this, history));
     }
 
     public int numField(FieldType fieldType) { return playerBoard.numField(fieldType); }
 
+
+    /**
+     * 직업 추가
+     * @param occupation
+     */
+    public void addOccupations(Occupation occupation) {
+        this.occupations.add(occupation);
+    }
+
+    /**
+     * 종료 트리거 발동
+     */
+    public void finish() {
+        this.occupations.stream()
+                .filter(occupation -> occupation instanceof ActionTrigger)
+                .map(occupation -> (FinishTrigger) occupation)
+                .forEach(occupation -> occupation.finishTrigger(this));
+
+    }
 }

@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
+import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,7 +23,7 @@ public class IncreaseFamily implements SimpleAction {
      * @param player player who increase family
      */
     @Override
-    public void runAction(Player player){
+    public void runAction(Player player, History history){
         if (!precondition || player.existEmptyRoom()){
             player.addChild();
         } else {

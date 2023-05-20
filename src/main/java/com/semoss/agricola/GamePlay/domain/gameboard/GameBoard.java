@@ -2,6 +2,7 @@ package com.semoss.agricola.GamePlay.domain.gameboard;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
+import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.action.*;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
@@ -63,6 +64,7 @@ public class GameBoard {
                 .build());
         events.add(Event.builder()
                 .gameBoard(this)
+                .id(1L)
                 .actions(actions1)
                 .actionDoType(new ArrayList<>(List.of(DoType.ANDOR)))
                 .roundGroup(0)
@@ -78,6 +80,7 @@ public class GameBoard {
                 .build());
         events.add(Event.builder()
                 .gameBoard(this)
+                .id(2L)
                 .actions(actions2)
                 .actionDoType(new ArrayList<>(Arrays.asList(DoType.ANDOR)))
                 .roundGroup(0)
@@ -94,6 +97,7 @@ public class GameBoard {
                 .build());
         events.add(Event.builder()
                 .gameBoard(this)
+                .id(3L)
                 .actions(actions3)
                 .roundGroup(0)
                 .build());
@@ -105,6 +109,7 @@ public class GameBoard {
                 .build());
         events.add(Event.builder()
                 .gameBoard(this)
+                .id(4L)
                 .actions(actions4)
                 .roundGroup(0)
                 .build());
@@ -112,6 +117,7 @@ public class GameBoard {
         // 5.밭 1개 일구기
         events.add(Event.builder()
                 .gameBoard(this)
+                .id(5L)
                 .actions(new ArrayList<>(Arrays.asList(buildActionToTillingFarm())))
                 .roundGroup(0)
                 .build());
@@ -126,29 +132,31 @@ public class GameBoard {
                 .build());
         events.add(Event.builder()
                 .gameBoard(this)
+                .id(6L)
                 .actions(actions6)
                 .roundGroup(0)
                 .build());
 
         // 7.누적 나무 3개
-        events.add(buildEventToSimpleStackAction(ResourceType.WOOD, 3, 0));
+        events.add(buildEventToSimpleStackAction(ResourceType.WOOD, 3, 7L, 0));
 
         // 8.누적 흙 1개
-        events.add(buildEventToSimpleStackAction(ResourceType.STONE, 1, 0));
+        events.add(buildEventToSimpleStackAction(ResourceType.STONE, 1, 8L, 0));
 
         // 9.누적 갈대 1개
-        events.add(buildEventToSimpleStackAction(ResourceType.REED, 1, 0));
+        events.add(buildEventToSimpleStackAction(ResourceType.REED, 1, 9L, 0));
 
         // 10.낚시 (누적 음식 1개)
-        events.add(buildEventToSimpleStackAction(ResourceType.FOOD, 1, 0));
+        events.add(buildEventToSimpleStackAction(ResourceType.FOOD, 1, 10L,  0));
 
         // --- 1주기 ---
         // 11. 양 시장 (누적 양 1개)
-        events.add(buildEventToSimpleStackAction(AnimalType.SHEEP, 1, 1));
+        events.add(buildEventToSimpleStackAction(AnimalType.SHEEP, 1, 11L, 1));
 
         // 12. 울타리 치기
         events.add(Event.builder()
                 .gameBoard(this)
+                .id(12L)
                 .actions(new ArrayList<>(Arrays.asList(buildActionToFence())))
                 .roundGroup(1)
                 .build());
@@ -163,6 +171,7 @@ public class GameBoard {
                 .build());
         events.add(Event.builder()
                 .gameBoard(this)
+                .id(13L)
                 .actions(action13)
                 .actionDoType(new ArrayList(List.of(DoType.OR)))
                 .roundGroup(1)
@@ -171,6 +180,7 @@ public class GameBoard {
         // 14. 씨 뿌리기 그리고/또는 빵 굽기
         events.add(Event.builder()
                 .gameBoard(this)
+                .id(14L)
                 .actions(new ArrayList<>(Arrays.asList(buildActionToCultivation(), buildActionToBake())))
                 .actionDoType(new ArrayList<>(List.of(DoType.ANDOR)))
                 .roundGroup(1)
@@ -189,13 +199,14 @@ public class GameBoard {
                 .build());
         events.add(Event.builder()
                 .gameBoard(this)
+                .id(15L)
                 .actions(action15)
                 .actionDoType(new ArrayList<>(List.of(DoType.ANDOR, DoType.OR)))
                 .roundGroup(2)
                 .build());
 
         // 16. 서부 채석장: 누적 돌 1개
-        events.add(buildEventToSimpleStackAction(ResourceType.STONE, 1, 2));
+        events.add(buildEventToSimpleStackAction(ResourceType.STONE, 1, 16L, 2));
 
         // 17. 급하지 않은 가족 늘리기: 빈 방이 있어야만 가족 늘리기 그 후에 보조 설비 1개
         List<Action> actions17 = new ArrayList<>();
@@ -207,6 +218,7 @@ public class GameBoard {
                 .build());
         events.add(Event.builder()
                 .gameBoard(this)
+                .id(17L)
                 .actions(actions17)
                 .roundGroup(2)
                 .build());
@@ -214,24 +226,25 @@ public class GameBoard {
         // --- 3주기 ---
 
         // 18.돼지 시장: 누적 돼지 1개
-        events.add(buildEventToSimpleStackAction(AnimalType.WILD_BOAR, 1, 3));
+        events.add(buildEventToSimpleStackAction(AnimalType.WILD_BOAR, 1, 18L, 3));
 
         // 19.채소 종자: 채소 1개
-        events.add(buildEventToSimpleStackAction(ResourceType.VEGETABLE, 1, 3));
+        events.add(buildEventToSimpleStackAction(ResourceType.VEGETABLE, 1, 19L, 3));
 
         // --- 4주기 ---
 
         // 20.소 시장: 누적 소 1개
-        events.add(buildEventToSimpleStackAction(AnimalType.CATTLE, 1, 4));
+        events.add(buildEventToSimpleStackAction(AnimalType.CATTLE, 1, 20L, 4));
 
         // 21.동부 채석장: 누적 돌 1개
-        events.add(buildEventToSimpleStackAction(ResourceType.STONE, 1, 4));
+        events.add(buildEventToSimpleStackAction(ResourceType.STONE, 1, 21L, 4));
 
         // --- 5주기 ---
 
         // 22.밭 농사: 밭 하나 일구기 그리고/또는 씨 뿌리기
         events.add(Event.builder()
                 .gameBoard(this)
+                .id(22L)
                 .actions(new ArrayList<>(Arrays.asList(
                         buildActionToTillingFarm(),
                         buildActionToCultivation())))
@@ -246,6 +259,7 @@ public class GameBoard {
                 .build());
         events.add(Event.builder()
                 .gameBoard(this)
+                .id(23L)
                 .actions(actions23)
                 .roundGroup(5)
                 .build());
@@ -255,6 +269,7 @@ public class GameBoard {
         // 24. 농장 개조: 집 한번 고치기 그 후에 울타리 치기
         events.add(Event.builder()
                 .gameBoard(this)
+                .id(24L)
                 .actions(new ArrayList<>(Arrays.asList(
                         buildActionToRoomUpgrade(),
                         buildActionToFence())))
@@ -279,10 +294,11 @@ public class GameBoard {
      * 단일 stackAction을 구성한다.
      * @param resourceType
      * @param num
+     * @param eventId
      * @param roundGroup
      * @return
      */
-    private Event buildEventToSimpleStackAction(ResourceType resourceType, int num, int roundGroup) {
+    private Event buildEventToSimpleStackAction(ResourceType resourceType, int num, Long eventId, int roundGroup) {
         List<Action> actions = new ArrayList<>();
         actions.add(StackResourceAction.builder()
                 .resourceType(resourceType)
@@ -290,12 +306,13 @@ public class GameBoard {
                 .build());
         return Event.builder()
                 .gameBoard(this)
+                .id(eventId)
                 .actions(actions)
                 .roundGroup(roundGroup)
                 .build();
     }
 
-    private Event buildEventToSimpleStackAction(AnimalType animalType, int num, int roundGroup) {
+    private Event buildEventToSimpleStackAction(AnimalType animalType, int num, Long eventId, int roundGroup) {
         List<Action> actions = new ArrayList<>();
         actions.add(StackAnimalAction.builder()
                 .animalType(animalType)
@@ -303,6 +320,7 @@ public class GameBoard {
                 .build());
         return Event.builder()
                 .gameBoard(this)
+                .id(eventId)
                 .actions(actions)
                 .roundGroup(roundGroup)
                 .build();
@@ -461,8 +479,8 @@ public class GameBoard {
      * @param eventId 플레이할 액션
      * @param acts    액션에 필요한 추가 요청
      */
-    public void playAction(Player player, Long eventId, List<AgricolaActionRequest.ActionFormat> acts) {
-        events.stream()
+    public History playAction(Player player, Long eventId, List<AgricolaActionRequest.ActionFormat> acts) {
+        return events.stream()
                 .filter(event -> event.getId().equals(eventId))
                 .findAny()
                 .orElseThrow(() -> new RuntimeException("이벤트가 존재하지 않습니다"))

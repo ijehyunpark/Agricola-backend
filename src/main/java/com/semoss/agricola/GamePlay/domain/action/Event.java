@@ -1,18 +1,22 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
 import com.fasterxml.jackson.annotation.*;
+import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.card.Card;
 import com.semoss.agricola.GamePlay.domain.gameboard.GameBoard;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.Reservation;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Getter
@@ -20,7 +24,6 @@ public class Event {
     @JsonIgnore
     private GameBoard gameBoard;
     private final Long id;
-    private static Long nextEventID = 1L;
     private final List<Action> actions = new ArrayList<>();
     private final List<DoType> actionDoType = new ArrayList<>();
     private final List<ResourceStruct> stacks = new ArrayList<>(); // 누적 쌓인 자원
@@ -37,9 +40,9 @@ public class Event {
     private Player isPlayed;
 
     @Builder
-    public Event(GameBoard gameBoard, List<Action> actions, List<DoType> actionDoType, int roundGroup) {
+    public Event(GameBoard gameBoard, Long id, List<Action> actions, List<DoType> actionDoType, int roundGroup) {
         this.gameBoard = gameBoard;
-        this.id = nextEventID++;
+        this.id = id;
         if(actions != null)
             actions.stream()
                     .forEach(this.actions::add);
@@ -55,12 +58,15 @@ public class Event {
      * @param player 액션을 플레이하는 플레이어
      * @param acts 액션 수행관련 세부 사항
      */
-    public void runActions(Player player, List<AgricolaActionRequest.ActionFormat> acts) {
+    public History runActions(Player player, List<AgricolaActionRequest.ActionFormat> acts) {
         // 이미 플레이된 상태인지 확인
         if(this.isPlayed != null)
             throw new RuntimeException("이미 플레이한 액션칸입니다.");
 
         this.isPlayed = player;
+        History history = History.builder()
+                .eventId(this.id)
+                .build();
 
         // TODO: Object 입력 개선 (object acts.acts)
         this.actions.stream()
@@ -69,7 +75,7 @@ public class Event {
                     AgricolaActionRequest.ActionFormat act = acts.get(actions.indexOf(action));
                     switch (action.getActionType()) {
                         case BASIC, STARTING, UPGRADE, ADOPT -> {
-                            ((SimpleAction) action).runAction(player);
+                            ((SimpleAction) action).runAction(player, history);
                         }
                         case BAKE, BUILD, CULTIVATION -> {
                             ((MultiInputAction) action).runAction(player, act.getActs());
@@ -80,10 +86,13 @@ public class Event {
                         }
                         case STACK -> {
                             player.addResource(this.stacks);
+                            history.writeResourceChange(this.stacks);
                             this.stacks.clear();
                         }
                     }
                 });
+
+        return history;
     }
 
     public void stackResource(ResourceStruct resource){

@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.card.Occupation;
 
+import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 

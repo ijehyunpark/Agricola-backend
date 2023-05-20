@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
+import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.player.RoomType;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
@@ -16,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class RoomUpgradeActionTest {
     Player player;
     RoomUpgradeAction roomUpgradeAction;
+    History history;
 
     RoomUpgradeAction buildRoomUpgradeAction() {
         Map<ResourceType, List<ResourceStruct>> costs = new HashMap<>();
@@ -51,6 +53,7 @@ class RoomUpgradeActionTest {
                 .build();
 
         roomUpgradeAction = buildRoomUpgradeAction();
+        history = History.builder().build();
     }
 
     @Test
@@ -62,9 +65,9 @@ class RoomUpgradeActionTest {
         player.addResource(ResourceType.STONE,4);
 
         // when
-        roomUpgradeAction.runAction(player);
+        roomUpgradeAction.runAction(player, history);
         RoomType result1 = player.getRoomType();
-        roomUpgradeAction.runAction(player);
+        roomUpgradeAction.runAction(player, history);
         RoomType result2 = player.getRoomType();
 
         // then
@@ -78,7 +81,7 @@ class RoomUpgradeActionTest {
         // given
 
         // when
-        assertThrows(RuntimeException.class, () -> roomUpgradeAction.runAction(player));
+        assertThrows(RuntimeException.class, () -> roomUpgradeAction.runAction(player, history));
 
         // then
     }

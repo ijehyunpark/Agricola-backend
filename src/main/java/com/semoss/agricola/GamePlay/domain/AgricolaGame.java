@@ -30,6 +30,7 @@ import java.util.stream.IntStream;
 @Log4j2
 public class AgricolaGame implements Game {
     private final GameType gameType = GameType.Agricola;
+
     @Getter
     @Setter
     public class GameState {
@@ -200,10 +201,10 @@ public class AgricolaGame implements Game {
      */
     public void playAction(Long eventId, List<AgricolaActionRequest.ActionFormat> acts) {
         // 액션 플레이를 수행한다.
-        this.gameBoard.playAction(this.getGameState().getPlayer(), eventId, acts);
+        History history = this.gameBoard.playAction(this.getGameState().getPlayer(), eventId, acts);
 
         // 거주자 한명을 임의로 뽑아 플레이 시킨다.
-        this.getGameState().getPlayer().playAction();
+        this.getGameState().getPlayer().playAction(history);
     }
 
     /**
@@ -223,6 +224,11 @@ public class AgricolaGame implements Game {
         // 주설비와 교환 요청 자원을 사용하여 교환 작업을 수행한다.
         // TODO: 교환 후 자원 획득
         player.useResource(resource);
+    }
+
+    public void finish() {
+        players.stream()
+                        .forEach(player -> player.finish());
     }
 
     //로그 기능

@@ -1,6 +1,7 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
+import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,6 +27,7 @@ class GetStartingPositionActionTest {
     @InjectMocks
     Player startPlayer;
     GetStartingPositionAction action;
+    History history;
 
     @BeforeEach
     void setUp() {
@@ -41,6 +43,8 @@ class GetStartingPositionActionTest {
                 .userId(1234L)
                 .isStartPlayer(false)
                 .build();
+
+        history = History.builder().build();
     }
 
     @Test
@@ -50,7 +54,7 @@ class GetStartingPositionActionTest {
         when(game.getPlayers()).thenReturn(new ArrayList<>(List.of(startPlayer, targetplayer)));
 
         //when
-        action.runAction(targetplayer);
+        action.runAction(targetplayer, history);
 
         //then
         assertTrue(targetplayer.isStartingToken());
@@ -64,7 +68,7 @@ class GetStartingPositionActionTest {
         when(game.getPlayers()).thenReturn(new ArrayList<>(List.of(startPlayer, targetplayer)));
 
         // when
-        action.runAction(startPlayer);
+        action.runAction(startPlayer, history);
 
         // then
         assertFalse(targetplayer.isStartingToken());

@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
+import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.player.FieldType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
@@ -48,7 +49,7 @@ public class BuildAction implements SimpleAction{
     }
 
     @Override
-    public void runAction(Player player) {
+    public void runAction(Player player, History history) {
     }
 
     public boolean runAction(Player player, int actionNum, int[][] pos) {

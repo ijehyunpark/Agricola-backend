@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
+import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,7 +22,7 @@ public class GetStartingPositionAction implements SimpleAction {
      * @param player
      */
     @Override
-    public void runAction(Player player) {
+    public void runAction(Player player, History history) {
         player.setStartingTokenByTrue();
     }
 }

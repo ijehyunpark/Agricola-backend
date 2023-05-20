@@ -1,7 +1,0 @@
-landAgent:
-  name: "토지 대리인"
-  description: "\"채소 1개 가져가기\" 행동 칸을 사용할 때마다 곡물 1개도 받습니다. 이 카드를 사용하면 공급처에서 야채 1개를 받습니다."
-
-TEMP:
-  name: "임시"
-  description: "임시로"

@@ -2,6 +2,7 @@ package com.semoss.agricola.GamePlay.service;
 
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
 import com.semoss.agricola.GamePlay.domain.GameProgress;
+import com.semoss.agricola.GamePlay.domain.card.Occupation.LandAgent;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
@@ -11,6 +12,7 @@ import com.semoss.agricola.GameRoom.domain.GameType;
 import com.semoss.agricola.GameRoom.repository.GameRoomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -289,6 +291,12 @@ public class AgricolaServiceImpl implements AgricolaService {
     @Override
     public void finish(Long gameRoomId) {
         log.info("종료되었습니다.");
+
+        // 아그리콜라 게임 추출
+        AgricolaGame game = extractGame(gameRoomId);
+        game.update(GameProgress.FINISH, null);
+
+        game.finish();
         //1.
         //    - 플레이어가 소유한 자원에 따라 플레이어 점수가 확정되고 최종 순위가 확정된다.
         //    - ‘한 번 더 하기’ 버튼을 누르면 게임방으로 돌아간다.

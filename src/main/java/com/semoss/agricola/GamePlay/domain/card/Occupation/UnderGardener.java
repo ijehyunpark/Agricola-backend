@@ -11,16 +11,16 @@ import org.springframework.stereotype.Component;
 @Getter
 @Component
 @Scope("prototype")
-public class Mendicant extends DefaultOccupation implements FinishTrigger {
+public class UnderGardener extends DefaultOccupation implements ActionTrigger {
     private Long id;
     private String name;
     private int playerRequirement;
     private String description;
 
-    public Mendicant(@Value("${mendicant.id}") Long id,
-                     @Value("${mendicant.name}") String name,
-                     @Value("${mendicant.players}") Integer playerRequirement,
-                     @Value("${mendicant.description}") String description) {
+    public UnderGardener(@Value("${underGardener.id}") Long id,
+                     @Value("${underGardener.name}") String name,
+                     @Value("${underGardener.players}") Integer playerRequirement,
+                     @Value("${underGardener.description}") String description) {
         this.id = id;
         this.name = name;
         this.playerRequirement = playerRequirement;
@@ -38,9 +38,9 @@ public class Mendicant extends DefaultOccupation implements FinishTrigger {
     }
 
     @Override
-    public void finishTrigger(Player player) {
-        // 구걸 카드 최대 2장 버림
-        int drop = Math.max(2, player.getResource(ResourceType.BEGGING));
-        player.useResource(ResourceType.BEGGING, drop);
+    public void actionTrigger(Player player, History history) {
+        // 날품팔이 행동칸을 이용할 때마다 채소 하나를 얻는다.
+        throw new RuntimeException("미구현");
+
     }
 }

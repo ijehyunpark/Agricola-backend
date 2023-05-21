@@ -23,4 +23,9 @@ public abstract class DefaultOccupation implements Occupation {
             throw new RuntimeException("이미 사용 중인 카드입니다.");
     }
 
+    @Override
+    public void place(Player player) {
+        setOwner(player);
+        player.addOccupations(this);
+    }
 }

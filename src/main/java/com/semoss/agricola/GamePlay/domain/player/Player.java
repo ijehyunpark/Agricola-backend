@@ -7,6 +7,7 @@ import com.semoss.agricola.GamePlay.domain.card.Card;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
 import com.semoss.agricola.GamePlay.domain.card.Occupation.ActionTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Occupation.FinishTrigger;
+import com.semoss.agricola.GamePlay.domain.card.Occupation.HarvestTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Occupation.Occupation;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
@@ -238,6 +239,12 @@ public class Player {
 
         // 플레이어 자원에 추가
         addResource(outputs);
+
+
+        this.occupations.stream()
+                .filter(occupation -> occupation instanceof HarvestTrigger)
+                .map(occupation -> (HarvestTrigger) occupation)
+                .forEach(occupation -> occupation.harvestTrigger(this));
     }
 
     /**

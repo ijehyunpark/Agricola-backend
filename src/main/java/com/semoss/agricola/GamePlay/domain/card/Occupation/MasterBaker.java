@@ -1,9 +1,11 @@
 package com.semoss.agricola.GamePlay.domain.card.Occupation;
 
 import com.semoss.agricola.GamePlay.domain.History;
+import com.semoss.agricola.GamePlay.domain.action.ActionType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
+import com.semoss.agricola.util.Pair;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
@@ -12,16 +14,16 @@ import org.springframework.stereotype.Component;
 @Getter
 @Component
 @Scope("prototype")
-public class LandAgent extends DefaultOccupation implements ActionTrigger{
+public class MasterBaker extends DefaultOccupation implements ActionTrigger, ActionCrossTrigger {
     private Long id;
     private String name;
     private int playerRequirement;
     private String description;
 
-    public LandAgent(@Value("${landAgent.id}") Long id,
-                     @Value("${landAgent.name}") String name,
-                     @Value("${landAgent.players}") Integer playerRequirement,
-                     @Value("${landAgent.description}") String description) {
+    public MasterBaker(@Value("${masterBaker.id}") Long id,
+                     @Value("${masterBaker.name}") String name,
+                     @Value("${masterBaker.players}") Integer playerRequirement,
+                     @Value("${masterBaker.description}") String description) {
         this.id = id;
         this.name = name;
         this.playerRequirement = playerRequirement;
@@ -40,22 +42,23 @@ public class LandAgent extends DefaultOccupation implements ActionTrigger{
 
     @Override
     public void actionTrigger(Player player, History history){
-        // 곡식 가져오기일 경우에만 실행
-        if (history.getEventName().getId() != 3)
-            return;
+        // 빵굽기 횟수만큼 곡식 추가
+        int bakeCount = history.getActionTypesAndTimes().stream()
+                .filter(actionTypeIntegerPair -> actionTypeIntegerPair.key() == ActionType.BAKE)
+                .mapToInt(Pair::value)
+                .sum();
+        player.addResource(ResourceType.GRAIN, bakeCount);
+    }
 
-        player.addResource(ResourceStruct.builder()
-                .resource(ResourceType.GRAIN)
-                .count(1)
-                .build());
+    @Override
+    public void actionCrossTrigger(Player player, History history) {
+        // TODO: 다른 사람 빵굽기 시 즉시 빵굽기 가능
+        throw new RuntimeException("미구현");
     }
 
     @Override
     public void place(Player player) {
-        super.place(player);
-        player.addResource(ResourceStruct.builder()
-                .resource(ResourceType.VEGETABLE)
-                .count(1)
-                .build());
+        setOwner(player);
+        player.addOccupations(this);
     }
 }

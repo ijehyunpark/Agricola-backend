@@ -81,4 +81,10 @@ farmer:
   players: 4
   decks: "E"
   id: 160
-  description: "다음에 당신이 울타리를 한번 치게 된다면 돼지를 하나 가져옵니다. 그 다음에 울타리를 한번 칠때마다 소를 한마리씩 가져옵니다. "
+  description: "다음에 당신이 울타리를 한번 치게 된다면 돼지를 하나 가져옵니다. 그 다음에 울타리를 한번 칠때마다 소를 한마리씩 가져옵니다."
+underGardener:
+  name: "정원일꾼"
+  players: 4
+  decks: "E"
+  id: 160
+  description: "당신이 날품팔이 행동칸을 이용할때마다 채소 하나를 추가로 받습니다."

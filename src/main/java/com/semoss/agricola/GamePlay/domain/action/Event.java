@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class Event {
     @JsonIgnore
     private GameBoard gameBoard;
-    private final Long id;
+    private final EventName eventName;
     private final List<Action> actions = new ArrayList<>();
     private final List<DoType> actionDoType = new ArrayList<>();
     private final List<ResourceStruct> stacks = new ArrayList<>(); // 누적 쌓인 자원
@@ -40,9 +40,9 @@ public class Event {
     private Player isPlayed;
 
     @Builder
-    public Event(GameBoard gameBoard, Long id, List<Action> actions, List<DoType> actionDoType, int roundGroup) {
+    public Event(GameBoard gameBoard, int id, List<Action> actions, List<DoType> actionDoType, int roundGroup) {
         this.gameBoard = gameBoard;
-        this.id = id;
+        this.eventName = EventName.getEventNameById(id);
         if(actions != null)
             actions.stream()
                     .forEach(this.actions::add);
@@ -65,7 +65,7 @@ public class Event {
 
         this.isPlayed = player;
         History history = History.builder()
-                .eventId(this.id)
+                .eventName(this.eventName)
                 .build();
 
         // TODO: Object 입력 개선 (object acts.acts)
@@ -73,6 +73,7 @@ public class Event {
                 .filter(action -> acts.get(actions.indexOf(action)).getUse())
                 .forEach(action -> {
                     AgricolaActionRequest.ActionFormat act = acts.get(actions.indexOf(action));
+                    Integer times = 1; // TODO 액션 횟수 요청 정의 후 해당 값 바인딩
                     switch (action.getActionType()) {
                         case BASIC, STARTING, UPGRADE, ADOPT -> {
                             ((SimpleAction) action).runAction(player, history);
@@ -90,6 +91,7 @@ public class Event {
                             this.stacks.clear();
                         }
                     }
+                    history.writeActionType(action.getActionType(), times);
                 });
 
         return history;

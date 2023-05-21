@@ -11,16 +11,16 @@ import org.springframework.stereotype.Component;
 @Getter
 @Component
 @Scope("prototype")
-public class BerryPicker extends DefaultOccupation implements ActionTrigger{
+public class BerryPicker extends DefaultOccupation implements ActionTrigger {
     private Long id;
     private String name;
     private int playerRequirement;
     private String description;
 
-    public BerryPicker(@Value("${landAgent.id}") Long id,
-                     @Value("${landAgent.name}") String name,
-                     @Value("${landAgent.players}") Integer playerRequirement,
-                     @Value("${landAgent.description}") String description) {
+    public BerryPicker(@Value("${berryPicker.id}") Long id,
+                     @Value("${berryPicker.name}") String name,
+                     @Value("${berryPicker.players}") Integer playerRequirement,
+                     @Value("${berryPicker.description}") String description) {
         this.id = id;
         this.name = name;
         this.playerRequirement = playerRequirement;
@@ -45,11 +45,5 @@ public class BerryPicker extends DefaultOccupation implements ActionTrigger{
             return;
 
         player.addResource(ResourceType.FOOD, 1);
-    }
-
-    @Override
-    public void place(Player player) {
-        setOwner(player);
-        player.addOccupations(this);
     }
 }

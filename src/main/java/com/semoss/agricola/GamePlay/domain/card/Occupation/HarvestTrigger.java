@@ -3,8 +3,8 @@ package com.semoss.agricola.GamePlay.domain.card.Occupation;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 
 /**
- * 게임 종료시 발동
+ * 수확 단계에 실행
  */
-public interface FinishTrigger extends Occupation {
-    void finishTrigger(Player player);
+public interface HarvestTrigger extends Occupation {
+    void harvestTrigger(Player player);
 }

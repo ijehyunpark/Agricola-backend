@@ -11,16 +11,16 @@ import org.springframework.stereotype.Component;
 @Getter
 @Component
 @Scope("prototype")
-public class Mendicant extends DefaultOccupation implements FinishTrigger {
+public class Baker extends DefaultOccupation implements HarvestTrigger {
     private Long id;
     private String name;
     private int playerRequirement;
     private String description;
 
-    public Mendicant(@Value("${mendicant.id}") Long id,
-                     @Value("${mendicant.name}") String name,
-                     @Value("${mendicant.players}") Integer playerRequirement,
-                     @Value("${mendicant.description}") String description) {
+    public Baker(@Value("${baker.id}") Long id,
+                       @Value("${baker.name}") String name,
+                       @Value("${baker.players}") Integer playerRequirement,
+                       @Value("${baker.description}") String description) {
         this.id = id;
         this.name = name;
         this.playerRequirement = playerRequirement;
@@ -38,9 +38,15 @@ public class Mendicant extends DefaultOccupation implements FinishTrigger {
     }
 
     @Override
-    public void finishTrigger(Player player) {
-        // 구걸 카드 최대 2장 버림
-        int drop = Math.max(2, player.getResource(ResourceType.BEGGING));
-        player.useResource(ResourceType.BEGGING, drop);
+    public void harvestTrigger(Player player) {
+        // TODO : 빵굽기
+        throw new RuntimeException("미구현");
+    }
+
+    @Override
+    public void place(Player player) {
+        super.place(player);
+        // TODO : 빵굽기
+        throw new RuntimeException("미구현");
     }
 }

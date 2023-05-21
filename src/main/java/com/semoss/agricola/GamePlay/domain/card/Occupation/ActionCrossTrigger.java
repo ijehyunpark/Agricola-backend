@@ -4,8 +4,8 @@ import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 
 /**
- * 행동시 발동
+ * 다른 사람 행동시 발동 TODO: trigger 배치
  */
-public interface ActionTrigger {
-    void actionTrigger(Player player, History history);
+public interface ActionCrossTrigger extends Occupation {
+    void actionCrossTrigger(Player player, History history);
 }

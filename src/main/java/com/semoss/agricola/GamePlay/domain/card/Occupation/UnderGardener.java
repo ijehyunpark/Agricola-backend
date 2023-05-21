@@ -40,7 +40,8 @@ public class UnderGardener extends DefaultOccupation implements ActionTrigger {
     @Override
     public void actionTrigger(Player player, History history) {
         // 날품팔이 행동칸을 이용할 때마다 채소 하나를 얻는다.
-        throw new RuntimeException("미구현");
-
+        if(history.getEventName().getId() == 6){
+            player.addResource(ResourceType.VEGETABLE, 1);
+        }
     }
 }

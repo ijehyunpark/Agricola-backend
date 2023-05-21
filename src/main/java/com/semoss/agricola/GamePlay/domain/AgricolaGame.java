@@ -12,10 +12,12 @@ import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
 import com.semoss.agricola.GameRoom.domain.Game;
 import com.semoss.agricola.GameRoom.domain.GameType;
 import com.semoss.agricola.GameRoomCommunication.domain.User;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -27,6 +29,8 @@ import java.util.stream.IntStream;
  */
 
 @Getter
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Log4j2
 public class AgricolaGame implements Game {
     private final GameType gameType = GameType.Agricola;
@@ -55,8 +59,11 @@ public class AgricolaGame implements Game {
     private int round;
     private GameState gameState;
 
-    @Builder
     public AgricolaGame(List<User> users, String strategy) {
+        log.debug("아그리 콜라 게임생성:" + this.hashCode());
+        log.debug("입력된 플레이어:" + users.size());
+        log.debug("플레이어 생성 전략:" + strategy);
+
         if(users.size() == 0)
             throw new RuntimeException("아그리콜라에 필요한 최소 인원수를 충족하지 않았습니다.");
         if(users.size() > 4)

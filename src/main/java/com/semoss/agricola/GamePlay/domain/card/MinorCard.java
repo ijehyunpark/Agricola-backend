@@ -42,7 +42,7 @@ public class MinorCard implements Card {
 
 
     @Override
-    public void useResource(Player player) {
+    public void place(Player player) {
 
     }
 }

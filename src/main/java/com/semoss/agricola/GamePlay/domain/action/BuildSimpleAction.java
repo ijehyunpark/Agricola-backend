@@ -34,7 +34,6 @@ public class BuildSimpleAction implements MultiInputAction {
      * @param player 해당 행동을 수행할 플레이어
      * @return 플레이어가 필요한 자원을 가지고 있다면 true를 반환한다.
      */
-    @Override
     public boolean checkPrecondition(Player player, Object detail) {
         // 요구사항이 없을 경우 true 반환
         if (this.requirements.size() == 0)
@@ -53,7 +52,7 @@ public class BuildSimpleAction implements MultiInputAction {
      * @param player 건설 작업을 수행할 플레이어
      * @return ?
      */
-    public boolean runAction(Player player, Object detail) {
+    public void runAction(Player player, Object detail) {
         if(!checkPrecondition(player, detail))
             throw new RuntimeException("건설을 수행할 자원이 부족합니다.");
 
@@ -63,7 +62,6 @@ public class BuildSimpleAction implements MultiInputAction {
             Pair<Integer, Integer> pos = (Pair<Integer, Integer>) detail;
             // 건설 작업 수행
             player.buildField(pos.first, pos.second, this.fieldType);
-            return true;
         } catch (Exception ex) {
             throw new RuntimeException("입력이 잘못됬습니다.");
         }

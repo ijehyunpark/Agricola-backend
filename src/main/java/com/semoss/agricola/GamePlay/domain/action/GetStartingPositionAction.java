@@ -16,23 +16,12 @@ public class GetStartingPositionAction implements SimpleAction {
     }
 
     /**
-     * 선공권 가져오는 행동의 전제조건은 없습니다.
-     * @param player
-     * @return true
-     */
-    @Override
-    public boolean checkPrecondition(Player player) {
-        return true;
-    }
-
-    /**
      * 선공권을 가져옵니다.
+     *
      * @param player
-     * @return
      */
     @Override
-    public boolean runAction(Player player) {
+    public void runAction(Player player) {
         player.setStartingTokenByTrue();
-        return false;
     }
 }

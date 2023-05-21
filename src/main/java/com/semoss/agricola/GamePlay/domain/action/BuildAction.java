@@ -35,7 +35,6 @@ public class BuildAction implements SimpleAction{
      * @param player player who check precondition
      * @return if the precondition is satisfied, return true.
      */
-    @Override
     public boolean checkPrecondition(Player player) {
         for (Map.Entry<ResourceType,Integer> resourceSet : resourceSet){
             if (player.getResource(resourceSet.getKey()) < resourceSet.getValue())
@@ -49,8 +48,7 @@ public class BuildAction implements SimpleAction{
     }
 
     @Override
-    public boolean runAction(Player player) {
-        return false;
+    public void runAction(Player player) {
     }
 
     public boolean runAction(Player player, int actionNum, int[][] pos) {

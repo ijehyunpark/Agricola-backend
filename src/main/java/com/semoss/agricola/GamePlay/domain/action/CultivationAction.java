@@ -22,7 +22,6 @@ public class CultivationAction implements MultiInputAction {
      * @param detail 밭의 y, x 좌표
      * @return
      */
-    @Override
     public boolean checkPrecondition(Player player, Object detail) {
         return false;
     }
@@ -33,7 +32,7 @@ public class CultivationAction implements MultiInputAction {
      * @param detail 밭의 y, x 좌표
      * @return
      */
-    public boolean runAction(Player player, Object detail) {
-        return false;
+    public void runAction(Player player, Object detail) {
+        throw new RuntimeException("미구현");
     }
 }

@@ -40,7 +40,7 @@ public class Occupation implements Card {
     }
 
     @Override
-    public void useResource(Player player) {
+    public void place(Player player) {
 
     }
 }

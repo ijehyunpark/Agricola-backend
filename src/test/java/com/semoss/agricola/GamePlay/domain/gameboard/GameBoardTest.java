@@ -2,24 +2,46 @@ package com.semoss.agricola.GamePlay.domain.gameboard;
 
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
 import com.semoss.agricola.GamePlay.domain.action.Event;
+import com.semoss.agricola.GamePlay.domain.action.GetStartingPositionAction;
+import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
+import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GameRoomCommunication.domain.User;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class GameBoardTest {
+    @Mock
+    AgricolaGame game;
+    @Mock
+    CardDictionary cardDictionary;
+    @InjectMocks
+    GameBoard board;
+
+    @BeforeEach
+    void setUp() {
+        board = GameBoard.builder()
+                .game(game)
+                .cardDictionary(cardDictionary)
+                .build();
+    }
     @Test
+    @DisplayName("라운드 셔플 테스트")
     void shuffleEventsWithinRound_shouldShuffleEventsWithinSameRound() {
         // given
-        AgricolaGame game = AgricolaGame.builder()
-                .users(List.of(User.builder().username("test1").build()))
-                .build();
-        // 아그리콜라 이벤트가 현재 라운드보다 작을 경우 은닉되어 증가한 후에 검증
-        for (int i = 0; i < 12; i++)
-            game.increaseRound();
-        List<Event> events = game.getGameBoard().getEvents();
+        when(game.getRound()).thenReturn(100);
+        List<Event> events = board.getEvents();
 
         // when
 
@@ -31,14 +53,13 @@ class GameBoardTest {
             if (events.get(i).getRound() > events.get(i + 1).getRound() ||
                     events.get(i).getRoundGroup() > events.get(i + 1).getRoundGroup()) {
                 isSorted = false;
-                break;
             }
             if(events.get(i).getRoundGroup() == 0 && events.get(i).getRound() != 0 ||
                     events.get(i).getRoundGroup() != 0 && events.get(i).getRound() == 0){
                 isMatched = false;
             }
-//            System.out.print(events.get(i).getRound());
-//            System.out.println(events.get(i).getRoundGroup());
+            System.out.print("round: " + events.get(i).getRound() + "  ::  ");
+            System.out.println("roundGroup: " + events.get(i).getRoundGroup());
         }
         // 정렬 되있는지 확인
         assertTrue(isSorted);
@@ -47,19 +68,14 @@ class GameBoardTest {
     }
 
     @Test
+    @DisplayName("스택 이벤트 처리 테스트")
     void givenStackActions_whenProcessStackEvent_thenResourceAccumulated() {
         // given
-        AgricolaGame game = AgricolaGame.builder()
-                .users(List.of(User.builder().username("test1").build()))
-                .build();
-        // 아그리콜라 이벤트가 현재 라운드보다 작을 경우 은닉되어 증가한 후에 검증
-        for (int i = 0; i < 12; i++)
-            game.increaseRound();
-        GameBoard board = game.getGameBoard();
+        when(game.getRound()).thenReturn(100);
         List<Event> events = board.getEvents();
 
         // when
-        board.processStackEvent(10);
+        board.processStackEvent();
 
         // then
         boolean dirtyChk = false;
@@ -68,5 +84,17 @@ class GameBoardTest {
                 dirtyChk = true;
         }
         assertTrue(dirtyChk);
+    }
+
+    @Test
+    @Disabled
+    @DisplayName("예약 자원 전달 테스트")
+    void processReservationResourceTest() {
+        // given
+
+        // when
+
+        // then
+
     }
 }

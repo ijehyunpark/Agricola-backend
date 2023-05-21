@@ -7,12 +7,7 @@ import com.semoss.agricola.GamePlay.domain.player.Player;
  */
 public interface MultiInputAction extends Action {
     /**
-     * Check if the player satisfies the precondition
-     */
-    boolean checkPrecondition(Player player, Object detail);
-
-    /**
      * when players select this action
      */
-    boolean runAction(Player player, Object detail);
+    void runAction(Player player, Object detail);
 }

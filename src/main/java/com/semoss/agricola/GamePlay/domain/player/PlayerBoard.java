@@ -1,8 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.player;
 
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
-import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
-import jdk.jshell.spi.ExecutionControl;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -66,7 +64,8 @@ public class PlayerBoard {
     protected boolean isCompletedPlayed() {
         return Arrays.stream(fields)
                 .flatMap(Arrays::stream)
-                .filter(field -> field instanceof Room)
+                .filter(Objects::nonNull)
+                .filter(field -> field.getFieldType() == FieldType.ROOM)
                 .allMatch(field -> ((Room) field).isCompletedPlayed());
     }
 
@@ -76,7 +75,8 @@ public class PlayerBoard {
     protected void initPlayed() {
         Arrays.stream(fields)
                 .flatMap(Arrays::stream)
-                .filter(field -> field instanceof Room)
+                .filter(Objects::nonNull)
+                .filter(field -> field.getFieldType() == FieldType.ROOM)
                 .map(field -> (Room) field)
                 .forEach(Room::initPlayed);
     }
@@ -87,7 +87,8 @@ public class PlayerBoard {
     protected void growUpChild() {
         Arrays.stream(fields)
                 .flatMap(Arrays::stream)
-                .filter(field -> field instanceof Room)
+                .filter(Objects::nonNull)
+                .filter(field -> field.getFieldType() == FieldType.ROOM)
                 .map(field -> (Room)field)
                 .forEach(Room::growUpChild);
     }
@@ -98,7 +99,8 @@ public class PlayerBoard {
     protected List<ResourceStruct> harvest() {
         return Arrays.stream(fields)
                 .flatMap(Arrays::stream)
-                .filter(field -> field instanceof Farm)
+                .filter(Objects::nonNull)
+                .filter(field -> field.getFieldType() == FieldType.BARN)
                 .map(field -> ((Farm) field).harvest())
                 .filter(Optional::isPresent)
                 .map(Optional::get)
@@ -109,7 +111,32 @@ public class PlayerBoard {
      * TODO: 동물을 번식시킨다.
      */
     protected void breeding() {
-        // do nothing now
+        Map<AnimalType, Integer> animals = new HashMap<>();
+
+        // 모든 가축 개수 계산
+        Arrays.stream(fields)
+                .flatMap(Arrays::stream)
+                .filter(Objects::nonNull)
+                .filter(field -> field.getFieldType() == FieldType.BARN)
+                .map(field -> ((Barn) field).getAnimal())
+                .forEach(animalStruct -> animals.put(animalStruct.getAnimal(), animalStruct.getCount()));
+
+        Arrays.stream(fields)
+                .flatMap(Arrays::stream)
+                .filter(Objects::nonNull)
+                .filter(field -> field.getFieldType() == FieldType.ROOM)
+                .map(field -> ((Room) field))
+                .filter(room -> room.getPetRoom() == null)
+                .map(room -> room.getPetRoom().getAnimal())
+                .forEach(animalStruct -> animals.put(animalStruct.getAnimal(), animalStruct.getCount()));
+
+
+        // 증가 process
+        for (Map.Entry<AnimalType, Integer> animal : animals.entrySet()) {
+            if (animal.getValue() >= 2) {
+                // TODO : 증가한 동물을 재배치
+            }
+        }
     }
 
     /**
@@ -118,7 +145,8 @@ public class PlayerBoard {
     protected int calculateFoodNeeds() {
         return Arrays.stream(fields)
                 .flatMap(Arrays::stream)
-                .filter(field -> field instanceof Room)
+                .filter(Objects::nonNull)
+                .filter(field -> field.getFieldType() == FieldType.ROOM)
                 .mapToInt(field -> ((Room) field).calculateFoodNeeds())
                 .sum();
     }
@@ -127,16 +155,16 @@ public class PlayerBoard {
      * 빈 방을 확인한다.
      * @return 만약 빈 방이 존재할 경우, true를 반환한다.
      */
-    protected boolean hasEmptyRoom() {
+    protected boolean existEmptyRoom() {
         return Arrays.stream(fields)
                 .flatMap(Arrays::stream)
-                .filter(field -> field instanceof Room)
+                .filter(Objects::nonNull)
+                .filter(field -> field.getFieldType() == FieldType.ROOM)
                 .map(room -> (Room) room)
                 .anyMatch(Room::isEmptyRoom);
     }
 
     /**
-<<<<<<< HEAD
      * 설치가능한 필드 위치
      * @param fieldType 확인할 필드
      * @return 설치가능한 위치를 true 로 나타낸 2차원 필드크기 배열
@@ -177,12 +205,6 @@ public class PlayerBoard {
      * @param y row
      * @param x col
      * @param fieldType 설치하고자하는 필드
-=======
-     * TODO: 빈 필드에 새로운 건물을 건설한다.
-     * @param y 건설할 y축 좌표
-     * @param x 건설할 x축 좌표
-     * @param fieldType 건설할 건물 종류
->>>>>>> develop
      */
     protected void buildField(int y, int x, FieldType fieldType) {
         if (fields[y][x] != null)
@@ -406,7 +428,8 @@ public class PlayerBoard {
         // 빈 방에 우선 추가
         Optional<Room> emptyRoom = Arrays.stream(fields)
                 .flatMap(Arrays::stream)
-                .filter(field -> field instanceof Room && ((Room) field).isEmptyRoom())
+                .filter(Objects::nonNull)
+                .filter(field -> field.getFieldType() == FieldType.ROOM && ((Room) field).isEmptyRoom())
                 .map(field -> (Room) field)
                 .findFirst();
 
@@ -418,7 +441,8 @@ public class PlayerBoard {
         // 없으면 아무 방에 추가
         Arrays.stream(fields)
                 .flatMap(Arrays::stream)
-                .filter(field -> field instanceof Room)
+                .filter(Objects::nonNull)
+                .filter(field -> field.getFieldType() == FieldType.ROOM)
                 .map(field -> (Room) field)
                 .findFirst()
                 .ifPresent(room -> room.addResident(ResidentType.CHILD));
@@ -431,7 +455,8 @@ public class PlayerBoard {
     protected int getFamilyCount(){
         return Arrays.stream(fields)
                 .flatMap(Arrays::stream)
-                .filter(Room.class::isInstance)
+                .filter(Objects::nonNull)
+                .filter(field -> field.getFieldType() == FieldType.ROOM)
                 .mapToInt(field -> ((Room) field).getResidentNumber())
                 .sum();
     }

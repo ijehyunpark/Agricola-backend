@@ -9,7 +9,7 @@ import lombok.Getter;
  * 자원이 누적해서 쌓이는 행동
  */
 @Getter
-public class StackResourceAction implements Action {
+public class StackResourceAction implements StackAction {
     private final ActionType actionType = ActionType.STACK;
     private final ResourceStruct stackResource;
 

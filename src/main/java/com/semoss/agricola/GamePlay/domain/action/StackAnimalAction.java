@@ -8,7 +8,7 @@ import lombok.Getter;
 /**
  * 자원이 누적해서 쌓이는 행동
  */
-public class StackAnimalAction implements Action {
+public class StackAnimalAction implements StackAction {
     @Getter
     private final ActionType actionType = ActionType.STACK_ANIMAL;
     @Getter

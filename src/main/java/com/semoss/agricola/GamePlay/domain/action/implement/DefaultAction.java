@@ -11,8 +11,6 @@ import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
 import com.semoss.agricola.GamePlay.domain.card.MajorCard;
 import com.semoss.agricola.GamePlay.domain.player.Player;
-import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
-import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStructInterface;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
 import com.semoss.agricola.GamePlay.dto.BakeActionExtentionRequest;
@@ -103,7 +101,7 @@ public abstract class DefaultAction {
         // 입력 행동값 검증
         isCollectRequest(acts);
 
-        // TooO: Memento로 실패 시 롤백
+        // ToDO: Memento로 실패 시 롤백
 
         this.actions.stream()
             .filter(action -> acts.get(actions.indexOf(action)).getUse())
@@ -157,14 +155,7 @@ public abstract class DefaultAction {
                         ((PlaceAction) action).runAction(player, card);
                     }
                     case STACK, STACK_ANIMAL -> {
-                        player.addResource(stacks.stream()
-                                .filter(ResourceStructInterface::isResource)
-                                .map(resourceStructInterface -> (ResourceStruct) resourceStructInterface)
-                                .toList());
-                        player.addAnimal(stacks.stream()
-                                .filter(ResourceStructInterface::isAnimal)
-                                .map(resourceStructInterface -> (AnimalStruct) resourceStructInterface)
-                                .toList());
+                        ((StackAction) action).runstackAction(player, stacks);
                         history.writeResourceChange(stacks);
                         stacks.clear();
                     }

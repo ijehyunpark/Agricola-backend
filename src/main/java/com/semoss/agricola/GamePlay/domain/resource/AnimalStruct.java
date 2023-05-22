@@ -1,6 +1,7 @@
 package com.semoss.agricola.GamePlay.domain.resource;
 
 import com.semoss.agricola.GamePlay.domain.player.AnimalType;
+import com.semoss.agricola.GamePlay.exception.MinusResourceException;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,7 +30,7 @@ public class AnimalStruct implements ResourceStructInterface {
         return true;
     }
 
-    public void subResource(int count) { if (this.count - count < 0) throw new RuntimeException("동물 수는 음수가 될 수 없습니다.");
+    public void subResource(int count) { if (this.count - count < 0) throw new MinusResourceException("동물 수는 음수가 될 수 없습니다.");
         this.count -= count;
     }
 }

@@ -15,6 +15,8 @@ public class AgricolaActionRequest {
     private Long eventId;
 
     @Getter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @AllArgsConstructor
     public static class ActionFormat {
         @NotNull(message = "필수 입력")
         private Boolean use;

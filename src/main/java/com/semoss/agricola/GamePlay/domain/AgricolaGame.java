@@ -13,6 +13,8 @@ import com.semoss.agricola.GamePlay.domain.gameboard.ImprovementBoard;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
+import com.semoss.agricola.GamePlay.exception.NotFoundException;
+import com.semoss.agricola.GamePlay.exception.ResourceLackException;
 import com.semoss.agricola.GameRoom.domain.Game;
 import com.semoss.agricola.GameRoom.domain.GameType;
 import com.semoss.agricola.GameRoomCommunication.domain.User;
@@ -122,7 +124,7 @@ public class AgricolaGame implements Game {
                 .findAny();
 
         // 선공 플레이어 변경
-        this.startingPlayer = startingPlayer.orElseThrow(RuntimeException::new);
+        this.startingPlayer = startingPlayer.orElseThrow(NotFoundException::new);
     }
 
 
@@ -144,7 +146,7 @@ public class AgricolaGame implements Game {
         // 현재 차례의 플레이어 인덱스 검색
         int index = players.indexOf(player);
         if (index == -1 || players.size() == 0)
-            throw new RuntimeException("다음 유저를 찾을 수 없습니다.");
+            throw new NotFoundException("다음 유저를 찾을 수 없습니다.");
 
         // 다음플레이어 반환
         if (index + 1 == players.size())
@@ -238,7 +240,7 @@ public class AgricolaGame implements Game {
 
         // 플레이어가 교환할 자원을 가지고 있는지 검증한다.
         if(player.getResource(resource.getResource()) < resource.getCount())
-            throw new RuntimeException("자원이 부족합니다.");
+            throw new ResourceLackException();
 
         // 주설비와 교환 요청 자원을 사용하여 교환 작업을 수행한다.
         // TODO: 교환 후 자원 획득

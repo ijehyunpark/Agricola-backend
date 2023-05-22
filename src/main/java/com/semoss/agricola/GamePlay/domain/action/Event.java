@@ -55,12 +55,13 @@ public class Event {
         if(this.isPlayed != null)
             throw new RuntimeException("이미 플레이한 액션칸입니다.");
 
-        this.isPlayed = player;
         History history = History.builder()
                 .eventName(this.action.getEventName())
                 .build();
 
         this.action.runAction(player, acts, this.stacks, cardDictionary, history);
+
+        this.isPlayed = player;
 
         return history;
     }

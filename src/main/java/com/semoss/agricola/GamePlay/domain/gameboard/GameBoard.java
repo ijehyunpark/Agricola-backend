@@ -6,6 +6,8 @@ import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.action.*;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
+import com.semoss.agricola.GamePlay.exception.NotFoundException;
+import com.semoss.agricola.GamePlay.exception.ServerError;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -66,7 +68,7 @@ public record GameBoard(@JsonIgnore AgricolaGame game, List<Event> events, Impro
      */
     private void shuffleEventsWithinRoundGroup() {
         if (this.events.size() == 0)
-            throw new RuntimeException("이벤트 객체가 비어 있습니다.");
+            throw new ServerError("이벤트 객체가 비어 있습니다.");
 
         // roundGroup 값을 기준으로 이전과 다음 Event 객체의 round 값과 비교하기 위한 변수
         int prevRound = events.get(0).getAction().getRoundGroup();
@@ -132,7 +134,7 @@ public record GameBoard(@JsonIgnore AgricolaGame game, List<Event> events, Impro
         return events.stream()
                 .filter(event -> event.getAction().getEventName().getId() == eventId.intValue())
                 .findAny()
-                .orElseThrow(() -> new RuntimeException("이벤트가 존재하지 않습니다"))
+                .orElseThrow(() -> new NotFoundException("이벤트가 존재하지 않습니다"))
                 .runActions(player, acts, this.game.getCardDictionary());
     }
 
@@ -140,7 +142,6 @@ public record GameBoard(@JsonIgnore AgricolaGame game, List<Event> events, Impro
      * 이벤트의 플레이 여부를 초기화한다.
      */
     public void initPlayed() {
-        events.stream()
-                .forEach(Event::initPlayed);
+        events.forEach(Event::initPlayed);
     }
 }

@@ -56,5 +56,6 @@ public class CultivationAction implements Action {
 
         //씨앗을 심는다.
         player.cultivate(requests);
+        requests.forEach(request -> player.useResource(request.getResourceType(), 1));
     }
 }

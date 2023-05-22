@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.action.implement;
 
+import com.semoss.agricola.GamePlay.domain.action.BuildRoomAction;
 import com.semoss.agricola.GamePlay.domain.action.BuildSimpleAction;
 import com.semoss.agricola.GamePlay.domain.action.DoType;
 import com.semoss.agricola.GamePlay.domain.player.FieldType;
@@ -25,19 +26,8 @@ public class Action1 extends DefaultAction {
 
         // 1-1. 방만들기
         List<ResourceStruct> requirements1 = new ArrayList<>();
-        requirements1.add(ResourceStruct.builder()
-                .resource(ResourceType.WOOD)
-                .count(5)
-                .build());
-        requirements1.add(ResourceStruct.builder()
-                .resource(ResourceType.GRAIN)
-                .count(2)
-                .build());
-        addAction(BuildSimpleAction.builder()
-                .fieldType(FieldType.ROOM)
-                .buildMaxCount(-1)
-                .requirements(requirements1)
-                .build(), DoType.ANDOR);
+
+        addAction(new BuildRoomAction(), DoType.ANDOR);
 
         // 1-2 외양간 짓기
         List<ResourceStruct> requirements2 = new ArrayList<>();

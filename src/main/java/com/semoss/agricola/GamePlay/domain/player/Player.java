@@ -13,6 +13,7 @@ import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.GamePlay.dto.CultivationActionExtentionRequest;
+import com.semoss.agricola.GamePlay.exception.ResourceLackException;
 import lombok.*;
 
 import java.util.*;
@@ -135,6 +136,16 @@ public class Player {
     }
 
     /**
+     * use resource
+     * @param resources resource type and amount to use
+     */
+    public void useResource(List<ResourceStruct> resources){
+        for (ResourceStruct resource : resources) {
+            useResource(resource);
+        }
+    }
+
+    /**
      * get player's resource
      * @param resourceType resource type to get
      * @return amount of resource
@@ -185,14 +196,16 @@ public class Player {
 
     /**
      * 건축물 건설
-     * @param y 건설할 가로축 좌표
-     * @param x 건설할 세로축 좌표
-     * @param fieldType 건설할 건물 종류
+     *
+     * @param y            건설할 가로축 좌표
+     * @param x            건설할 세로축 좌표
+     * @param fieldType    건설할 건물 종류
      * @return
      */
     public void buildField(int y, int x, FieldType fieldType){
         this.playerBoard.buildField(y, x, fieldType);
     }
+
 
     /** TODO
      * 플레이어의 핸드에 해당 타입의 카드가 있는지 확인
@@ -293,7 +306,7 @@ public class Player {
         if(getResourceStruct(ResourceType.FOOD).getCount() >= foodNeeds)
             useResource(ResourceType.FOOD, foodNeeds);
         else
-            throw new RuntimeException("음식 토큰 부족");
+            throw new ResourceLackException("음식 토큰 부족");
     }
 
     /** TODO
@@ -402,6 +415,5 @@ public class Player {
      */
     public void cultivate(List<CultivationActionExtentionRequest> requests) {
         this.playerBoard.cultivate(requests);
-        requests.forEach(request -> useResource(request.getResourceType(), 1));
     }
 }

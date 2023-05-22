@@ -32,15 +32,25 @@ import java.util.Map;
 @Getter
 @Log4j2
 public abstract class DefaultAction {
+    @JsonIgnore
     private final ActionName eventName;
     private final List<Action> actions = new ArrayList<>();
     private final List<DoType> doTypes = new ArrayList<>();
+
     @JsonIgnore
     private final int roundGroup;
 
     protected DefaultAction(ActionName eventName, int roundGroup) {
         this.eventName = eventName;
         this.roundGroup = roundGroup;
+    }
+
+    public int getId() {
+        return eventName.getId();
+    }
+
+    public String getName() {
+        return eventName.getName();
     }
 
     /**
@@ -99,6 +109,37 @@ public abstract class DefaultAction {
         return BuildFenceAction.builder().build();
     }
 
+
+    /**
+     * 올바른 행동 입력인지 검증
+     * @param acts 요청 필드
+     */
+    private void isCollectRequest(List<AgricolaActionRequest.ActionFormat> acts) {
+        int actionSize = actions.size();
+        for (int i = 0; i < actionSize; i++) {
+            DoType doType = this.doTypes.get(i);
+            // After 구문은 전 구문이 성립되야 이후 구문을 사용할 수 있습니다.
+            if(doType == DoType.After && !acts.get(i).getUse()) {
+                for(int j = i + 1; j < actionSize; j++) {
+                    if(acts.get(i).getUse())
+                        throw new RuntimeException("액션 구분 오류");
+                }
+            }
+
+            // OR 구문은 하나만 선택되어야 합니다.
+            if(doType == DoType.OR){
+                boolean chk = false;
+                while(i < actionSize && this.doTypes.get(i) == DoType.OR) {
+                    if(acts.get(i++).getUse()){
+                        if(chk)
+                            throw new RuntimeException("액션 구분 오류");
+                        chk = true;
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * 입력에 대해 액션 수행
      * @param player 액션을 플레이하는 플레이어
@@ -109,7 +150,11 @@ public abstract class DefaultAction {
      * @return 해당 행동을 수행한 후 해당 기록을 반환
      */
     public History runAction(Player player, List<AgricolaActionRequest.ActionFormat> acts, List<ResourceStructInterface> stacks, CardDictionary cardDictionary, History history) {
-        // TODO: Object 입력 개선 (object acts.acts)
+        // 입력 행동값 검증
+        isCollectRequest(acts);
+
+        // TooO: Memento로 실패 시 롤백
+
         this.actions.stream()
             .filter(action -> acts.get(actions.indexOf(action)).getUse())
             .forEach(action -> {
@@ -125,10 +170,10 @@ public abstract class DefaultAction {
                             String jsonString = objectMapper.writeValueAsString(act.getActs());
                             BakeActionExtentionRequest request = objectMapper.readValue(jsonString, BakeActionExtentionRequest.class);
                             Card card = cardDictionary.getCard(request.getImprovmentId());
-                            if(card.getCardType() != CardType.MAJOR)
+                            if (card.getCardType() != CardType.MAJOR)
                                 throw new RuntimeException("주설비카드가 아닙니다.");
                             ((BakeAction) action).runAction(player, (MajorCard) card);
-                        } catch (JsonProcessingException e){
+                        } catch (JsonProcessingException e) {
                             throw new RuntimeException("요청 필드 오류");
                         }
                     }
@@ -146,7 +191,6 @@ public abstract class DefaultAction {
                         try {
                             ObjectMapper objectMapper = new ObjectMapper();
                             String jsonString = objectMapper.writeValueAsString(act.getActs());
-
                             JavaType listType = objectMapper.getTypeFactory().constructCollectionType(List.class, CultivationActionExtentionRequest.class);
                             List<CultivationActionExtentionRequest> requestList = objectMapper.readValue(jsonString, listType);
                             ((CultivationAction) action).runAction(player, requestList);
@@ -174,5 +218,5 @@ public abstract class DefaultAction {
                 history.writeActionType(action.getActionType(), times);
             });
         return history;
-    }
+        }
 }

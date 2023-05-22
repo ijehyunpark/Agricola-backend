@@ -1,33 +1,27 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.semoss.agricola.GamePlay.domain.History;
-import com.semoss.agricola.GamePlay.domain.action.implement.Action1;
-import com.semoss.agricola.GamePlay.domain.action.implement.Action20;
 import com.semoss.agricola.GamePlay.domain.action.implement.DefaultAction;
-import com.semoss.agricola.GamePlay.domain.card.Card;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
-import com.semoss.agricola.GamePlay.domain.card.MajorCard;
-import com.semoss.agricola.GamePlay.domain.gameboard.GameBoard;
 import com.semoss.agricola.GamePlay.domain.player.Player;
-import com.semoss.agricola.GamePlay.domain.resource.*;
+import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
+import com.semoss.agricola.GamePlay.domain.resource.Reservation;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceStructInterface;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
-import com.semoss.agricola.GamePlay.dto.BakeActionExtentionRequest;
-import com.semoss.agricola.GamePlay.dto.BuildActionExtentionRequest;
-import com.semoss.agricola.GamePlay.dto.CultivationActionExtentionRequest;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Getter
 @Component

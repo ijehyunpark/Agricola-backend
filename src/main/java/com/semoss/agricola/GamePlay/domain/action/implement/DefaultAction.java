@@ -1,10 +1,14 @@
 package com.semoss.agricola.GamePlay.domain.action.implement;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.action.*;
 import com.semoss.agricola.GamePlay.domain.card.Card;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
+import com.semoss.agricola.GamePlay.domain.card.CardType;
 import com.semoss.agricola.GamePlay.domain.card.MajorCard;
 import com.semoss.agricola.GamePlay.domain.player.AnimalType;
 import com.semoss.agricola.GamePlay.domain.player.FieldType;
@@ -18,21 +22,23 @@ import com.semoss.agricola.GamePlay.dto.BakeActionExtentionRequest;
 import com.semoss.agricola.GamePlay.dto.BuildActionExtentionRequest;
 import com.semoss.agricola.GamePlay.dto.CultivationActionExtentionRequest;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 @Getter
+@Log4j2
 public abstract class DefaultAction {
-    private final EventName eventName;
+    private final ActionName eventName;
     private final List<Action> actions = new ArrayList<>();
     private final List<DoType> doTypes = new ArrayList<>();
     @JsonIgnore
     private final int roundGroup;
 
-    protected DefaultAction(EventName eventName, int roundGroup) {
+    protected DefaultAction(ActionName eventName, int roundGroup) {
         this.eventName = eventName;
         this.roundGroup = roundGroup;
     }
@@ -114,17 +120,39 @@ public abstract class DefaultAction {
                         ((SimpleAction) action).runAction(player, history);
                     }
                     case BAKE -> {
-                        BakeActionExtentionRequest request = (BakeActionExtentionRequest) act.getActs();
-                        cardDictionary.getCard((long) request.getImprovmentId());
-                        ((BakeAction) action).runAction(player, (MajorCard) act.getActs());
+                        try {
+                            ObjectMapper objectMapper = new ObjectMapper();
+                            String jsonString = objectMapper.writeValueAsString(act.getActs());
+                            BakeActionExtentionRequest request = objectMapper.readValue(jsonString, BakeActionExtentionRequest.class);
+                            Card card = cardDictionary.getCard(request.getImprovmentId());
+                            if(card.getCardType() != CardType.MAJOR)
+                                throw new RuntimeException("주설비카드가 아닙니다.");
+                            ((BakeAction) action).runAction(player, (MajorCard) card);
+                        } catch (JsonProcessingException e){
+                            throw new RuntimeException("요청 필드 오류");
+                        }
                     }
                     case BUILD -> {
-                        BuildActionExtentionRequest request = (BuildActionExtentionRequest) act.getActs();
-                        ((MultiInputAction) action).runAction(player, act.getActs());
+                        try {
+                            ObjectMapper objectMapper = new ObjectMapper();
+                            String jsonString = objectMapper.writeValueAsString(act.getActs());
+                            BuildActionExtentionRequest request = objectMapper.readValue(jsonString, BuildActionExtentionRequest.class);
+                            ((BuildSimpleAction) action).runAction(player, request.getY(), request.getX());
+                        } catch (JsonProcessingException e) {
+                            throw new RuntimeException("요청 필드 오류");
+                        }
                     }
                     case CULTIVATION -> {
-                        CultivationActionExtentionRequest request = (CultivationActionExtentionRequest) act.getActs();
-                        ((CultivationAction) action).runAction(player, request.getY(), request.getX(), request.getResourceType());
+                        try {
+                            ObjectMapper objectMapper = new ObjectMapper();
+                            String jsonString = objectMapper.writeValueAsString(act.getActs());
+
+                            JavaType listType = objectMapper.getTypeFactory().constructCollectionType(List.class, CultivationActionExtentionRequest.class);
+                            List<CultivationActionExtentionRequest> requestList = objectMapper.readValue(jsonString, listType);
+                            ((CultivationAction) action).runAction(player, requestList);
+                        } catch (JsonProcessingException e) {
+                            throw new RuntimeException("요청 필드 오류");
+                        }
                     }
                     case PLACE -> {
                         Card card = cardDictionary.getCard((Long) act.getActs());

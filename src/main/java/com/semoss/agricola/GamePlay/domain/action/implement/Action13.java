@@ -1,7 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.action.implement;
 
 import com.semoss.agricola.GamePlay.domain.action.DoType;
-import com.semoss.agricola.GamePlay.domain.action.EventName;
 import com.semoss.agricola.GamePlay.domain.action.PlaceAction;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
 import lombok.extern.log4j.Log4j2;
@@ -17,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Log4j2
 public class Action13 extends DefaultAction {
     public Action13() {
-        super(EventName.ACTION13, 1);
+        super(ActionName.ACTION13, 1);
 
         addAction(PlaceAction.builder()
                 .cardType(CardType.MAJOR)

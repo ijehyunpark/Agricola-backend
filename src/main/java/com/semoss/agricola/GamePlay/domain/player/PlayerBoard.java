@@ -3,6 +3,7 @@ package com.semoss.agricola.GamePlay.domain.player;
 import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
+import com.semoss.agricola.GamePlay.dto.CultivationActionExtentionRequest;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -226,13 +227,15 @@ public class PlayerBoard {
                         .build();
             }
             case STABLE -> {
-                fields[y][x] = Barn.builder()
-                        .fieldType(FieldType.STABLE)
-                        .build();
+                // TODO: 외양간 건설 요청시
+                throw new RuntimeException("미구현");
+//                fields[y][x] = Barn.builder()
+//                        .fieldType(FieldType.STABLE)
+//                        .build();
             }
             case FENCE -> {
                 // TODO: 울타리 건설 요청시
-                throw new RuntimeException("world");
+                throw new RuntimeException("미구현");
             }
             default -> {
                 throw new RuntimeException("불가능한 입력입니다.");
@@ -623,6 +626,31 @@ public class PlayerBoard {
     }
 
     /**
+     * 경작
+     * @param requests
+     */
+    public void cultivate(List<CultivationActionExtentionRequest> requests) {
+        requests.forEach(this::accept);
+
+        requests.forEach(request -> ((Farm) this.fields[request.getY()][request.getX()]).cultivate(request.getResourceType()));
+    }
+
+    /**
+     * 경작 가능성 검증
+     * @param request
+     */
+    private void accept(CultivationActionExtentionRequest request) {
+        if (request.getY() < 0 || request.getY() >= FIELD_COLUMN || request.getX() < 0 || request.getX() >= FIELD_ROW) {
+            throw new RuntimeException("필드 위치가 부적절합니다.");
+        }
+
+        if (this.fields[request.getY()][request.getX()].getFieldType() != FieldType.FARM ||
+                (((Farm) this.fields[request.getY()][request.getX()]).getSeed().getResource() != null &&
+                        ((Farm) this.fields[request.getY()][request.getX()]).getSeed().getCount() != 0))
+            throw new RuntimeException("빈 밭이 아닙니다.");
+    }
+
+    /**
      * 빈 밭인지 확인
      * @param y 플레이어 필드 column 위치
      * @param x 플레이어 필드 row 위치
@@ -643,17 +671,5 @@ public class PlayerBoard {
                 .findFirst()
                 .orElseThrow(RuntimeException::new)
                 .play();
-    }
-
-    public void cultivate(int y, int x, ResourceType resourceType) {
-        if(y < 0 || y >= FIELD_COLUMN || x < 0 || x >= FIELD_ROW)
-            throw new RuntimeException("필드 위치가 부적절합니다.");
-
-        if(this.fields[y][x].getFieldType() != FieldType.FARM ||
-                (((Farm) this.fields[y][x]).getSeed().getResource() != null &&
-                ((Farm) this.fields[y][x]).getSeed().getCount() != 0))
-            throw new RuntimeException("빈 밭이 아닙니다.");
-
-        ((Farm) this.fields[y][x]).cultivate(resourceType);
     }
 }

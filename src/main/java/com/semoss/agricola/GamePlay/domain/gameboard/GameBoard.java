@@ -16,15 +16,10 @@ import java.util.*;
  * 아그리콜라 메인 게임 보드
  */
 @Log4j2
-public class GameBoard {
+public record GameBoard(@JsonIgnore AgricolaGame game, List<Event> events, ImprovementBoard improvementBoard) {
 
-    @JsonIgnore @Getter
-    private final AgricolaGame game;
-    private final List<Event> events;
-    @Getter
-    private final ImprovementBoard improvementBoard;
-
-    public List<Event> getEvents() {
+    @Override
+    public List<Event> events() {
         return events.stream()
                 .filter(event -> event.getRound() <= game.getRound())
                 .toList();
@@ -39,7 +34,7 @@ public class GameBoard {
         shuffleEventsWithinRoundGroup();
         int round = 1;
         for (Event event : this.events) {
-            if(event.getAction().getRoundGroup() != 0)
+            if (event.getAction().getRoundGroup() != 0)
                 event.setRound(round++);
         }
         this.improvementBoard = improvementBoard;
@@ -100,7 +95,7 @@ public class GameBoard {
      * 현재 필드의 모든 누적 액션의 누적자원량을 증가시킨다.
      */
     public void processStackEvent() {
-        for (Event event : getEvents()) {
+        for (Event event : events()) {
             // 해당 이벤트의 모든 스택 액에 대해 자원을 쌓는다.
             event.getAction().getActions().stream()
                     .filter(action -> action.getActionType() == ActionType.STACK)

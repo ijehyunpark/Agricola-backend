@@ -1,10 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.action.implement;
 
 import com.semoss.agricola.GamePlay.domain.action.DoType;
-import com.semoss.agricola.GamePlay.domain.action.EventName;
-import com.semoss.agricola.GamePlay.domain.action.IncreaseFamily;
-import com.semoss.agricola.GamePlay.domain.action.PlaceAction;
-import com.semoss.agricola.GamePlay.domain.card.CardType;
 import com.semoss.agricola.GamePlay.domain.player.AnimalType;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -19,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Log4j2
 public class Action18 extends DefaultAction {
     public Action18() {
-        super(EventName.ACTION18, 3);
+        super(ActionName.ACTION18, 3);
 
         addAction(buildSimpleStackAction(AnimalType.WILD_BOAR, 1), DoType.FINISH);
 

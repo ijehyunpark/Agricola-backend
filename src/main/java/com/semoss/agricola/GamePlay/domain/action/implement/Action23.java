@@ -1,8 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.action.implement;
 
-import com.semoss.agricola.GamePlay.domain.action.CultivationAction;
 import com.semoss.agricola.GamePlay.domain.action.DoType;
-import com.semoss.agricola.GamePlay.domain.action.EventName;
 import com.semoss.agricola.GamePlay.domain.action.IncreaseFamily;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -17,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Log4j2
 public class Action23 extends DefaultAction {
     public Action23() {
-        super(EventName.ACTION23, 5);
+        super(ActionName.ACTION23, 5);
 
         addAction(IncreaseFamily.builder()
                 .precondition(false)

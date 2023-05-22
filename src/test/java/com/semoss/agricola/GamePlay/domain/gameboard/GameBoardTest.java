@@ -8,10 +8,6 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
@@ -65,7 +61,7 @@ class GameBoardTest {
     void shuffleEventsWithinRound_shouldShuffleEventsWithinSameRound() {
         // given
         when(game.getRound()).thenReturn(100);
-        List<Event> events = board.getEvents();
+        List<Event> events = board.events();
 
         // when
 
@@ -98,7 +94,7 @@ class GameBoardTest {
     void givenStackActions_whenProcessStackEvent_thenResourceAccumulated() {
         // given
         when(game.getRound()).thenReturn(100);
-        List<Event> events = board.getEvents();
+        List<Event> events = board.events();
 
         // when
         board.processStackEvent();

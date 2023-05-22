@@ -5,9 +5,12 @@ import com.semoss.agricola.GamePlay.domain.player.Field;
 import com.semoss.agricola.GamePlay.domain.player.FieldType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
+import com.semoss.agricola.GamePlay.dto.CultivationActionExtentionRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -34,13 +37,39 @@ class CultivationActionTest {
         Field field = player.getPlayerBoard().getFields()[2][3];
         assertEquals(FieldType.FARM, field.getFieldType());
         Farm farm = (Farm) field;
+        List<CultivationActionExtentionRequest> request = List.of(new CultivationActionExtentionRequest(2, 3, ResourceType.VEGETABLE));
 
         //when
-        action.runAction(player, 2, 3, ResourceType.VEGETABLE);
+        action.runAction(player, request);
 
         //then
         assertEquals(ResourceType.VEGETABLE, farm.getSeed().getResource());
         assertEquals(3, farm.getSeed().getCount());
+    }
+
+    @Test
+    @DisplayName("runAction_씨앗 심기 테스트 다중 요청 : 성공")
+    void runAction7() {
+        //given
+        player.buildField(2,3, FieldType.FARM);
+        player.buildField(2,4, FieldType.FARM);
+        player.addResource(ResourceType.GRAIN, 1);
+        player.addResource(ResourceType.VEGETABLE, 1);
+
+        Field field = player.getPlayerBoard().getFields()[2][3];
+        assertEquals(FieldType.FARM, field.getFieldType());
+        Farm farm = (Farm) field;
+        List<CultivationActionExtentionRequest> request = List.of(new CultivationActionExtentionRequest(2, 3, ResourceType.VEGETABLE),
+                new CultivationActionExtentionRequest(2, 4, ResourceType.GRAIN));
+
+        //when
+        action.runAction(player, request);
+
+        //then
+        assertEquals(ResourceType.VEGETABLE, farm.getSeed().getResource());
+        assertEquals(3, farm.getSeed().getCount());
+        assertEquals(0, player.getResource(ResourceType.VEGETABLE));
+        assertEquals(0, player.getResource(ResourceType.GRAIN));
     }
 
     @Test
@@ -52,10 +81,11 @@ class CultivationActionTest {
         Field field = player.getPlayerBoard().getFields()[2][3];
         assertEquals(FieldType.FARM, field.getFieldType());
         Farm farm = (Farm) field;
+        List<CultivationActionExtentionRequest> request = List.of(new CultivationActionExtentionRequest(2, 3, ResourceType.VEGETABLE));
 
         //when
         assertThrows(RuntimeException.class, () ->{
-            action.runAction(player, 2, 3, ResourceType.VEGETABLE);
+            action.runAction(player, request);
         });
 
         //then
@@ -66,10 +96,11 @@ class CultivationActionTest {
     void runAction3() {
         //given
         player.addResource(ResourceType.VEGETABLE, 1);
+        List<CultivationActionExtentionRequest> request = List.of(new CultivationActionExtentionRequest(2, 3, ResourceType.VEGETABLE));
 
         //when
         assertThrows(RuntimeException.class, () ->{
-            action.runAction(player, 2, 3, ResourceType.VEGETABLE);
+            action.runAction(player, request);
         });
 
         //then
@@ -80,10 +111,11 @@ class CultivationActionTest {
     void runAction4() {
         //given
         player.addResource(ResourceType.VEGETABLE, 1);
+        List<CultivationActionExtentionRequest> request = List.of(new CultivationActionExtentionRequest(3, -1, ResourceType.VEGETABLE));
 
         //when
         assertThrows(RuntimeException.class, () ->{
-            action.runAction(player, 3, -1, ResourceType.VEGETABLE);
+            action.runAction(player, request);
         });
 
         //then
@@ -96,11 +128,29 @@ class CultivationActionTest {
         //given
         player.buildField(2,3, FieldType.FARM);
         player.addResource(ResourceType.VEGETABLE, 2);
+        List<CultivationActionExtentionRequest> request = List.of(new CultivationActionExtentionRequest(2, 3, ResourceType.VEGETABLE));
 
         //when
-        action.runAction(player, 2, 3, ResourceType.VEGETABLE);
+        action.runAction(player, request);
         assertThrows(RuntimeException.class, () ->{
-            action.runAction(player, 2, 3, ResourceType.VEGETABLE);
+            action.runAction(player, request);
+        });
+
+        //then
+    }
+
+    @Test
+    @DisplayName("runAction_중복된 요청이 있는 경우 씨앗 심기 테스트 : 실패")
+    void runAction6() {
+        //given
+        player.buildField(2,3, FieldType.FARM);
+        player.addResource(ResourceType.VEGETABLE, 2);
+        List<CultivationActionExtentionRequest> request = List.of(new CultivationActionExtentionRequest(2, 3, ResourceType.VEGETABLE),
+                new CultivationActionExtentionRequest(2, 3, ResourceType.VEGETABLE));
+
+        //when
+        assertThrows(RuntimeException.class, () ->{
+            action.runAction(player, request);
         });
 
         //then

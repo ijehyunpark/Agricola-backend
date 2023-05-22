@@ -2,8 +2,6 @@ package com.semoss.agricola.GamePlay.domain.action.implement;
 
 import com.semoss.agricola.GamePlay.domain.action.BasicAction;
 import com.semoss.agricola.GamePlay.domain.action.DoType;
-import com.semoss.agricola.GamePlay.domain.action.EventName;
-import com.semoss.agricola.GamePlay.domain.player.AnimalType;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.extern.log4j.Log4j2;
@@ -19,7 +17,7 @@ import org.springframework.stereotype.Component;
 @Log4j2
 public class Action19 extends DefaultAction {
     public Action19() {
-        super(EventName.ACTION19, 3);
+        super(ActionName.ACTION19, 3);
 
         addAction(BasicAction.builder()
                 .resource(ResourceStruct.builder()

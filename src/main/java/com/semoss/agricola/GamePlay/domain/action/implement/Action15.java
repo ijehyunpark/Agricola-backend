@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Log4j2
 public class Action15 extends DefaultAction {
     public Action15() {
-        super(EventName.ACTION15, 2);
+        super(ActionName.ACTION15, 2);
 
         addAction(RoomUpgradeAction.builder().build(), DoType.ANDOR);
         addAction(PlaceAction.builder()

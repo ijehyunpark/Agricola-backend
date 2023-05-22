@@ -1,11 +1,9 @@
 package com.semoss.agricola.GamePlay.domain.action.implement;
 
 import com.semoss.agricola.GamePlay.domain.action.DoType;
-import com.semoss.agricola.GamePlay.domain.action.EventName;
 import com.semoss.agricola.GamePlay.domain.action.IncreaseFamily;
 import com.semoss.agricola.GamePlay.domain.action.PlaceAction;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
-import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -19,7 +17,7 @@ import org.springframework.stereotype.Component;
 @Log4j2
 public class Action17 extends DefaultAction {
     public Action17() {
-        super(EventName.ACTION17, 2);
+        super(ActionName.ACTION17, 2);
 
         addAction(IncreaseFamily.builder()
                 .precondition(true)

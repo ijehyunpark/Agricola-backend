@@ -12,6 +12,7 @@ import com.semoss.agricola.GamePlay.domain.card.Occupation.Occupation;
 import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
+import com.semoss.agricola.GamePlay.dto.CultivationActionExtentionRequest;
 import lombok.*;
 
 import java.util.*;
@@ -398,11 +399,9 @@ public class Player {
 
     /**
      * 플레이어 밭에 씨앗을 심습니다.
-     * @param y 플레이어 필드 column 위치
-     * @param x 플레이어 필드 row 위치
-     * @param resourceType 심을 씨앗
      */
-    public void cultivate(int y, int x, ResourceType resourceType) {
-        this.playerBoard.cultivate(y, x, resourceType);
+    public void cultivate(List<CultivationActionExtentionRequest> requests) {
+        this.playerBoard.cultivate(requests);
+        requests.forEach(request -> useResource(request.getResourceType(), 1));
     }
 }

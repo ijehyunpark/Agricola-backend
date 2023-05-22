@@ -1,15 +1,10 @@
 package com.semoss.agricola.GamePlay.domain.action.implement;
 
-import com.semoss.agricola.GamePlay.domain.action.Action;
 import com.semoss.agricola.GamePlay.domain.action.BuildSimpleAction;
 import com.semoss.agricola.GamePlay.domain.action.DoType;
-import com.semoss.agricola.GamePlay.domain.action.EventName;
 import com.semoss.agricola.GamePlay.domain.player.FieldType;
-import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
-import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
-import lombok.experimental.SuperBuilder;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -26,7 +21,7 @@ import java.util.List;
 @Log4j2
 public class Action1 extends DefaultAction {
     public Action1() {
-        super(EventName.ACTION1, 0);
+        super(ActionName.ACTION1, 0);
 
         // 1-1. 방만들기
         List<ResourceStruct> requirements1 = new ArrayList<>();

@@ -1,10 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.action.implement;
 
 import com.semoss.agricola.GamePlay.domain.action.DoType;
-import com.semoss.agricola.GamePlay.domain.action.EventName;
-import com.semoss.agricola.GamePlay.domain.action.PlaceAction;
-import com.semoss.agricola.GamePlay.domain.action.RoomUpgradeAction;
-import com.semoss.agricola.GamePlay.domain.card.CardType;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -19,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Log4j2
 public class Action16 extends DefaultAction {
     public Action16() {
-        super(EventName.ACTION16, 2);
+        super(ActionName.ACTION16, 2);
 
         addAction(buildSimpleStackAction(ResourceType.STONE, 1), DoType.FINISH);
 

@@ -1,8 +1,8 @@
-package com.semoss.agricola.GamePlay.domain.action;
+package com.semoss.agricola.GamePlay.domain.action.implement;
 
 import java.util.Arrays;
 
-public enum EventName {
+public enum ActionName {
     ACTION1(1, "방 만들기 그리고/또는 외양간 짓기"),
     ACTION2(2, "시작 플레이어 되기 그리고/또는 보조 설비 1개 놓기"),
     ACTION3(3, "곡식 1개 가져가기"),
@@ -31,7 +31,7 @@ public enum EventName {
     private final int id;
     private final String name;
 
-    EventName(int id, String name) {
+    ActionName(int id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -39,8 +39,8 @@ public enum EventName {
     public int getId() { return id; }
     public String getName() { return name; }
 
-    public static EventName getEventNameById(int id) {
-        return Arrays.stream(EventName.values())
+    public static ActionName getEventNameById(int id) {
+        return Arrays.stream(ActionName.values())
                 .filter(eventName -> eventName.getId() == id)
                 .findAny()
                 .orElseThrow(RuntimeException::new);

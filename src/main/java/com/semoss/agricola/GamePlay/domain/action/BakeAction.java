@@ -1,15 +1,13 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
-import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.MajorCard;
-import com.semoss.agricola.GamePlay.domain.gameboard.ImprovementBoard;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.Builder;
 import lombok.Getter;
 
 /**
- * TODO: 빵 굽기 액션
+ * 빵 굽기 액션
  */
 public class BakeAction implements Action {
 

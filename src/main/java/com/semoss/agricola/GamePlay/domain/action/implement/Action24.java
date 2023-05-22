@@ -1,8 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.action.implement;
 
 import com.semoss.agricola.GamePlay.domain.action.DoType;
-import com.semoss.agricola.GamePlay.domain.action.EventName;
-import com.semoss.agricola.GamePlay.domain.action.IncreaseFamily;
 import com.semoss.agricola.GamePlay.domain.action.RoomUpgradeAction;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -17,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Log4j2
 public class Action24 extends DefaultAction {
     public Action24() {
-        super(EventName.ACTION24, 6);
+        super(ActionName.ACTION24, 6);
 
         addAction(RoomUpgradeAction.builder().build(), DoType.ANDOR);
         addAction(buildActionToFence(), DoType.FINISH);

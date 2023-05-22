@@ -7,6 +7,7 @@ import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
+import com.semoss.agricola.GameRoom.domain.Game;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 @Getter
 public class Player {
     private Long userId;
-    @Setter @JsonIgnore
+    @JsonIgnore
     private AgricolaGame game;
     private boolean startingToken;
     private final EnumMap<ResourceType,Integer> resources;
@@ -29,8 +30,9 @@ public class Player {
     private final List<Long> cardField;
 
     @Builder
-    public Player(Long userId, boolean isStartPlayer){
+    public Player(Long userId, AgricolaGame game, boolean isStartPlayer){
         this.userId = userId;
+        this.game = game;
         this.startingToken = isStartPlayer;
         this.resources = new EnumMap<>(ResourceType.class);
         for (ResourceType resource : ResourceType.values()){

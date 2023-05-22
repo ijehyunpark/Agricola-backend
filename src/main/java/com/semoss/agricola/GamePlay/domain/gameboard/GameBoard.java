@@ -11,7 +11,6 @@ import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.*;
 
@@ -19,11 +18,11 @@ import java.util.*;
  * 아그리콜라 메인 게임 보드
  */
 public class GameBoard {
-    @JsonIgnore @Setter
+    @JsonIgnore
     private AgricolaGame game;
     private List<Event> events;
     @Getter
-    private ImprovementBoard improvementBoard;
+    private ImprovementBoard improvementBoard; // TODO: 주요설비가 나열이 된다.
 
     @Builder
     public GameBoard(AgricolaGame game) {

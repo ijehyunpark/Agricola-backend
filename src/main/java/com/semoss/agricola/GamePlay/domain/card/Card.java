@@ -15,7 +15,9 @@ public interface Card {
     ResourceStruct getResourceToFoodHarvest(); // 수확시 1회에 한해 자원을 음식으로 교환
     ResourceStruct[] getResourcesToFoodAnytime(); // 언제든지 음식으로 교환
     AnimalStruct[] getAnimalsToFoodAnytime(); // 언제든지 음식으로 교환
+    int checkPoint(Player player); //
 
+    int getBonusPoint();
     CardType getCardType();
     Long getOwner();
     void setOwner(Long userID);

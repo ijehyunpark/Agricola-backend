@@ -58,9 +58,13 @@ public class Player {
         return resources.get(resourceType);
     }
 
+    public int getAnimal(AnimalType animalType) {
+        return playerBoard.getAnimal(animalType);
+    }
+
     /**
      * add resources to storage
-     * @param resource resource type and amout to add
+     * @param resource resource type and amount to add
      */
     public void addResource(ResourceStruct resource){
         resources.compute(resource.getResource(), (key, value) -> value + resource.getCount());
@@ -149,7 +153,7 @@ public class Player {
      */
     @JsonIgnore
     public int getRoomCount() {
-        return playerBoard.getRoomCount();
+        return playerBoard.numField(FieldType.ROOM);
     }
 
     /**
@@ -161,6 +165,14 @@ public class Player {
      */
     public void buildField(int y, int x, FieldType fieldType){
         this.playerBoard.buildField(y, x, fieldType);
+    }
+
+    public void buildFence(int[][] rowPos, int[][] colPos){
+        this.playerBoard.buildFence(rowPos,colPos);
+    }
+
+    public void addStable(int row, int col){
+        playerBoard.addStable(row,col);
     }
 
     /** TODO
@@ -335,5 +347,21 @@ public class Player {
     }
 
     public int numField(FieldType fieldType) { return playerBoard.numField(fieldType); }
+
+    public int numEmptyField(){ return playerBoard.numEmptyField(); }
+
+    public int numStableInBarn() { return playerBoard.numStableInBarn(); }
+
+    public int getCardPointsResource() {
+        return (int)cardField.stream()
+                .mapToLong(id -> CardDictionary.cardDict.get(id).checkPoint(this))
+                .sum();
+    }
+
+    public int getCardBonusPoints() {
+        return (int)cardField.stream()
+                .mapToLong(id -> CardDictionary.cardDict.get(id).getBonusPoint())
+                .sum();
+    }
 
 }

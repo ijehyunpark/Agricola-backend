@@ -136,7 +136,6 @@ public class PlayerBoard {
     }
 
     /**
-<<<<<<< HEAD
      * 설치가능한 필드 위치
      * @param fieldType 확인할 필드
      * @return 설치가능한 위치를 true 로 나타낸 2차원 필드크기 배열
@@ -177,12 +176,6 @@ public class PlayerBoard {
      * @param y row
      * @param x col
      * @param fieldType 설치하고자하는 필드
-=======
-     * TODO: 빈 필드에 새로운 건물을 건설한다.
-     * @param y 건설할 y축 좌표
-     * @param x 건설할 x축 좌표
-     * @param fieldType 건설할 건물 종류
->>>>>>> develop
      */
     protected void buildField(int y, int x, FieldType fieldType) {
         if (fields[y][x] != null)
@@ -210,6 +203,11 @@ public class PlayerBoard {
                 throw new RuntimeException("불가능한 입력입니다.");
             }
         }
+    }
+
+    protected void addStable(int row, int col){
+        if (fields[row][col] == null || fields[row][col].getFieldType() != FieldType.BARN) return;
+        ((Barn)fields[row][col]).addStable();
     }
 
     /**
@@ -565,14 +563,36 @@ public class PlayerBoard {
     }
 
     /**
-     *
+     * 필드 개수
      * @param fieldType
      * @return
      */
     public int numField(FieldType fieldType){
         return (int)Arrays.stream(fields)
                 .flatMap(Arrays::stream)
-                .filter(field -> field.getFieldType().equals(fieldType))
+                .filter(field -> field != null && field.getFieldType().equals(fieldType))
+                .count();
+    }
+
+    /**
+     * 헛간안에 외양간이 있는 수(포인트 계산용)
+     * @return
+     */
+    public int numStableInBarn(){
+        return (int) Arrays.stream(fields)
+                .flatMap(Arrays::stream)
+                .filter(field -> field != null && field.getFieldType().equals(FieldType.BARN) && ((Barn)field).isStable())
+                .count();
+    }
+
+    /**
+     * 보드의 빈칸 개수(포인트 계산용)
+     * @return
+     */
+    public int numEmptyField(){
+        return (int) Arrays.stream(fields)
+                .flatMap(Arrays::stream)
+                .filter(Objects::isNull)
                 .count();
     }
 
@@ -600,5 +620,22 @@ public class PlayerBoard {
                 .findFirst()
                 .orElseThrow(RuntimeException::new)
                 .play();
+    }
+
+    public int getAnimal(AnimalType animalType) {
+        int num;
+        num = (int)Arrays.stream(fields)
+                .flatMap(Arrays::stream)
+                .filter(field -> field != null &&
+                        (field.getFieldType() == FieldType.BARN || field.getFieldType() == FieldType.STABLE) &&
+                        ((Barn)field).getAnimal().getAnimal() == animalType)
+                .mapToLong(field -> ((Barn)field).getAnimal().getCount())
+                .sum();
+
+        //애완동물
+        if(((Room)fields[1][0]).getPet() != null && ((Room)fields[1][0]).getPet() == animalType) {
+            num += 1;
+        }
+        return num;
     }
 }

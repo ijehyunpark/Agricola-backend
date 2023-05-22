@@ -40,6 +40,11 @@ public class Occupation implements Card {
     }
 
     @Override
+    public int checkPoint(Player player) {
+        return 0;
+    }
+
+    @Override
     public void useResource(Player player) {
 
     }

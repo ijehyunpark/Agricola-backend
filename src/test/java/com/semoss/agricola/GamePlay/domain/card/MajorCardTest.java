@@ -49,8 +49,8 @@ class MajorCardTest {
         int expectPointBasket = 2;
 
         //when
-        int actualPointOven = oven.checkPoint(player1.getResource(ResourceType.REED));
-        int actualPointBasket = basket.checkPoint(player1.getResource(ResourceType.REED));
+        int actualPointOven = oven.checkPoint(player1);
+        int actualPointBasket = basket.checkPoint(player1);
 
         //then
         assertEquals(expectPointOven,actualPointOven);

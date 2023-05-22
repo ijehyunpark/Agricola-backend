@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain;
 
+import com.semoss.agricola.GamePlay.domain.action.implement.DefaultAction;
 import com.semoss.agricola.GameRoom.domain.GameType;
 import com.semoss.agricola.GameRoomCommunication.domain.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +19,8 @@ class AgricolaGameTest {
     AgricolaGame game;
     @Autowired
     ObjectProvider<AgricolaGame> agricolaGameProvider;
+    @Autowired
+    ObjectProvider<DefaultAction> actionProvider;
 
     @BeforeEach
     void setUp(){
@@ -27,8 +30,10 @@ class AgricolaGameTest {
     void createBeanTest() {
         List<User> users = List.of(User.builder().build(),
                 User.builder().build());
-        AgricolaGame game1 = agricolaGameProvider.getObject(users, "NONE");
-        AgricolaGame game2 = agricolaGameProvider.getObject(users, "NONE");
+        AgricolaGame game1 = agricolaGameProvider.getObject(users, "NONE",
+                actionProvider.stream().toList());
+        AgricolaGame game2 = agricolaGameProvider.getObject(users, "NONE",
+                actionProvider.stream().toList());
 
         assertNotEquals(game1.hashCode(), game2.hashCode());
 

@@ -1,8 +1,11 @@
 package com.semoss.agricola.GamePlay.domain.player;
 
+import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -11,11 +14,14 @@ import java.util.stream.Collectors;
  * 아그리콜라 플레이어 게임 보드
  */
 @Getter
+@Log4j2
 public class PlayerBoard {
     private int roomCount;
     private RoomType roomType;
+    private static final int FIELD_COLUMN = 3;
+    private static final int FIELD_ROW = 5;
 
-    private Field[][] fields = new Field[3][5];
+    private Field[][] fields = new Field[FIELD_COLUMN][FIELD_ROW];
     private boolean[][] colFence = new boolean[3][6];
     private boolean[][] rowFence = new boolean[4][5];
     private AnimalStruct[] moveAnimalArr = new AnimalStruct[3];
@@ -616,6 +622,18 @@ public class PlayerBoard {
         }
     }
 
+    /**
+     * 빈 밭인지 확인
+     * @param y 플레이어 필드 column 위치
+     * @param x 플레이어 필드 row 위치
+     * @return 빈 밭일 경우 true를 반환한다,
+     */
+    public boolean isEmptyFarm(int y, int x) {
+        return this.fields[y][x].getFieldType() == FieldType.FARM &&
+                ((Farm) this.fields[y][x]).getSeed().getResource() == null ||
+                ((Farm) this.fields[y][x]).getSeed().getCount() == 0;
+    }
+
     public void playAction() {
         Arrays.stream(fields)
                 .flatMap(Arrays::stream)
@@ -625,5 +643,17 @@ public class PlayerBoard {
                 .findFirst()
                 .orElseThrow(RuntimeException::new)
                 .play();
+    }
+
+    public void cultivate(int y, int x, ResourceType resourceType) {
+        if(y < 0 || y >= FIELD_COLUMN || x < 0 || x >= FIELD_ROW)
+            throw new RuntimeException("필드 위치가 부적절합니다.");
+
+        if(this.fields[y][x].getFieldType() != FieldType.FARM ||
+                (((Farm) this.fields[y][x]).getSeed().getResource() != null &&
+                ((Farm) this.fields[y][x]).getSeed().getCount() != 0))
+            throw new RuntimeException("빈 밭이 아닙니다.");
+
+        ((Farm) this.fields[y][x]).cultivate(resourceType);
     }
 }

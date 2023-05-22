@@ -1,6 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.card;
 
-import com.semoss.agricola.GamePlay.domain.player.AnimalStruct;
+import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;

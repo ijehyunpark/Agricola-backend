@@ -3,6 +3,7 @@ package com.semoss.agricola.GamePlay.domain;
 import com.semoss.agricola.GamePlay.domain.action.ActionType;
 import com.semoss.agricola.GamePlay.domain.action.EventName;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceStructInterface;
 import com.semoss.agricola.util.Pair;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,7 +15,7 @@ import java.util.List;
 public class History {
     private EventName eventName;
     private final List<Pair<ActionType, Integer>> actionTypesAndTimes = new ArrayList<>();
-    private final List<ResourceStruct> changes = new ArrayList<>();
+    private final List<ResourceStructInterface> changes = new ArrayList<>();
 
     @Builder
     public History(EventName eventName){
@@ -24,7 +25,7 @@ public class History {
         this.actionTypesAndTimes.add(new Pair<>(actionType, actionTime));
     }
 
-    public void writeResourceChange(ResourceStruct resource){
+    public void writeResourceChange(ResourceStructInterface resource){
         changes.add(resource);
     }
 
@@ -32,8 +33,8 @@ public class History {
      * add resources to storage
      * @param resources List of a pair of resource and amount of resource
      */
-    public void writeResourceChange(List<ResourceStruct> resources) {
-        for (ResourceStruct resource : resources)
+    public void writeResourceChange(List<ResourceStructInterface> resources) {
+        for (ResourceStructInterface resource : resources)
             writeResourceChange(resource);
     }
 

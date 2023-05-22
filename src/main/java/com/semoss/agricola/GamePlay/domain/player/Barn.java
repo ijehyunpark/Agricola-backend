@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.player;
 
+import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
 import lombok.Builder;
 import lombok.Getter;
 

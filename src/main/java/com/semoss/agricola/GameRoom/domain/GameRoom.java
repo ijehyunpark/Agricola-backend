@@ -2,6 +2,7 @@ package com.semoss.agricola.GameRoom.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
+import com.semoss.agricola.GamePlay.domain.action.implement.DefaultAction;
 import com.semoss.agricola.GameRoomCommunication.domain.User;
 import lombok.Builder;
 import lombok.Getter;
@@ -40,10 +41,11 @@ public class GameRoom {
         this.capacity = capacity;
     }
 
-    public void setGame(ObjectProvider gameProvider, GameType gameType, String strategy) {
+    public void setGame(ObjectProvider gameProvider, ObjectProvider actionProvider, GameType gameType, String strategy) {
         switch (gameType){
             case Agricola -> {
-                this.game = (AgricolaGame) gameProvider.getObject(getParticipants(), strategy);
+                List<DefaultAction> actions = actionProvider.stream().toList();
+                this.game = (AgricolaGame) gameProvider.getObject(getParticipants(), strategy, actions);
             }
             default -> {
                 throw new RuntimeException("지원하지 않는 게임입니다.");

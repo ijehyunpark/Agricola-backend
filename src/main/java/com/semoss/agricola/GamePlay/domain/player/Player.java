@@ -9,6 +9,7 @@ import com.semoss.agricola.GamePlay.domain.card.Occupation.ActionTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Occupation.FinishTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Occupation.HarvestTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Occupation.Occupation;
+import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.*;
@@ -82,6 +83,34 @@ public class Player {
     public void addResource(List<ResourceStruct> resources) {
         for (ResourceStruct resource : resources) {
             addResource(resource.getResource(), resource.getCount());
+        }
+    }
+
+    /**
+     * 가축을 추가한다.
+     * @param animalType 추가할 가축 종류
+     * @param count 추가할 가축 개수
+     */
+    public void addAnimal(AnimalType animalType, int count) {
+        this.playerBoard.addAnimal(animalType, count);
+    }
+
+
+    /**
+     * 가축을 추가한다.
+     * @param animal 추가할 가축 구조
+     */
+    public void addAnimal(AnimalStruct animal) {
+        addAnimal(animal.getAnimal(), animal.getCount());
+    }
+
+    /**
+     * 가축을 추가한다.
+     * @param animals 추가할 가축 구조 리스트
+     */
+    public void addAnimal(List<AnimalStruct> animals) {
+        for (AnimalStruct animal : animals) {
+            addAnimal(animal);
         }
     }
 
@@ -365,5 +394,15 @@ public class Player {
                 .map(occupation -> (FinishTrigger) occupation)
                 .forEach(occupation -> occupation.finishTrigger(this));
 
+    }
+
+    /**
+     * 플레이어 밭에 씨앗을 심습니다.
+     * @param y 플레이어 필드 column 위치
+     * @param x 플레이어 필드 row 위치
+     * @param resourceType 심을 씨앗
+     */
+    public void cultivate(int y, int x, ResourceType resourceType) {
+        this.playerBoard.cultivate(y, x, resourceType);
     }
 }

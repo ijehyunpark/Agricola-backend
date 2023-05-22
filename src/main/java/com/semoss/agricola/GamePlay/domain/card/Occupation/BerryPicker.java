@@ -2,6 +2,8 @@ package com.semoss.agricola.GamePlay.domain.card.Occupation;
 
 import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.player.Player;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceStructInterface;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,6 +42,8 @@ public class BerryPicker extends DefaultOccupation implements ActionTrigger {
     @Override
     public void actionTrigger(Player player, History history) {
         boolean isGetWood = history.getChanges().stream()
+                .filter(ResourceStructInterface::isResource)
+                .map(resourceStructInterface -> (ResourceStruct) resourceStructInterface)
                 .anyMatch(resourceStruct -> resourceStruct.getResource() == ResourceType.WOOD && resourceStruct.getCount() > 0);
         if(!isGetWood)
             return;

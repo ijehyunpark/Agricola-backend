@@ -10,7 +10,7 @@ import lombok.Getter;
  * e.g 집, 외양간 여러개 짓기
  */
 //TODO : implement fence actions
-public class BuildFenceAction implements MultiInputAction {
+public class BuildFenceAction implements Action {
     @Getter
     private final ActionType actionType = ActionType.BUILD;
     @Builder
@@ -22,8 +22,7 @@ public class BuildFenceAction implements MultiInputAction {
         return false;
     }
 
-    @Override
-    public void runAction(Player player, Object detail) {
+    public void runAction(Player player) {
         throw new RuntimeException("미구현");
     }
 }

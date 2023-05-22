@@ -4,8 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.semoss.agricola.GamePlay.domain.action.Event;
+import com.semoss.agricola.GamePlay.domain.action.implement.Action1;
+import com.semoss.agricola.GamePlay.domain.action.implement.DefaultAction;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.gameboard.GameBoard;
+import com.semoss.agricola.GamePlay.domain.gameboard.ImprovementBoard;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
@@ -15,6 +19,7 @@ import com.semoss.agricola.GameRoomCommunication.domain.User;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -58,9 +63,9 @@ public class AgricolaGame implements Game {
     @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@userId")
     private Player startingPlayer;
     private int round;
-    private GameState gameState;
+    private final GameState gameState;
 
-    public AgricolaGame(List<User> users, String strategy) {
+    public AgricolaGame(List<User> users, String strategy, List<DefaultAction> actions) {
         log.debug("아그리 콜라 게임생성:" + this.hashCode());
         log.debug("입력된 플레이어:" + users.size());
         log.debug("플레이어 생성 전략:" + strategy);
@@ -70,10 +75,16 @@ public class AgricolaGame implements Game {
         if(users.size() > 4)
             throw new RuntimeException("아그리콜라에 필요한 최대 인원수를 초과하였습니다.");
 
+        // 카드 사전 제작
         cardDictionary = new CardDictionary();
+
+        // 게임 보드 제작
         this.gameBoard = GameBoard.builder()
                 .game(this)
-                .cardDictionary(cardDictionary)
+                .improvementBoard(new ImprovementBoard(cardDictionary))
+                .events(actions.stream()
+                        .map(action -> Event.builder().action(action).build())
+                        .toList())
                 .build();
 
         // 게임방 유저 객체로 아그리 콜라 게임 플레이어 객체를 생성
@@ -107,7 +118,7 @@ public class AgricolaGame implements Game {
     public void updateStartingPlayer() {
         // 선공 플레이어 검색
         Optional<Player> startingPlayer = players.stream()
-                .filter(player -> player.isStartingToken())
+                .filter(Player::isStartingToken)
                 .findAny();
 
         // 선공 플레이어 변경
@@ -118,7 +129,7 @@ public class AgricolaGame implements Game {
     public Player findPlayerByUserId(Long userId) {
         // 플레이어 검색
         Optional<Player> targetPlayer = players.stream()
-                .filter(player -> player.getUserId() == userId)
+                .filter(player -> player.getUserId().equals(userId))
                 .findAny();
 
         return targetPlayer.orElseThrow(NoSuchElementException::new);
@@ -148,11 +159,12 @@ public class AgricolaGame implements Game {
      * @return 모든 플레이어가 플레이를 마친 경우 null, 아닌 경우 다음 플레이어
      */
     public Optional<Player> findNextActionPlayer(Player player){
-        Player nextPlayer = findNextPlayer(player);
+        Player nextPlayer = player;
         do{
+            nextPlayer = findNextPlayer(player);
             if(!nextPlayer.isCompletedPlayed())
                 return Optional.of(nextPlayer);
-        }while (nextPlayer != player);
+        } while (nextPlayer != player);
         return Optional.empty();
     }
 
@@ -234,8 +246,7 @@ public class AgricolaGame implements Game {
     }
 
     public void finish() {
-        players.stream()
-                        .forEach(player -> player.finish());
+        players.forEach(Player::finish);
     }
 
     //로그 기능

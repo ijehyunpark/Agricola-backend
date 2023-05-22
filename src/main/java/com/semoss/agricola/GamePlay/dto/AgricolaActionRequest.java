@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.dto;
 
+import com.semoss.agricola.GamePlay.domain.action.ActionType;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 

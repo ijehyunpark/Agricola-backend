@@ -26,11 +26,22 @@ public class Seed extends ResourceStruct {
 
         // 수확 반영
         super.setCount(super.getCount() - harvestCount);
+        if(super.getCount() == 0)
+            super.setResource(null);
 
         // 수확 반환
         return Optional.of(ResourceStruct.builder()
                 .resource(super.getResource())
                 .count(harvestCount)
                 .build());
+    }
+
+    /**
+     * 새로운 씨앗을 심는다.
+     * @param resourceType 심을 씨앗
+     */
+    public void cultivate(ResourceType resourceType) {
+        super.setResource(resourceType);
+        super.addResource(3);
     }
 }

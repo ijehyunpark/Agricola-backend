@@ -1,15 +1,20 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
-import com.semoss.agricola.GamePlay.domain.player.AnimalStruct;
+import com.semoss.agricola.GamePlay.domain.History;
+import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
 import com.semoss.agricola.GamePlay.domain.player.AnimalType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceStructInterface;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.util.List;
 
 /**
  * 자원이 누적해서 쌓이는 행동
  */
-public class StackAnimalAction implements StackAction {
+public class StackAnimalAction implements Action {
     @Getter
     private final ActionType actionType = ActionType.STACK_ANIMAL;
     @Getter

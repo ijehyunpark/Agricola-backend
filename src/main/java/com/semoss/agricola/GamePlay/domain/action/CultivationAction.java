@@ -1,15 +1,16 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
 import com.semoss.agricola.GamePlay.domain.player.Player;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.Builder;
 import lombok.Getter;
 
 /**
- * TODO: 씨 뿌리기 액션
+ * 경작 이벤트
  */
 
 @Getter
-public class CultivationAction implements MultiInputAction {
+public class CultivationAction implements Action {
     private final ActionType actionType = ActionType.CULTIVATION;
 
     @Builder
@@ -17,22 +18,19 @@ public class CultivationAction implements MultiInputAction {
     }
 
     /**
-     * TODO: 씨앗 심기 전 빈 밭인지 검증
      * @param player 씨를 뿌릴 플레이어
-     * @param detail 밭의 y, x 좌표
+     * @param y 씨를 뿌릴 밭의 y좌표
+     * @param x 씨를 뿌릴 밭의 x좌표
+     * @param resourceType 심을 자원
      * @return
      */
-    public boolean checkPrecondition(Player player, Object detail) {
-        return false;
-    }
+    public void runAction(Player player, int y, int x, ResourceType resourceType) {
+        if (resourceType != ResourceType.GRAIN && resourceType != ResourceType.VEGETABLE)
+            throw new RuntimeException("씨앗 자원이 아닙니다.");
+        if(player.getResource(resourceType) < 1)
+            throw new RuntimeException("씨앗 자원이 부족합니다.");
 
-    /**
-     * TODO: 플레이어 밭에 씨를 뿌립니다.
-     * @param player 씨를 뿌릴 플레이어
-     * @param detail 밭의 y, x 좌표
-     * @return
-     */
-    public void runAction(Player player, Object detail) {
-        throw new RuntimeException("미구현");
+        //씨앗을 심는다.
+        player.cultivate(y, x, resourceType);
     }
 }

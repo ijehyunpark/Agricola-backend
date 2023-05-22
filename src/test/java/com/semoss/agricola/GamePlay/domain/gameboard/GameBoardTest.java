@@ -1,6 +1,7 @@
 package com.semoss.agricola.GamePlay.domain.gameboard;
 
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
+import com.semoss.agricola.GamePlay.domain.action.ActionFactory;
 import com.semoss.agricola.GamePlay.domain.action.Event;
 import com.semoss.agricola.GamePlay.domain.action.implement.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,31 +24,81 @@ class GameBoardTest {
     GameBoard board;
 
     List<Event> buildEvents() {
+        ActionFactory actionFactory = new ActionFactory();
         return List.of(
-                Event.builder().action(new Action1()).build(),
-                Event.builder().action(new Action2()).build(),
-                Event.builder().action(new Action3()).build(),
-                Event.builder().action(new Action4()).build(),
-                Event.builder().action(new Action5()).build(),
-                Event.builder().action(new Action6()).build(),
-                Event.builder().action(new Action7()).build(),
-                Event.builder().action(new Action8()).build(),
-                Event.builder().action(new Action9()).build(),
-                Event.builder().action(new Action10()).build(),
-                Event.builder().action(new Action11()).build(),
-                Event.builder().action(new Action12()).build(),
-                Event.builder().action(new Action13()).build(),
-                Event.builder().action(new Action14()).build(),
-                Event.builder().action(new Action15()).build(),
-                Event.builder().action(new Action16()).build(),
-                Event.builder().action(new Action17()).build(),
-                Event.builder().action(new Action18()).build(),
-                Event.builder().action(new Action19()).build(),
-                Event.builder().action(new Action20()).build(),
-                Event.builder().action(new Action21()).build(),
-                Event.builder().action(new Action22()).build(),
-                Event.builder().action(new Action23()).build(),
-                Event.builder().action(new Action24()).build());
+                Event.builder()
+                        .action(new Action1(actionFactory.buildRoomAction(), actionFactory.buildStableAction()))
+                        .build(),
+                Event.builder()
+                        .action(new Action2(actionFactory.getStartingPositionAction(), actionFactory.placeMinorCardAction()))
+                        .build(),
+                Event.builder()
+                        .action(new Action3(actionFactory.getGrain1Action()))
+                        .build(),
+                Event.builder()
+                        .action(new Action4(actionFactory.placeOccupationCardAction()))
+                        .build(),
+                Event.builder()
+                        .action(new Action5(actionFactory.buildFarmAction()))
+                        .build(),
+                Event.builder()
+                        .action(new Action6(actionFactory.datallerAction()))
+                        .build(),
+                Event.builder()
+                        .action(new Action7(actionFactory.stackWood3Action()))
+                        .build(),
+                Event.builder()
+                        .action(new Action8(actionFactory.stackClay1Action()))
+                        .build(),
+                Event.builder()
+                        .action(new Action9(actionFactory.stackReed1Action()))
+                        .build(),
+                Event.builder()
+                        .action(new Action10(actionFactory.fishingAction()))
+                        .build(),
+                Event.builder()
+                        .action(new Action11(actionFactory.sheepMarketAction()))
+                        .build(),
+                Event.builder()
+                        .action(new Action12(actionFactory.buildFenceAction()))
+                        .build(),
+                Event.builder()
+                        .action(new Action13(actionFactory.placeMajorCardAction(), actionFactory.placeMinorCardAction()))
+                        .build(),
+                Event.builder()
+                        .action(new Action14(actionFactory.cultivationAction(), actionFactory.bakeAction()))
+                        .build(),
+                Event.builder()
+                        .action(new Action15(actionFactory.roomUpgradeAction(), actionFactory.placeMajorCardAction(), actionFactory.placeMinorCardAction()))
+                        .build(),
+                Event.builder()
+                        .action(new Action16(actionFactory.westernQuarryAction()))
+                        .build(),
+                Event.builder()
+                        .action(new Action17(actionFactory.growFamilyWithoutUrgencyAction(), actionFactory.placeMinorCardAction()))
+                        .build(),
+                Event.builder()
+                        .action(new Action18(actionFactory.wildBoarMarketAction()))
+                        .build(),
+                Event.builder()
+                        .action(new Action19(actionFactory.getVegetable1Action()))
+                        .build(),
+                Event.builder()
+                        .action(new Action20(actionFactory.cattleMarketAction()))
+                        .build(),
+                Event.builder()
+                        .action(new Action21(actionFactory.easternQuarryAction()))
+                        .build(),
+                Event.builder()
+                        .action(new Action22(actionFactory.buildFarmAction(), actionFactory.cultivationAction()))
+                        .build(),
+                Event.builder()
+                        .action(new Action23(actionFactory.growFamilyWithUrgencyAction()))
+                        .build(),
+                Event.builder()
+                        .action(new Action24(actionFactory.roomUpgradeAction(), actionFactory.buildFenceAction()))
+                        .build()
+                );
     }
 
     @BeforeEach

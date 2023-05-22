@@ -1,25 +1,23 @@
 package com.semoss.agricola.GamePlay.domain.action.implement;
 
-import com.semoss.agricola.GamePlay.domain.action.*;
-import com.semoss.agricola.GamePlay.domain.card.CardType;
+import com.semoss.agricola.GamePlay.domain.action.DoType;
+import com.semoss.agricola.GamePlay.domain.action.PlaceAction;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 /**
  * 직업 1개 놓기
  */
 @Component
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Log4j2
 public class Action4 extends DefaultAction {
-    public Action4() {
+    @Autowired
+    public Action4(@Qualifier("placeOccupationCardAction") PlaceAction placeOccupationCardAction) {
         super(ActionName.ACTION4, 0);
 
-        addAction(PlaceAction.builder()
-                .cardType(CardType.OCCUPATION)
-                .build(), DoType.FINISH);
+        addAction(placeOccupationCardAction, DoType.FINISH);
 
         log.debug("ACTION4 생성되었습니다: " + this.hashCode());
     }

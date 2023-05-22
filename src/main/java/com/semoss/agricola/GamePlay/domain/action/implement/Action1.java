@@ -3,43 +3,26 @@ package com.semoss.agricola.GamePlay.domain.action.implement;
 import com.semoss.agricola.GamePlay.domain.action.BuildRoomAction;
 import com.semoss.agricola.GamePlay.domain.action.BuildSimpleAction;
 import com.semoss.agricola.GamePlay.domain.action.DoType;
-import com.semoss.agricola.GamePlay.domain.player.FieldType;
-import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
-import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 방 만들기 그리고/또는 외양간 짓기
  */
 @Component
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Log4j2
 public class Action1 extends DefaultAction {
-    public Action1() {
+    @Autowired
+    public Action1(BuildRoomAction buildRoomAction, @Qualifier("buildStableAction") BuildSimpleAction buildStableAction) {
         super(ActionName.ACTION1, 0);
 
         // 1-1. 방만들기
-        List<ResourceStruct> requirements1 = new ArrayList<>();
-
-        addAction(new BuildRoomAction(), DoType.ANDOR);
+        addAction(buildRoomAction, DoType.ANDOR);
 
         // 1-2 외양간 짓기
-        List<ResourceStruct> requirements2 = new ArrayList<>();
-        requirements2.add(ResourceStruct.builder()
-                .resource(ResourceType.WOOD)
-                .count(2)
-                .build());
-        addAction(BuildSimpleAction.builder()
-                .fieldType(FieldType.STABLE)
-                .buildMaxCount(-1)
-                .requirements(requirements2)
-                .build(), DoType.FINISH);
+        addAction(buildStableAction, DoType.FINISH);
 
         log.debug("ACTION1 생성되었습니다: " + this.hashCode());
     }

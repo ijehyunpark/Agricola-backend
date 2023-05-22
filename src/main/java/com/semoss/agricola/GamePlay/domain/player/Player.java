@@ -14,6 +14,7 @@ import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.GamePlay.dto.CultivationActionExtentionRequest;
 import com.semoss.agricola.GamePlay.exception.ResourceLackException;
+import com.semoss.agricola.GamePlay.exception.ServerError;
 import lombok.*;
 
 import java.util.*;
@@ -162,9 +163,9 @@ public class Player {
      */
     public void setStartingTokenByTrue() {
         this.game.getPlayers().stream()
-                .filter(player -> player.isStartingToken())
+                .filter(Player::isStartingToken)
                 .findAny()
-                .orElseThrow(RuntimeException::new)
+                .orElseThrow(ServerError::new)
                 .disableStartingToken();
 
         this.startingToken = true;
@@ -413,7 +414,7 @@ public class Player {
     /**
      * 플레이어 밭에 씨앗을 심습니다.
      */
-    public void cultivate(List<CultivationActionExtentionRequest> requests) {
-        this.playerBoard.cultivate(requests);
+    public void cultivate(int y, int x, ResourceType resourceType) {
+        this.playerBoard.cultivate(y, x, resourceType);
     }
 }

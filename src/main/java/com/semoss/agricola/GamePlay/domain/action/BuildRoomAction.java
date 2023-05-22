@@ -1,14 +1,14 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
-import com.semoss.agricola.GamePlay.domain.player.FieldType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
+import com.semoss.agricola.GamePlay.domain.player.RoomType;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 집 건설 액션
@@ -16,23 +16,13 @@ import java.util.List;
  * e.g 집 건설
  */
 @Getter
-public class BuildRoomAction extends BuildSimpleAction {
+public class BuildRoomAction implements Action {
+    private final ActionType actionType = ActionType.BUILD;
+    private final Map<RoomType, BuildSimpleAction> buildActions;
 
-    public BuildRoomAction() {
-        super(FieldType.ROOM, new ArrayList<>(), -1);
-
-    }
-
-    private void setRequirements(ResourceType resourceType){
-        setRequirements(List.of(
-                ResourceStruct.builder()
-                        .resource(resourceType)
-                        .count(5)
-                        .build(),
-                ResourceStruct.builder()
-                        .resource(ResourceType.GRAIN)
-                        .count(2)
-                        .build()));
+    @Builder
+    public BuildRoomAction(Map<RoomType, BuildSimpleAction> buildActions) {
+        this.buildActions = buildActions;
     }
 
     /**
@@ -40,18 +30,7 @@ public class BuildRoomAction extends BuildSimpleAction {
      * @param player 건설 작업을 수행할 플레이어
      */
     public void runAction(Player player, int y, int x) {
-        switch (player.getRoomType()) {
-            case WOOD -> {
-                setRequirements(ResourceType.WOOD);
-            }
-            case CLAY -> {
-                setRequirements(ResourceType.CLAY);
-            }
-            case STONE -> {
-                setRequirements(ResourceType.STONE);
-            }
-        }
-        super.runAction(player, y, x);
+        buildActions.get(player.getRoomType()).runAction(player, y, x);
     }
 
 }

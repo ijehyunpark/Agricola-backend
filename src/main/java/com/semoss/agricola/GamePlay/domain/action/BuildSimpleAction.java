@@ -22,8 +22,7 @@ import java.util.List;
 public class BuildSimpleAction implements Action {
     private final ActionType actionType = ActionType.BUILD;
     private final FieldType fieldType;
-    @Setter(AccessLevel.PROTECTED)
-    private List<ResourceStruct> requirements;
+    private final List<ResourceStruct> requirements;
     private final int buildMaxCount;
 
     @Builder

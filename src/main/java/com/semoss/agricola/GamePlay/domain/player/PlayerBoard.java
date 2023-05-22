@@ -2,6 +2,7 @@ package com.semoss.agricola.GamePlay.domain.player;
 
 import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.GamePlay.dto.CultivationActionExtentionRequest;
 import com.semoss.agricola.GamePlay.exception.*;
 import lombok.Builder;
@@ -628,30 +629,29 @@ public class PlayerBoard {
             System.out.println();
         }
     }
-
-    /**
-     * 경작
-     * @param requests
-     */
-    public void cultivate(List<CultivationActionExtentionRequest> requests) {
-        requests.forEach(this::accept);
-
-        requests.forEach(request -> ((Farm) this.fields[request.getY()][request.getX()]).cultivate(request.getResourceType()));
-    }
-
     /**
      * 경작 가능성 검증
-     * @param request
      */
-    private void accept(CultivationActionExtentionRequest request) {
-        if (request.getY() < 0 || request.getY() >= FIELD_COLUMN || request.getX() < 0 || request.getX() >= FIELD_ROW) {
+    private void acceptFarm(int y, int x) {
+        if (y < 0 || y >= FIELD_COLUMN || x < 0 || x >= FIELD_ROW) {
             throw new NotAllowRequestException("필드 위치가 부적절합니다.");
         }
 
-        if (this.fields[request.getY()][request.getX()].getFieldType() != FieldType.FARM ||
-                (((Farm) this.fields[request.getY()][request.getX()]).getSeed().getResource() != null &&
-                        ((Farm) this.fields[request.getY()][request.getX()]).getSeed().getCount() != 0))
+        if (this.fields[y][x].getFieldType() != FieldType.FARM ||
+                (((Farm) this.fields[y][x]).getSeed().getResource() != null &&
+                        ((Farm) this.fields[y][x]).getSeed().getCount() != 0))
             throw new IllgalRequestException("빈 밭이 아닙니다.");
+    }
+
+    /**
+     * 경작
+     * @param y
+     * @param x
+     * @param resourceType
+     */
+    public void cultivate(int y, int x, ResourceType resourceType) {
+        acceptFarm(y, x);
+        ((Farm) this.fields[y][x]).cultivate(resourceType);
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.action.implement;
 
+import com.semoss.agricola.GamePlay.domain.action.ActionFactory;
 import com.semoss.agricola.GamePlay.domain.action.Event;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.player.FieldType;
@@ -29,6 +30,7 @@ class Action1Test {
 
     @BeforeEach
     void setUp(){
+        ActionFactory actionFactory = new ActionFactory();
         cardDictionary = mock(CardDictionary.class);
 
         player = Player.builder()
@@ -37,7 +39,7 @@ class Action1Test {
                 .build();
 
         event = Event.builder()
-                .action(new Action1())
+                .action(new Action1(actionFactory.buildRoomAction(), actionFactory.buildStableAction()))
                 .build();
 
     }

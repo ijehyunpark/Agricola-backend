@@ -6,6 +6,7 @@ import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;

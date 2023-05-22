@@ -10,23 +10,19 @@ import com.semoss.agricola.GamePlay.domain.card.Card;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
 import com.semoss.agricola.GamePlay.domain.card.MajorCard;
-import com.semoss.agricola.GamePlay.domain.player.AnimalType;
-import com.semoss.agricola.GamePlay.domain.player.FieldType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStructInterface;
-import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
 import com.semoss.agricola.GamePlay.dto.BakeActionExtentionRequest;
 import com.semoss.agricola.GamePlay.dto.BuildActionExtentionRequest;
 import com.semoss.agricola.GamePlay.dto.CultivationActionExtentionRequest;
-import lombok.*;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 
 @Getter
@@ -63,52 +59,6 @@ public abstract class DefaultAction {
         this.doTypes.add(doType);
     }
 
-    /**
-     * 밭 일구기 액션를 구성한다.
-     * @return 밭 일구기 건설 액션 객체를 반환한다.
-     */
-    protected BuildSimpleAction buildActionToTillingFarm() {
-        return BuildSimpleAction.builder()
-                .fieldType(FieldType.FARM)
-                .buildMaxCount(1)
-                .requirements(new ArrayList<>())
-                .build();
-    }
-
-    /**
-     * 단일 stackAction을 구성한다.
-     * @param resourceType 누적할 자원 종류
-     * @param num 누적할 자원 개수
-     * @return 단일 누적 액션 객체를 반환한다.
-     */
-    protected Action buildSimpleStackAction(ResourceType resourceType, int num) {
-        return StackResourceAction.builder()
-                .resourceType(resourceType)
-                .stackCount(num)
-                .build();
-    }
-
-    /**
-     * 단일 stackAnimalAction을 구성한다.
-     * @param animalType 누적할 가축 종류
-     * @param num 누적할 자원 개수
-     * @return 단일 누적 액션 객체를 반환한다.
-     */
-    protected Action buildSimpleStackAction(AnimalType animalType, int num) {
-        return StackAnimalAction.builder()
-                .animalType(animalType)
-                .stackCount(num)
-                .build();
-    }
-
-    /**
-     * 울타리 건설 액션을 구성한다.
-     * @return 울타리 건설 액션 객체를 반환한다.
-     */
-    protected BuildFenceAction buildActionToFence() {
-        return BuildFenceAction.builder().build();
-    }
-
 
     /**
      * 올바른 행동 입력인지 검증
@@ -119,7 +69,7 @@ public abstract class DefaultAction {
         for (int i = 0; i < actionSize; i++) {
             DoType doType = this.doTypes.get(i);
             // After 구문은 전 구문이 성립되야 이후 구문을 사용할 수 있습니다.
-            if(doType == DoType.After && !acts.get(i).getUse()) {
+            if(doType == DoType.AFTER && !acts.get(i).getUse()) {
                 for(int j = i + 1; j < actionSize; j++) {
                     if(acts.get(i).getUse())
                         throw new RuntimeException("액션 구분 오류");
@@ -169,10 +119,14 @@ public abstract class DefaultAction {
                             ObjectMapper objectMapper = new ObjectMapper();
                             String jsonString = objectMapper.writeValueAsString(act.getActs());
                             BakeActionExtentionRequest request = objectMapper.readValue(jsonString, BakeActionExtentionRequest.class);
-                            Card card = cardDictionary.getCard(request.getImprovmentId());
-                            if (card.getCardType() != CardType.MAJOR)
-                                throw new RuntimeException("주설비카드가 아닙니다.");
-                            ((BakeAction) action).runAction(player, (MajorCard) card);
+                            request.getImprovmentIds().forEach(
+                                            immprovmentId -> {
+                                                Card card = cardDictionary.getCard(immprovmentId);
+                                                if (card.getCardType() != CardType.MAJOR)
+                                                    throw new RuntimeException("주설비카드가 아닙니다.");
+                                                ((BakeAction) action).runAction(player, (MajorCard) card);
+                                            }
+                                    );
                         } catch (JsonProcessingException e) {
                             throw new RuntimeException("요청 필드 오류");
                         }
@@ -193,7 +147,7 @@ public abstract class DefaultAction {
                             String jsonString = objectMapper.writeValueAsString(act.getActs());
                             JavaType listType = objectMapper.getTypeFactory().constructCollectionType(List.class, CultivationActionExtentionRequest.class);
                             List<CultivationActionExtentionRequest> requestList = objectMapper.readValue(jsonString, listType);
-                            ((CultivationAction) action).runAction(player, requestList);
+                            requestList.forEach(request -> ((CultivationAction) action).runAction(player, request.getY(), request.getY(), request.getResourceType()));
                         } catch (JsonProcessingException e) {
                             throw new RuntimeException("요청 필드 오류");
                         }

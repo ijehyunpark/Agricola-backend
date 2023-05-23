@@ -8,7 +8,7 @@ import java.util.List;
 public interface AgricolaService {
     void start(Long gameRoomId);
     void playAction(Long gameRoomId, Long eventId, List<AgricolaActionRequest.ActionFormat> acts);
-    void playExchange(Long gameRoomId, String improvementId, ResourceStruct resource);
+    void playExchange(Long gameRoomId, Long improvementId, ResourceStruct resource);
     void finish(Long gameRoomId);
     boolean validatePlayer(Long gameRoomId, Object userId);
 }

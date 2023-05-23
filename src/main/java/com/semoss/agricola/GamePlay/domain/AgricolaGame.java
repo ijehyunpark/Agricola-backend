@@ -236,7 +236,7 @@ public class AgricolaGame implements Game {
      * @param improvementId 자원 교환 작업 시 사용할 주설비 식별자
      * @param resource 교환할 자원의 종류와 개수
      */
-    public void playExchange(String improvementId, ResourceStruct resource) {
+    public void playExchange(Long improvementId, ResourceStruct resource) {
         Player player = this.getGameState().getPlayer();
 
         // TODO: 플레이어가 해당 주설비를 가지고 있는지 검증한다.

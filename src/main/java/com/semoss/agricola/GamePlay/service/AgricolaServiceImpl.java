@@ -151,7 +151,7 @@ public class AgricolaServiceImpl implements AgricolaService {
      * @param gameRoomId
      */
     @Override
-    public void playExchange(Long gameRoomId, String improvementId, ResourceStruct resource) {
+    public void playExchange(Long gameRoomId, Long improvementId, ResourceStruct resource) {
         log.info("playExchange 요청이 입력되었습니다. : " + improvementId.toString());
         log.info(resource.getResource());
         log.info(resource.getCount());

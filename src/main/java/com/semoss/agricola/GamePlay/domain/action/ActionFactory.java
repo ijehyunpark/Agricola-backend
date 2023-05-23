@@ -18,7 +18,6 @@ import java.util.Map;
 @Configuration
 @RequiredArgsConstructor
 public class ActionFactory {
-
     private BuildSimpleAction buildRoomSimpleAction(ResourceType resourceType) {
         return BuildSimpleAction.builder()
                 .fieldType(FieldType.ROOM)
@@ -108,7 +107,12 @@ public class ActionFactory {
      */
     @Bean
     public BuildFenceAction buildFenceAction() {
-        return BuildFenceAction.builder().build();
+        return BuildFenceAction.builder()
+                .requirements(ResourceStruct.builder()
+                        .resource(ResourceType.WOOD)
+                        .count(1)
+                        .build())
+                .build();
     }
 
 

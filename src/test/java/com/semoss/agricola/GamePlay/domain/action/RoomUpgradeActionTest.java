@@ -4,7 +4,7 @@ import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.player.RoomType;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
-import com.semoss.agricola.GamePlay.exception.IllgalRequestException;
+import com.semoss.agricola.GamePlay.exception.IllegalRequestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -74,7 +74,7 @@ class RoomUpgradeActionTest {
         action.runAction(player, history);
         action.runAction(player, history);
 
-        assertThrows(IllgalRequestException.class, () -> action.runAction(player, history));
+        assertThrows(IllegalRequestException.class, () -> action.runAction(player, history));
 
         // then
     }

@@ -2,7 +2,7 @@ package com.semoss.agricola.GamePlay.domain.player;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
-import com.semoss.agricola.GamePlay.exception.IllgalRequestException;
+import com.semoss.agricola.GamePlay.exception.IllegalRequestException;
 import com.semoss.agricola.GamePlay.exception.ServerError;
 import lombok.Builder;
 import lombok.Getter;
@@ -134,18 +134,18 @@ public class Room implements Field {
     }
 
     public boolean addPet(AnimalType animalType){
-        if (!isPetRoom) throw new IllgalRequestException("펫이 없는 집입니다.");
+        if (!isPetRoom) throw new IllegalRequestException("펫이 없는 집입니다.");
         return petRoom.addPet(animalType);
     }
 
     public AnimalType removePet() {
-        if (!isPetRoom) throw new IllgalRequestException("펫이 없는 집입니다.");
+        if (!isPetRoom) throw new IllegalRequestException("펫이 없는 집입니다.");
         return petRoom.removePet();
     }
 
     @JsonIgnore
     public AnimalType getPet() {
-        if (!isPetRoom) throw new IllgalRequestException("펫이 없는 집입니다.");
+        if (!isPetRoom) throw new IllegalRequestException("펫이 없는 집입니다.");
         return petRoom.getAnimalType();
     }
 }

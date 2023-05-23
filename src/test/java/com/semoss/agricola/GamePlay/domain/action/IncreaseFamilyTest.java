@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
+import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.player.FieldType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import org.junit.jupiter.api.*;
@@ -9,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class IncreaseFamilyTest {
     Player player;
     IncreaseFamily increaseFamily;
+    History history;
 
     @BeforeEach
     void setUp() {
@@ -16,6 +18,7 @@ class IncreaseFamilyTest {
                 .userId(1234L)
                 .isStartPlayer(true)
                 .build();
+        history = History.builder().build();
     }
     @Test
     @DisplayName("runAction: 빈 방이 있는 경우 가족 늘리기 테스트 - 성공")
@@ -29,7 +32,7 @@ class IncreaseFamilyTest {
         assertTrue(player.existEmptyRoom());
 
         // when
-        increaseFamily.runAction(player);
+        increaseFamily.runAction(player, history);
 
         // then
         assertFalse(player.existEmptyRoom());
@@ -47,7 +50,7 @@ class IncreaseFamilyTest {
         assertFalse(player.existEmptyRoom());
 
         // when
-        assertThrows(RuntimeException.class, () -> increaseFamily.runAction(player));
+        assertThrows(RuntimeException.class, () -> increaseFamily.runAction(player, history));
 
         // then
         assertFalse(player.existEmptyRoom());
@@ -66,7 +69,7 @@ class IncreaseFamilyTest {
         assertFalse(player.existEmptyRoom());
 
         // when
-        increaseFamily.runAction(player);
+        increaseFamily.runAction(player, history);
 
         // then
         assertFalse(player.existEmptyRoom());

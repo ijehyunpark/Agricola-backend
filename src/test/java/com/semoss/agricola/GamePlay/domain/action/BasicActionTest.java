@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
+import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
@@ -12,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class BasicActionTest {
     Player player;
     BasicAction action;
+    History history;
 
     @BeforeEach
     void setUp() {
@@ -19,6 +21,7 @@ class BasicActionTest {
                 .userId(1234L)
                 .isStartPlayer(true)
                 .build();
+        history = History.builder().build();
     }
 
     @Test
@@ -34,9 +37,9 @@ class BasicActionTest {
                 .build();
 
         // when
-        action.runAction(player);
+        action.runAction(player, history);
         int result1 = player.getResource(ResourceType.WOOD);
-        action.runAction(player);
+        action.runAction(player, history);
         int result2 = player.getResource(ResourceType.WOOD);
 
         // then

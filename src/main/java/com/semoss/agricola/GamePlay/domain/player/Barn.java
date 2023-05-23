@@ -1,5 +1,7 @@
 package com.semoss.agricola.GamePlay.domain.player;
 
+import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
+import com.semoss.agricola.GamePlay.exception.AlreadyExistException;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -34,7 +36,7 @@ public class Barn implements Field {
      * @return method was successful or not.
      */
     public boolean addStable(){
-        if (isStable) throw new RuntimeException("이미 외양간이 지어져 있습니다.");
+        if (isStable) throw new AlreadyExistException("이미 외양간이 지어져 있습니다.");
 
         isStable = true;
         capacity = capacity * 2;

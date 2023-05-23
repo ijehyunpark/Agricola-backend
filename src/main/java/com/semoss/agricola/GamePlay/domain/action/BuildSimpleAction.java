@@ -1,9 +1,11 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
-import ch.qos.logback.core.joran.sanity.Pair;
 import com.semoss.agricola.GamePlay.domain.player.FieldType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
+import com.semoss.agricola.GamePlay.exception.IllgalRequestException;
+import com.semoss.agricola.GamePlay.exception.ResourceLackException;
+import com.semoss.agricola.util.Pair;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -12,10 +14,10 @@ import java.util.List;
 /**
  * 단순 필드 건설 액션
  * 1개의 빈 필드에 새로운 건축물을 건설한다.
- * e.g 밭 일구기, 집 건설
+ * e.g 밭 일구기, 마구간 건설 등
  */
 @Getter
-public class BuildSimpleAction implements MultiInputAction {
+public class BuildSimpleAction implements Action {
     private final ActionType actionType = ActionType.BUILD;
     private final FieldType fieldType;
     private final List<ResourceStruct> requirements;
@@ -34,36 +36,44 @@ public class BuildSimpleAction implements MultiInputAction {
      * @param player 해당 행동을 수행할 플레이어
      * @return 플레이어가 필요한 자원을 가지고 있다면 true를 반환한다.
      */
-    public boolean checkPrecondition(Player player, Object detail) {
-        // 요구사항이 없을 경우 true 반환
-        if (this.requirements.size() == 0)
-            return true;
-
+    protected boolean checkPrecondition(Player player, int count) {
         // 플레이어가 요구 자원을 가지고 있는지 반환
         for (ResourceStruct requirement : requirements){
-            if(!(player.getResource(requirement.getResource()) >= requirement.getCount()))
+            if(!(player.getResource(requirement.getResource()) >= requirement.getCount() * count))
                 return false;
         }
         return true;
     }
 
+    public void runAction(Player player, int y, int x) {
+        if(buildMaxCount == 0)
+            throw new IllgalRequestException("허용되지 않은 건설 작업입니다.");
+
+
+        if(!checkPrecondition(player, 1))
+            throw new ResourceLackException();
+
+
+        // 새로운 건물 건설
+        player.buildField(y, x, this.fieldType);
+
+
+        // 자원 소모
+        player.useResource(requirements);
+    }
+
     /**
      * 플레이어의 필드에 새로운 건물을 추가한다.
      * @param player 건설 작업을 수행할 플레이어
-     * @return ?
      */
-    public void runAction(Player player, Object detail) {
-        if(!checkPrecondition(player, detail))
-            throw new RuntimeException("건설을 수행할 자원이 부족합니다.");
+    public void runAction(Player player, List<Pair<Integer, Integer>> positions) {
+        int buildCount = positions.size();
+        if (buildMaxCount != -1 && buildCount > buildMaxCount)
+            throw new IllgalRequestException("최대 건설 횟수를 초과하였습니다.");
 
-        try{
-            if(!(detail instanceof Pair<?,?>))
-                throw new RuntimeException("입력이 잘못됬습니다.");
-            Pair<Integer, Integer> pos = (Pair<Integer, Integer>) detail;
-            // 건설 작업 수행
-            player.buildField(pos.first, pos.second, this.fieldType);
-        } catch (Exception ex) {
-            throw new RuntimeException("입력이 잘못됬습니다.");
-        }
+        positions.forEach(
+                position -> runAction(player, position.first(), position.second())
+        );
     }
+
 }

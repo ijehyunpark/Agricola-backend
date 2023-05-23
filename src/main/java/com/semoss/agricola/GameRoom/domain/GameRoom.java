@@ -1,10 +1,14 @@
 package com.semoss.agricola.GameRoom.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.semoss.agricola.GamePlay.domain.AgricolaGame;
+import com.semoss.agricola.GamePlay.domain.action.implement.DefaultAction;
 import com.semoss.agricola.GameRoomCommunication.domain.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.ObjectProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +25,6 @@ public class GameRoom {
     private int capacity;
     private final List<User> participants;
 
-    @Setter
     private Game game;
 
     @Builder
@@ -36,6 +39,18 @@ public class GameRoom {
         if (this.participants.size() > capacity)
             throw new IllegalStateException("현재 참여자 수가 설정한 최대 참여자 수보다 많습니다.");
         this.capacity = capacity;
+    }
+
+    public void setGame(ObjectProvider gameProvider, ObjectProvider actionProvider, GameType gameType, String strategy) {
+        switch (gameType){
+            case Agricola -> {
+                List<DefaultAction> actions = actionProvider.stream().toList();
+                this.game = (AgricolaGame) gameProvider.getObject(getParticipants(), strategy, actions);
+            }
+            default -> {
+                throw new RuntimeException("지원하지 않는 게임입니다.");
+            }
+        }
     }
 
     /**

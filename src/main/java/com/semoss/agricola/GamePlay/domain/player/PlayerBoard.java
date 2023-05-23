@@ -1,8 +1,13 @@
 package com.semoss.agricola.GamePlay.domain.player;
 
+import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
+import com.semoss.agricola.GamePlay.dto.CultivationActionExtentionRequest;
+import com.semoss.agricola.GamePlay.exception.*;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -11,11 +16,14 @@ import java.util.stream.Collectors;
  * 아그리콜라 플레이어 게임 보드
  */
 @Getter
+@Log4j2
 public class PlayerBoard {
     private int roomCount;
     private RoomType roomType;
+    private static final int FIELD_COLUMN = 3;
+    private static final int FIELD_ROW = 5;
 
-    private Field[][] fields = new Field[3][5];
+    private Field[][] fields = new Field[FIELD_COLUMN][FIELD_ROW];
     private boolean[][] colFence = new boolean[3][6];
     private boolean[][] rowFence = new boolean[4][5];
     private AnimalStruct[] moveAnimalArr = new AnimalStruct[3];
@@ -207,8 +215,12 @@ public class PlayerBoard {
      * @param fieldType 설치하고자하는 필드
      */
     protected void buildField(int y, int x, FieldType fieldType) {
+        if (y < 0 || y >= FIELD_COLUMN || x < 0 || x >= FIELD_ROW) {
+            throw new NotAllowRequestException("필드 위치가 부적절합니다.");
+        }
+
         if (fields[y][x] != null)
-            throw new RuntimeException("이미 건설 되어 있습니다.");
+            throw new AlreadyExistException("이미 건설 되어 있습니다.");
 
         switch (fieldType){
             case FARM -> {
@@ -220,16 +232,18 @@ public class PlayerBoard {
                         .build();
             }
             case STABLE -> {
-                fields[y][x] = Barn.builder()
-                        .fieldType(FieldType.STABLE)
-                        .build();
+                // TODO: 외양간 건설 요청시
+                throw new NotImplementException();
+//                fields[y][x] = Barn.builder()
+//                        .fieldType(FieldType.STABLE)
+//                        .build();
             }
             case FENCE -> {
                 // TODO: 울타리 건설 요청시
-                throw new RuntimeException("world");
+                throw new NotImplementException();
             }
             default -> {
-                throw new RuntimeException("불가능한 입력입니다.");
+                throw new NotAllowRequestException();
             }
         }
     }
@@ -491,7 +505,7 @@ public class PlayerBoard {
      * @return 제거된 동물 수
      */
     protected int removeAnimal(int row, int col, int animalNum){
-        if (fields[row][col] == null || fields[row][col].getFieldType() != FieldType.BARN && fields[row][col].getFieldType() != FieldType.STABLE) throw new RuntimeException("해당 필드는 헛간이 아닙니다.");
+        if (fields[row][col] == null || fields[row][col].getFieldType() != FieldType.BARN && fields[row][col].getFieldType() != FieldType.STABLE) throw new IllgalRequestException("해당 필드는 헛간이 아닙니다.");
         AnimalType animalType = ((Barn)fields[row][col]).getAnimal().getAnimal();
         int num = ((Barn)fields[row][col]).removeAnimal(animalNum);
         moveAnimalArr[animalType.getValue()-9].addResource(num);
@@ -505,7 +519,7 @@ public class PlayerBoard {
      * @return 제거된 동물 수
      */
     protected int removeALLAnimals(int row, int col){
-        if (fields[row][col] == null || fields[row][col].getFieldType() != FieldType.BARN && fields[row][col].getFieldType() != FieldType.STABLE) throw new RuntimeException("해당 필드는 헛간이 아닙니다.");
+        if (fields[row][col] == null || fields[row][col].getFieldType() != FieldType.BARN && fields[row][col].getFieldType() != FieldType.STABLE) throw new IllgalRequestException("해당 필드는 헛간이 아닙니다.");
         AnimalType animalType = ((Barn)fields[row][col]).getAnimal().getAnimal();
         int num = ((Barn)fields[row][col]).removeAllAnimals();
         moveAnimalArr[animalType.getValue()-9].addResource(num);
@@ -521,7 +535,7 @@ public class PlayerBoard {
      * @return 이동한 동물 수(수용가능한 동물 양에 따라 결과값이 달라짐)
      */
     protected int addRemovedAnimal(int row, int col, AnimalType animalType, int animalNum){
-        if (fields[row][col] == null || fields[row][col].getFieldType() != FieldType.BARN && fields[row][col].getFieldType() != FieldType.STABLE) throw new RuntimeException("해당 필드는 헛간이 아닙니다.");
+        if (fields[row][col] == null || fields[row][col].getFieldType() != FieldType.BARN && fields[row][col].getFieldType() != FieldType.STABLE) throw new IllgalRequestException("해당 필드는 헛간이 아닙니다.");
         animalNum = Integer.min(animalNum,moveAnimalArr[animalType.getValue()-9].getCount());
         int num = ((Barn)fields[row][col]).addAnimal(animalType, animalNum);
         moveAnimalArr[animalType.getValue()-9].subResource(num);
@@ -615,6 +629,42 @@ public class PlayerBoard {
             System.out.println();
         }
     }
+    /**
+     * 경작 가능성 검증
+     */
+    private void acceptFarm(int y, int x) {
+        if (y < 0 || y >= FIELD_COLUMN || x < 0 || x >= FIELD_ROW) {
+            throw new NotAllowRequestException("필드 위치가 부적절합니다.");
+        }
+
+        if (this.fields[y][x].getFieldType() != FieldType.FARM ||
+                (((Farm) this.fields[y][x]).getSeed().getResource() != null &&
+                        ((Farm) this.fields[y][x]).getSeed().getCount() != 0))
+            throw new IllgalRequestException("빈 밭이 아닙니다.");
+    }
+
+    /**
+     * 경작
+     * @param y
+     * @param x
+     * @param resourceType
+     */
+    public void cultivate(int y, int x, ResourceType resourceType) {
+        acceptFarm(y, x);
+        ((Farm) this.fields[y][x]).cultivate(resourceType);
+    }
+
+    /**
+     * 빈 밭인지 확인
+     * @param y 플레이어 필드 column 위치
+     * @param x 플레이어 필드 row 위치
+     * @return 빈 밭일 경우 true를 반환한다,
+     */
+    public boolean isEmptyFarm(int y, int x) {
+        return this.fields[y][x].getFieldType() == FieldType.FARM &&
+                ((Farm) this.fields[y][x]).getSeed().getResource() == null ||
+                ((Farm) this.fields[y][x]).getSeed().getCount() == 0;
+    }
 
     public void playAction() {
         Arrays.stream(fields)
@@ -623,7 +673,7 @@ public class PlayerBoard {
                 .map(field -> (Room) field)
                 .filter(room -> !room.isCompletedPlayed())
                 .findFirst()
-                .orElseThrow(RuntimeException::new)
+                .orElseThrow(ServerError::new)
                 .play();
     }
 }

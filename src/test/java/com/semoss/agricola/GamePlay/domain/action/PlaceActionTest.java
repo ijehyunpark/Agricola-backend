@@ -2,7 +2,7 @@ package com.semoss.agricola.GamePlay.domain.action;
 
 import com.semoss.agricola.GamePlay.domain.card.CardType;
 import com.semoss.agricola.GamePlay.domain.card.MajorCard;
-import com.semoss.agricola.GamePlay.domain.player.AnimalStruct;
+import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
 import com.semoss.agricola.GamePlay.domain.player.AnimalType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;

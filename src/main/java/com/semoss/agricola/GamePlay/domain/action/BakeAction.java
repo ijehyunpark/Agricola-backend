@@ -1,14 +1,17 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
-import com.semoss.agricola.GamePlay.domain.gameboard.ImprovementBoard;
+import com.semoss.agricola.GamePlay.domain.card.MajorCard;
 import com.semoss.agricola.GamePlay.domain.player.Player;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
+import com.semoss.agricola.GamePlay.exception.NotFoundException;
+import com.semoss.agricola.GamePlay.exception.ResourceLackException;
 import lombok.Builder;
 import lombok.Getter;
 
 /**
- * TODO: 빵 굽기 액션
+ * 빵 굽기 액션
  */
-public class BakeAction implements MultiInputAction {
+public class BakeAction implements Action {
 
     @Getter
     private final ActionType actionType = ActionType.BAKE;
@@ -17,20 +20,20 @@ public class BakeAction implements MultiInputAction {
     public BakeAction(){
     }
 
-    private boolean checkPrecondition(Player player, ImprovementBoard improvementBoard) {
-        // TODO: 플레이어가 해당 주설비를 가지고 있는지 확인
-        return false;
-    }
-
     /**
      * 빵 굽는다.
-     * @param player
-     * @param ImprovementCard
-     * @return
+     * @param player 빵굽는 플레이어
+     * @param improvementCard 주설비 카드
      */
-    public void runAction(Player player, Object ImprovementCard) {
-        // TODO: 플레이어가 해당 주설비를 사용하여 자원을 교환한다.
-        // TODO: ImprovementCard 보단 1. ImprovementBoardType을 만들어 화로, 화덕, 흙가마, 돌가마만 받아 player에서 가져와 확인 || 2. cardId를 가져와 검증
-        throw new RuntimeException("미구현");
+    public void runAction(Player player, MajorCard improvementCard) {
+        if(!player.hasCardInField(improvementCard.getCardID()))
+            throw new NotFoundException("주설비를 가지고 있지 않습니다.");
+
+        if(player.getResource(ResourceType.GRAIN) < 1)
+            throw new ResourceLackException("곡식이 부족합니다.");
+
+        // 자원 교환
+        player.useResource(ResourceType.GRAIN, 1);
+        player.addResource(ResourceType.FOOD, improvementCard.getBakeEfficiency());
     }
 }

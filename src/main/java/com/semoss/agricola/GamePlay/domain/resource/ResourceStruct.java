@@ -10,12 +10,23 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class ResourceStruct {
+public class ResourceStruct implements ResourceStructInterface {
     private ResourceType resource;
     private int count;
 
     public void addResource(int count) {
         this.count += count;
     }
+
+    @Override
+    public boolean isResource() {
+        return true;
+    }
+
+    @Override
+    public boolean isAnimal() {
+        return false;
+    }
+
     public void subResource(int count) { this.count -= count; }
 }

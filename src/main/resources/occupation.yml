@@ -1,0 +1,90 @@
+landAgent:
+  name: "농지 판매인"
+  players: 3
+  decks: "E"
+  id: 147
+  description: "당신이 채소1개 액션칸을 이용할때 곡식 한개를 추가로 받습니다. 이 카드를 내려놓는 즉시 채소 하나를 공동창고에서 가져옵니다."
+academic:
+  name: "교수"
+  players: 3
+  decks: "E"
+  id: 148
+  description: "이 카드는 보조설비를 내려놓을때나 행정관, 가정교사의 점수를 환산할 때, 2개의 직업으로 간주합니다."
+masterBaker:
+  name: "제빵명인"
+  players: 4
+  decks: "E"
+  id: 149
+  description: "다른 사람이 빵을 굽고 당신이 빵굽기 설비를 가지고 있다면, 즉시 (당신의 설비를 이용해서) 빵을 구울수 있습니다. 당신이 액션을 통해 빵을 굽는다면 빵굽는 곡식 하나당 1음식을 추가로 받습니다"
+baker:
+  name: "제빵사"
+  players: 1
+  decks: "E"
+  id: 150
+  description: "매 수확때 당신은 당신의 빵굽기 설비를 이용해 빵을 구울 수 있습니다. 이 카드를 내려놓는 즉시 빵을 굽습니다. 당신은 이 능력을 매 수확마다 단 한번 사용할수 있습니다. 단 이때 모든 빵굽기 설비를 모두 한번씩 사용할수 있습니다."
+masterBuilder:
+  name: "건축가"
+  players: 1
+  decks: "E"
+  id: 151
+  description: "만약 당신이 최소 5개의 방을 가지고 있다면, 게임중 한번 언제든지 방 한 개를 공짜로 늘릴수 있습니다. 당신은 방 한 개를 늘릴때 방 만들기 액션을 할 필요는 없지만, 규칙에 맞게 방을 지을 공간은 있어야합니다."
+berryPicker:
+  name: "열매따는 사람"
+  players: 3
+  decks: "E"
+  id: 152
+  description: "당신이 액션을 통해 나무를 얻을때마다 1음식을 추가로 받습니다."
+mendicant:
+  name: "탁발승"
+  players: 1
+  decks: "E"
+  id: 153
+  description: "당신은 게임이 끝났을 때, 구걸카드 두장을 감점없이 버릴 수 있습니다."
+masterBrewer:
+  name: "양조장이"
+  players: 1
+  decks: "E"
+  id: 154
+  description: "당신은 '가족 먹여살리기' 단계에서 곡식 하나를 음식 3개로 바꿀 수 있습니다."
+breadSeller:
+  name: "빵장수"
+  players: 3
+  decks: "E"
+  id: 155
+  description: "모든 플레이어가 빵을 구을때마다, 빵을 굽는 곡식수만큼 음식을 받습니다. 당신도 모든 플레이어에 포함됩니다."
+brushMaker:
+  name: "솔제작자"
+  players: 3
+  decks: "E"
+  id: 156
+  description: "당신은 음식으로 바꾼 돼지를 이 카드위에 올려둘 수 있습니다. 게임이 끝난후 이 카드위에 올라간 돼지가 2/3/4+ 마리라면 1/2/3점의 추가 점수를 받습니다."
+thatcher:
+  name: "지붕 이는 사람"
+  players: 3
+  decks: "E"
+  id: 157
+  description: "방을 만들때, 집을 고칠때, 갈대가 필요한 보조설비를 놓을때, 갈대를 1개 적게 냅니다."
+turner:
+  name: "선반공"
+  players: 3
+  decks: "E"
+  id: 158
+  description: "언제든 나무를 같은 숫자의 음식으로 바꿀 수 있습니다."
+headOfTheFamily:
+  name: "가장"
+  players: 4
+  decks: "E"
+  id: 159
+  description: "다른 플레이어가 '방짓기' 와 '가족늘리기' 행동칸에 놓여져 있어도 당신은 그 칸을 이용할수 있습니다."
+farmer:
+  name: "농부"
+  players: 4
+  decks: "E"
+  id: 160
+  description: "다음에 당신이 울타리를 한번 치게 된다면 돼지를 하나 가져옵니다. 그 다음에 울타리를 한번 칠때마다 소를 한마리씩 가져옵니다."
+underGardener:
+  name: "정원일꾼"
+  players: 4
+  decks: "E"
+  id: 160
+  description: "당신이 날품팔이 행동칸을 이용할때마다 채소 하나를 추가로 받습니다."

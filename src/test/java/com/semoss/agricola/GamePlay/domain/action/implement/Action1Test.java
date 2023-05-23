@@ -49,7 +49,7 @@ class Action1Test {
     void test1(){
         // given
         player.addResource(ResourceType.WOOD, 5);
-        player.addResource(ResourceType.GRAIN, 2);
+        player.addResource(ResourceType.REED, 2);
         List<AgricolaActionRequest.ActionFormat> acts = List.of(
                 new AgricolaActionRequest.ActionFormat(true, new BuildActionExtentionRequest(2,4)),
                 new AgricolaActionRequest.ActionFormat(false, null));
@@ -69,7 +69,7 @@ class Action1Test {
     void test2(){
         // given
         player.addResource(ResourceType.CLAY, 5);
-        player.addResource(ResourceType.GRAIN, 2);
+        player.addResource(ResourceType.REED, 2);
         player.upgradeRoom();
         List<AgricolaActionRequest.ActionFormat> acts = List.of(
                 new AgricolaActionRequest.ActionFormat(true, new BuildActionExtentionRequest(2,4)),
@@ -90,7 +90,7 @@ class Action1Test {
     void test3(){
         // given
         player.addResource(ResourceType.STONE, 5);
-        player.addResource(ResourceType.GRAIN, 2);
+        player.addResource(ResourceType.REED, 2);
         player.upgradeRoom();
         player.upgradeRoom();
         List<AgricolaActionRequest.ActionFormat> acts = List.of(
@@ -128,7 +128,7 @@ class Action1Test {
     void test5(){
         // given
         player.addResource(ResourceType.WOOD, 7);
-        player.addResource(ResourceType.GRAIN, 2);
+        player.addResource(ResourceType.REED, 2);
         List<AgricolaActionRequest.ActionFormat> acts = List.of(
                 new AgricolaActionRequest.ActionFormat(true, new BuildActionExtentionRequest(2,4)),
                 new AgricolaActionRequest.ActionFormat(true, new BuildActionExtentionRequest(2,3)));

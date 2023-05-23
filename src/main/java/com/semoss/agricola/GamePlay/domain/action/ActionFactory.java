@@ -42,7 +42,32 @@ public class ActionFactory {
      */
     @Bean
     public RoomUpgradeAction roomUpgradeAction() {
-        return RoomUpgradeAction.builder().build();
+        Map<RoomType, List<ResourceStruct>> costs = new HashMap<>();
+        costs.put(RoomType.CLAY, List.of(
+                ResourceStruct.builder()
+                        .resource(ResourceType.CLAY)
+                        .count(1)
+                        .build(),
+                ResourceStruct.builder()
+                        .resource(ResourceType.REED)
+                        .count(1)
+                        .build()
+                )
+        );
+        costs.put(RoomType.STONE, List.of(
+                        ResourceStruct.builder()
+                                .resource(ResourceType.STONE)
+                                .count(1)
+                                .build(),
+                        ResourceStruct.builder()
+                                .resource(ResourceType.REED)
+                                .count(1)
+                                .build()
+                )
+        );
+        return RoomUpgradeAction.builder()
+                .costs(costs)
+                .build();
     }
 
     /**

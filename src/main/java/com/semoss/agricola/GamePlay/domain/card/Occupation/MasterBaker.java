@@ -3,7 +3,6 @@ package com.semoss.agricola.GamePlay.domain.card.Occupation;
 import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.action.ActionType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
-import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.util.Pair;
 import lombok.Getter;
@@ -44,8 +43,8 @@ public class MasterBaker extends DefaultOccupation implements ActionTrigger, Act
     public void actionTrigger(Player player, History history){
         // 빵굽기 횟수만큼 곡식 추가
         int bakeCount = history.getActionTypesAndTimes().stream()
-                .filter(actionTypeIntegerPair -> actionTypeIntegerPair.key() == ActionType.BAKE)
-                .mapToInt(Pair::value)
+                .filter(actionTypeIntegerPair -> actionTypeIntegerPair.first() == ActionType.BAKE)
+                .mapToInt(Pair::second)
                 .sum();
         player.addResource(ResourceType.GRAIN, bakeCount);
     }

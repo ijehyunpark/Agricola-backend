@@ -16,6 +16,7 @@ import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
 import com.semoss.agricola.GamePlay.dto.BakeActionExtentionRequest;
 import com.semoss.agricola.GamePlay.dto.BuildActionExtentionRequest;
 import com.semoss.agricola.GamePlay.dto.CultivationActionExtentionRequest;
+import com.semoss.agricola.util.ObjectMapperSingleton;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
@@ -104,6 +105,7 @@ public abstract class DefaultAction {
 
         // ToDO: Memento로 실패 시 롤백
 
+
         this.actions.stream()
             .filter(action -> acts.get(actions.indexOf(action)).getUse())
             .forEach(action -> {
@@ -115,7 +117,7 @@ public abstract class DefaultAction {
                     }
                     case BAKE -> {
                         try {
-                            ObjectMapper objectMapper = new ObjectMapper();
+                            ObjectMapper objectMapper = ObjectMapperSingleton.getInstance();
                             String jsonString = objectMapper.writeValueAsString(act.getActs());
                             BakeActionExtentionRequest request = objectMapper.readValue(jsonString, BakeActionExtentionRequest.class);
                             request.getImprovmentIds().forEach(
@@ -132,7 +134,7 @@ public abstract class DefaultAction {
                     }
                     case BUILD -> {
                         try {
-                            ObjectMapper objectMapper = new ObjectMapper();
+                            ObjectMapper objectMapper = ObjectMapperSingleton.getInstance();
                             String jsonString = objectMapper.writeValueAsString(act.getActs());
                             BuildActionExtentionRequest request = objectMapper.readValue(jsonString, BuildActionExtentionRequest.class);
                             ((BuildSimpleAction) action).runAction(player, request.getY(), request.getX());
@@ -140,9 +142,19 @@ public abstract class DefaultAction {
                             throw new RuntimeException("요청 필드 오류");
                         }
                     }
+                    case BUILD_ROOM -> {
+                        try {
+                            ObjectMapper objectMapper = ObjectMapperSingleton.getInstance();
+                            String jsonString = objectMapper.writeValueAsString(act.getActs());
+                            BuildActionExtentionRequest request = objectMapper.readValue(jsonString, BuildActionExtentionRequest.class);
+                            ((BuildRoomAction) action).runAction(player, request.getY(), request.getX());
+                        } catch (JsonProcessingException e) {
+                            throw new RuntimeException("요청 필드 오류");
+                        }
+                    }
                     case CULTIVATION -> {
                         try {
-                            ObjectMapper objectMapper = new ObjectMapper();
+                            ObjectMapper objectMapper = ObjectMapperSingleton.getInstance();
                             String jsonString = objectMapper.writeValueAsString(act.getActs());
                             JavaType listType = objectMapper.getTypeFactory().constructCollectionType(List.class, CultivationActionExtentionRequest.class);
                             List<CultivationActionExtentionRequest> requestList = objectMapper.readValue(jsonString, listType);

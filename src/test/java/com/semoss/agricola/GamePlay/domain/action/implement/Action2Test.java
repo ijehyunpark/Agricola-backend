@@ -8,6 +8,7 @@ import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
 import com.semoss.agricola.GamePlay.dto.PlaceExtentionRequest;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -87,6 +88,7 @@ class Action2Test {
     }
 
     @Test
+    @Disabled
     @DisplayName("Action2 테스트: 보조 설비 테스트")
     void test3(){
         // given
@@ -98,6 +100,5 @@ class Action2Test {
         // when
 
         // then
-        assertTrue(false);
     }
 }

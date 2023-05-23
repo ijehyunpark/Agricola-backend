@@ -1,15 +1,13 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
-import ch.qos.logback.core.joran.sanity.Pair;
 import com.semoss.agricola.GamePlay.domain.player.FieldType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
-import com.semoss.agricola.GamePlay.dto.BuildActionExtentionRequest;
+import com.semoss.agricola.GamePlay.exception.IllgalRequestException;
 import com.semoss.agricola.GamePlay.exception.ResourceLackException;
-import lombok.AccessLevel;
+import com.semoss.agricola.util.Pair;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 
@@ -38,25 +36,44 @@ public class BuildSimpleAction implements Action {
      * @param player 해당 행동을 수행할 플레이어
      * @return 플레이어가 필요한 자원을 가지고 있다면 true를 반환한다.
      */
-    protected boolean checkPrecondition(Player player) {
+    protected boolean checkPrecondition(Player player, int count) {
         // 플레이어가 요구 자원을 가지고 있는지 반환
         for (ResourceStruct requirement : requirements){
-            if(!(player.getResource(requirement.getResource()) >= requirement.getCount()))
+            if(!(player.getResource(requirement.getResource()) >= requirement.getCount() * count))
                 return false;
         }
         return true;
+    }
+
+    public void runAction(Player player, int y, int x) {
+        if(buildMaxCount == 0)
+            throw new IllgalRequestException("허용되지 않은 건설 작업입니다.");
+
+
+        if(!checkPrecondition(player, 1))
+            throw new ResourceLackException();
+
+
+        // 새로운 건물 건설
+        player.buildField(y, x, this.fieldType);
+
+
+        // 자원 소모
+        player.useResource(requirements);
     }
 
     /**
      * 플레이어의 필드에 새로운 건물을 추가한다.
      * @param player 건설 작업을 수행할 플레이어
      */
-    public void runAction(Player player, int y, int x) {
-        if(!checkPrecondition(player))
-            throw new ResourceLackException();
+    public void runAction(Player player, List<Pair<Integer, Integer>> positions) {
+        int buildCount = positions.size();
+        if (buildMaxCount != -1 && buildCount > buildMaxCount)
+            throw new IllgalRequestException("최대 건설 횟수를 초과하였습니다.");
 
-        player.buildField(y, x, this.fieldType);
-        player.useResource(requirements);
+        positions.forEach(
+                position -> runAction(player, position.first(), position.second())
+        );
     }
 
 }

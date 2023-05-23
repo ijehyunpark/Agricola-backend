@@ -2,12 +2,9 @@ package com.semoss.agricola.GamePlay.domain.action;
 
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.player.RoomType;
-import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
-import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,7 +14,7 @@ import java.util.Map;
  */
 @Getter
 public class BuildRoomAction implements Action {
-    private final ActionType actionType = ActionType.BUILD;
+    private final ActionType actionType = ActionType.BUILD_ROOM;
     private final Map<RoomType, BuildSimpleAction> buildActions;
 
     @Builder

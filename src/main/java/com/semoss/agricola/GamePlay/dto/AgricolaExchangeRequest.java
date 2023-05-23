@@ -12,9 +12,11 @@ import java.util.List;
 @Builder
 public class AgricolaExchangeRequest {
     @Getter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @AllArgsConstructor
     public static class ExchangeFormat {
         @NotNull(message = "필수 입력")
-        private String improvementId;
+        private Long improvementId;
         @NotNull(message = "필수 입력")
         private ResourceStruct resource;
     }

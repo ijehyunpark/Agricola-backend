@@ -3,7 +3,6 @@ package com.semoss.agricola.GamePlay.domain.player;
 import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
-import com.semoss.agricola.GamePlay.dto.CultivationActionExtentionRequest;
 import com.semoss.agricola.GamePlay.exception.*;
 import lombok.Builder;
 import lombok.Getter;

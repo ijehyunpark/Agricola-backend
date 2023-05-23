@@ -8,7 +8,7 @@ import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.player.RoomType;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
-import com.semoss.agricola.GamePlay.dto.BuildActionExtentionRequest;
+import com.semoss.agricola.GamePlay.dto.BuildActionExtensionRequest;
 import com.semoss.agricola.GamePlay.exception.ResourceLackException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -51,7 +51,7 @@ class Action1Test {
         player.addResource(ResourceType.WOOD, 5);
         player.addResource(ResourceType.REED, 2);
         List<AgricolaActionRequest.ActionFormat> acts = List.of(
-                new AgricolaActionRequest.ActionFormat(true, new BuildActionExtentionRequest(2,4)),
+                new AgricolaActionRequest.ActionFormat(true, new BuildActionExtensionRequest(2,4)),
                 new AgricolaActionRequest.ActionFormat(false, null));
 
         // when
@@ -72,7 +72,7 @@ class Action1Test {
         player.addResource(ResourceType.REED, 2);
         player.upgradeRoom();
         List<AgricolaActionRequest.ActionFormat> acts = List.of(
-                new AgricolaActionRequest.ActionFormat(true, new BuildActionExtentionRequest(2,4)),
+                new AgricolaActionRequest.ActionFormat(true, new BuildActionExtensionRequest(2,4)),
                 new AgricolaActionRequest.ActionFormat(false, null));
 
         // when
@@ -94,7 +94,7 @@ class Action1Test {
         player.upgradeRoom();
         player.upgradeRoom();
         List<AgricolaActionRequest.ActionFormat> acts = List.of(
-                new AgricolaActionRequest.ActionFormat(true, new BuildActionExtentionRequest(2,4)),
+                new AgricolaActionRequest.ActionFormat(true, new BuildActionExtensionRequest(2,4)),
                 new AgricolaActionRequest.ActionFormat(false, null));
 
         // when
@@ -112,7 +112,7 @@ class Action1Test {
     void test4(){
         // given
         List<AgricolaActionRequest.ActionFormat> acts = List.of(
-                new AgricolaActionRequest.ActionFormat(true, new BuildActionExtentionRequest(2,4)),
+                new AgricolaActionRequest.ActionFormat(true, new BuildActionExtensionRequest(2,4)),
                 new AgricolaActionRequest.ActionFormat(false, null));
 
         // when
@@ -130,8 +130,8 @@ class Action1Test {
         player.addResource(ResourceType.WOOD, 7);
         player.addResource(ResourceType.REED, 2);
         List<AgricolaActionRequest.ActionFormat> acts = List.of(
-                new AgricolaActionRequest.ActionFormat(true, new BuildActionExtentionRequest(2,4)),
-                new AgricolaActionRequest.ActionFormat(true, new BuildActionExtentionRequest(2,3)));
+                new AgricolaActionRequest.ActionFormat(true, new BuildActionExtensionRequest(2,4)),
+                new AgricolaActionRequest.ActionFormat(true, new BuildActionExtensionRequest(2,3)));
 
         // when
         event.runActions(player, acts, cardDictionary);
@@ -148,7 +148,7 @@ class Action1Test {
         player.addResource(ResourceType.WOOD, 2);
         List<AgricolaActionRequest.ActionFormat> acts = List.of(
                 new AgricolaActionRequest.ActionFormat(false, null),
-                new AgricolaActionRequest.ActionFormat(true, new BuildActionExtentionRequest(2,4)));
+                new AgricolaActionRequest.ActionFormat(true, new BuildActionExtensionRequest(2,4)));
 
         // when
         event.runActions(player, acts, cardDictionary);

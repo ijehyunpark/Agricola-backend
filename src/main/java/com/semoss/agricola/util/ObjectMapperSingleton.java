@@ -1,12 +1,21 @@
 package com.semoss.agricola.util;
 
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ObjectMapperSingleton {
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper;
 
-    private ObjectMapperSingleton() {
-        // private 생성자로 외부에서의 인스턴스 생성 방지
+    static {
+        Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
+        objectMapper = builder
+                .featuresToEnable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS)
+                .build();
     }
 
     public static ObjectMapper getInstance() {

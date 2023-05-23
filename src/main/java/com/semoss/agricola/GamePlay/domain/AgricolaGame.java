@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.semoss.agricola.GamePlay.domain.action.Event;
-import com.semoss.agricola.GamePlay.domain.action.implement.Action1;
 import com.semoss.agricola.GamePlay.domain.action.implement.DefaultAction;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.gameboard.GameBoard;
@@ -21,7 +20,6 @@ import com.semoss.agricola.GameRoomCommunication.domain.User;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -222,7 +220,7 @@ public class AgricolaGame implements Game {
      */
     public void playAction(Long eventId, List<AgricolaActionRequest.ActionFormat> acts) {
         // 액션 플레이를 수행한다.
-        History history = this.gameBoard.playAction(this.getGameState().getPlayer(), eventId, acts);
+        History history = this.gameBoard.playAction(this.getGameState().getPlayer(), eventId, acts, this.cardDictionary);
 
         // 거주자 한명을 임의로 뽑아 플레이 시킨다.
         this.getGameState().getPlayer().playAction(history);

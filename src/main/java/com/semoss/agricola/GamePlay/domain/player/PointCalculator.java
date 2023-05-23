@@ -4,6 +4,7 @@ import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 
 public class PointCalculator {
     public static int calculate(Player player){
+
         int num;
         int point;
         for (ResourceType resourceType : ResourceType.values()){

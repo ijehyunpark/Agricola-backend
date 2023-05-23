@@ -3,16 +3,22 @@ package com.semoss.agricola.GamePlay.domain.gameboard;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
 import com.semoss.agricola.GamePlay.domain.History;
-import com.semoss.agricola.GamePlay.domain.action.*;
+import com.semoss.agricola.GamePlay.domain.action.ActionType;
+import com.semoss.agricola.GamePlay.domain.action.Event;
+import com.semoss.agricola.GamePlay.domain.action.StackAnimalAction;
+import com.semoss.agricola.GamePlay.domain.action.StackResourceAction;
+import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
 import com.semoss.agricola.GamePlay.exception.NotFoundException;
 import com.semoss.agricola.GamePlay.exception.ServerError;
 import lombok.Builder;
-import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * 아그리콜라 메인 게임 보드
@@ -130,12 +136,12 @@ public record GameBoard(@JsonIgnore AgricolaGame game, List<Event> events, Impro
      * @param eventId 플레이할 액션
      * @param acts    액션에 필요한 추가 요청
      */
-    public History playAction(Player player, Long eventId, List<AgricolaActionRequest.ActionFormat> acts) {
+    public History playAction(Player player, Long eventId, List<AgricolaActionRequest.ActionFormat> acts, CardDictionary cardDictionary) {
         return events.stream()
                 .filter(event -> event.getAction().getEventName().getId() == eventId.intValue())
                 .findAny()
                 .orElseThrow(() -> new NotFoundException("이벤트가 존재하지 않습니다"))
-                .runActions(player, acts, this.game.getCardDictionary());
+                .runActions(player, acts, cardDictionary);
     }
 
     /**

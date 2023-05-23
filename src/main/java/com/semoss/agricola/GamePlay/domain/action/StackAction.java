@@ -7,7 +7,7 @@ import com.semoss.agricola.GamePlay.domain.resource.ResourceStructInterface;
 
 import java.util.List;
 
-public interface StackAction {
+public interface StackAction extends Action {
     default void runstackAction(Player player, List<ResourceStructInterface> resourceStructInterfaces) {
         resourceStructInterfaces.stream()
                 .filter(ResourceStructInterface::isResource)

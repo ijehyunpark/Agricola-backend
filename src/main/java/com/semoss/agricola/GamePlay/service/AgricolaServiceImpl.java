@@ -91,7 +91,7 @@ public class AgricolaServiceImpl implements AgricolaService {
     private void roundStart(Long gameRoomId) {
         // 아그리콜라 게임 추출
         AgricolaGame game = extractGame(gameRoomId);
-        log.info("round가 시작되었습니다.: " + game.getRound() );
+        log.info("round가 시작되었습니다.: " + game.getGameState().getRound());
 
         // 현재 게임 상태를 선공 플레이어의 행동 단계로 변경한다.
         game.update(GameProgress.PlayerAction, game.getStartingPlayer());
@@ -189,7 +189,7 @@ public class AgricolaServiceImpl implements AgricolaService {
         game.initPlayerPlayed();
 
         // 수확 시기인 경우 수확 행동을 수행한다.
-        int round = game.getRound();
+        int round = game.getGameState().getRound();
         if (round == 4 || round == 7 || round == 9 || round == 11 || round == 13 || round == 14) {
             game.update(GameProgress.HARVEST, game.getStartingPlayer());
             harvesting(gameRoomId);
@@ -209,7 +209,7 @@ public class AgricolaServiceImpl implements AgricolaService {
         // 선공 플레이어를 변경한다.
         game.updateStartingPlayer();
 
-        if(game.getRound() < 14){
+        if(game.getGameState().getRound() < 14){
             // 새로운 라운드를 시작한다.
             roundStart(gameRoomId);
         } else {

@@ -30,6 +30,11 @@ public class AnimalStruct implements ResourceStructInterface {
         return true;
     }
 
+    @Override
+    public String getName() {
+        return animal == null ? null : animal.getName();
+    }
+
     public void subResource(int count) { if (this.count - count < 0) throw new MinusResourceException("동물 수는 음수가 될 수 없습니다.");
         this.count -= count;
     }

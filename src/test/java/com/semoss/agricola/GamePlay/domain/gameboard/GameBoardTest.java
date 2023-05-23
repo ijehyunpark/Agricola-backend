@@ -15,7 +15,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class GameBoardTest {
@@ -105,13 +104,12 @@ class GameBoardTest {
     void setUp() {
         game = mock(AgricolaGame.class);
         improvementBoard = mock(ImprovementBoard.class);
-        board = new GameBoard(game, buildEvents(), improvementBoard);
+        board = new GameBoard(buildEvents(), improvementBoard);
     }
     @Test
     @DisplayName("라운드 셔플 테스트")
     void shuffleEventsWithinRound_shouldShuffleEventsWithinSameRound() {
         // given
-        when(game.getRound()).thenReturn(100);
         List<Event> events = board.events();
 
         // when
@@ -144,7 +142,6 @@ class GameBoardTest {
     @DisplayName("스택 이벤트 처리 테스트")
     void givenStackActions_whenProcessStackEvent_thenResourceAccumulated() {
         // given
-        when(game.getRound()).thenReturn(100);
         List<Event> events = board.events();
 
         // when
@@ -153,8 +150,10 @@ class GameBoardTest {
         // then
         boolean dirtyChk = false;
         for(Event event : events){
-            if(event.getStacks().size() != 0)
+            if (event.getStacks().size() != 0) {
                 dirtyChk = true;
+                break;
+            }
         }
         assertTrue(dirtyChk);
     }

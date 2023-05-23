@@ -1,9 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.action.implement.DefaultAction;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
@@ -27,6 +24,7 @@ import java.util.List;
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class Event {
+    @JsonUnwrapped
     private final DefaultAction action;
     private final List<ResourceStructInterface> stacks = new ArrayList<>(); // 누적 쌓인 자원
     private final List<Reservation> reservations = new ArrayList<>(); // 예약으로 쌓인 자원

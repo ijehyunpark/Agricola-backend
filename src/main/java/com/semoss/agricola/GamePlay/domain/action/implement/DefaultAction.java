@@ -1,6 +1,7 @@
 package com.semoss.agricola.GamePlay.domain.action.implement;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,6 +26,7 @@ import java.util.List;
 
 
 @Getter
+@JsonPropertyOrder({"id", "name", "actions", "doTypes"})
 @Log4j2
 public abstract class DefaultAction {
     @JsonIgnore

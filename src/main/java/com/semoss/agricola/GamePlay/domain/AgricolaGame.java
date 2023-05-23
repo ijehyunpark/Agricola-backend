@@ -1,9 +1,6 @@
 package com.semoss.agricola.GamePlay.domain;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import com.semoss.agricola.GamePlay.domain.action.Event;
 import com.semoss.agricola.GamePlay.domain.action.implement.DefaultAction;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
@@ -18,7 +15,6 @@ import com.semoss.agricola.GameRoom.domain.Game;
 import com.semoss.agricola.GameRoom.domain.GameType;
 import com.semoss.agricola.GameRoomCommunication.domain.User;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -36,13 +32,14 @@ import java.util.stream.IntStream;
 @Getter
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+@JsonPropertyOrder({"gameType", "gameState", "startingPlayerId", "gameBoard", "players", "events", "cardDictionary"})
 @Log4j2
 public class AgricolaGame implements Game {
     private final GameType gameType = GameType.Agricola;
 
     @Getter
-    @Setter
-    public class GameState {
+    public static class GameState {
+        private int round = -1;
         private GameProgress gameProgress;
         @JsonProperty("playerId")
         @JsonIdentityReference(alwaysAsId = true)
@@ -51,6 +48,9 @@ public class AgricolaGame implements Game {
         private void update(GameProgress gameProgress, Player player) {
             this.gameProgress = gameProgress;
             this.player = player;
+        }
+        private void increaseRound() {
+            this.round++;
         }
     }
 
@@ -62,7 +62,6 @@ public class AgricolaGame implements Game {
     @JsonIdentityReference(alwaysAsId = true)
     @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@userId")
     private Player startingPlayer;
-    private int round;
     private final GameState gameState;
 
     public AgricolaGame(List<User> users, String strategy, List<DefaultAction> actions) {
@@ -80,7 +79,6 @@ public class AgricolaGame implements Game {
 
         // 게임 보드 제작
         this.gameBoard = GameBoard.builder()
-                .game(this)
                 .improvementBoard(new ImprovementBoard(cardDictionary))
                 .events(actions.stream()
                         .map(action -> Event.builder().action(action).build())
@@ -99,7 +97,6 @@ public class AgricolaGame implements Game {
                 })
                 .toList();
         this.startingPlayer = players.get(0);
-        this.round = -1;
         gameState = new GameState();
     }
 
@@ -174,7 +171,7 @@ public class AgricolaGame implements Game {
      */
     public void increaseRound() {
         // 라운드를 증가시킨다.
-        this.round++;
+        this.gameState.increaseRound();
     }
 
     /**
@@ -210,7 +207,15 @@ public class AgricolaGame implements Game {
      * 현재 게임보드에 예약된 자원량을 플레이어에게 선물한다.
      */
     public void processReservationResource() {
-        this.gameBoard.processReservationResource(this.round);
+        this.gameBoard.processReservationResource(this.gameState.getRound());
+    }
+
+
+    @JsonProperty("events")
+    public List<Event> getActiveEvents() {
+        return this.getGameBoard().events().stream()
+                .filter(event -> event.getRound() <= this.gameState.getRound())
+                .toList();
     }
 
     /**

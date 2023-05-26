@@ -1,17 +1,16 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
-import com.semoss.agricola.GamePlay.domain.player.AnimalStruct;
 import com.semoss.agricola.GamePlay.domain.player.AnimalType;
-import com.semoss.agricola.GamePlay.domain.player.Player;
+import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
 import lombok.Builder;
 import lombok.Getter;
 
 /**
  * 자원이 누적해서 쌓이는 행동
  */
-public class StackAnimalAction implements SimpleAction {
+public class StackAnimalAction implements StackAction {
     @Getter
-    private final ActionType actionType = ActionType.STACK;
+    private final ActionType actionType = ActionType.STACK_ANIMAL;
     @Getter
     private final AnimalStruct stackAnimal;
 
@@ -26,25 +25,6 @@ public class StackAnimalAction implements SimpleAction {
                 .animal(animalType)
                 .count(stackCount)
                 .build();
-    }
-
-    /**
-     * 전제조건을 만족하는지 확인
-     * @return always true
-     */
-    @Override
-    public boolean checkPrecondition(Player player) {
-        return true;
-    }
-
-    /**
-     * stack resource action - do nothing, Stack actions do not do any additional work on player actions.
-     * @param player player who get resource
-     * @return always true
-     */
-    @Override
-    public boolean runAction(Player player) {
-        return true;
     }
 }
 

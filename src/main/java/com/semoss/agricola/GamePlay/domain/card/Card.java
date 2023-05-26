@@ -1,6 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.card;
 
-import com.semoss.agricola.GamePlay.domain.player.AnimalStruct;
+import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 
@@ -21,5 +21,5 @@ public interface Card {
     CardType getCardType();
     Long getOwner();
     void setOwner(Long userID);
-    void useResource(Player player);
+    void place(Player player);
 }

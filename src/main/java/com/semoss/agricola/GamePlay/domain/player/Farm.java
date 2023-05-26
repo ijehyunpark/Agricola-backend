@@ -1,6 +1,7 @@
 package com.semoss.agricola.GamePlay.domain.player;
 
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.GamePlay.domain.resource.Seed;
 import lombok.Getter;
 
@@ -12,7 +13,7 @@ import java.util.Optional;
 @Getter
 public class Farm implements Field {
     private Seed seed;
-    private FieldType fieldType = FieldType.FARM;
+    private final FieldType fieldType = FieldType.FARM;
 
     public Farm() {
         seed = Seed.seedBuilder()
@@ -27,5 +28,9 @@ public class Farm implements Field {
      */
     protected Optional<ResourceStruct> harvest() {
         return seed.harvest();
+    }
+
+    public void cultivate(ResourceType resourceType) {
+        this.seed.cultivate(resourceType);
     }
 }

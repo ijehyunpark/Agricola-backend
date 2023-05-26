@@ -1,6 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.card;
 
-import com.semoss.agricola.GamePlay.domain.player.AnimalStruct;
+import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
@@ -70,12 +70,15 @@ public class MinorCard implements Card{
      * 카드를 가져가는데 필요한 자원만큼 player 의 자원을 가져감
      * @param player 카드를 가져갈 플레이어
      */
-    @Override
     public void useResource(Player player) {
         setOwner(player.getUserId());
-        for (ResourceStruct ingredient : ingredients){
+        for (ResourceStruct ingredient : ingredients) {
             player.useResource(ingredient.getResource(), ingredient.getCount());
         }
-        player.getMajorCard(cardID);
+        player.placeCard(cardID);
+    }
+
+    public void place(Player player) {
+        ;
     }
 }

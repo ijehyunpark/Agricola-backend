@@ -4,16 +4,25 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.semoss.agricola.GamePlay.domain.action.Event;
+import com.semoss.agricola.GamePlay.domain.action.implement.DefaultAction;
+import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.gameboard.GameBoard;
+import com.semoss.agricola.GamePlay.domain.gameboard.ImprovementBoard;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
+import com.semoss.agricola.GamePlay.exception.NotFoundException;
+import com.semoss.agricola.GamePlay.exception.ResourceLackException;
 import com.semoss.agricola.GameRoom.domain.Game;
+import com.semoss.agricola.GameRoom.domain.GameType;
 import com.semoss.agricola.GameRoomCommunication.domain.User;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -25,8 +34,12 @@ import java.util.stream.IntStream;
  */
 
 @Getter
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Log4j2
 public class AgricolaGame implements Game {
+    private final GameType gameType = GameType.Agricola;
+
     @Getter
     @Setter
     public class GameState {
@@ -42,6 +55,7 @@ public class AgricolaGame implements Game {
     }
 
     private final GameBoard gameBoard;
+    private final CardDictionary cardDictionary;
     private final List<Player> players;
 
     @JsonProperty("startingPlayerId")
@@ -49,16 +63,29 @@ public class AgricolaGame implements Game {
     @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@userId")
     private Player startingPlayer;
     private int round;
-    private GameState gameState;
+    private final GameState gameState;
 
-    @Builder
-    public AgricolaGame(List<User> users, String strategy) {
+    public AgricolaGame(List<User> users, String strategy, List<DefaultAction> actions) {
+        log.debug("아그리 콜라 게임생성:" + this.hashCode());
+        log.debug("입력된 플레이어:" + users.size());
+        log.debug("플레이어 생성 전략:" + strategy);
+
         if(users.size() == 0)
             throw new RuntimeException("아그리콜라에 필요한 최소 인원수를 충족하지 않았습니다.");
         if(users.size() > 4)
             throw new RuntimeException("아그리콜라에 필요한 최대 인원수를 초과하였습니다.");
 
-        this.gameBoard = GameBoard.builder().game(this).build();
+        // 카드 사전 제작
+        cardDictionary = new CardDictionary();
+
+        // 게임 보드 제작
+        this.gameBoard = GameBoard.builder()
+                .game(this)
+                .improvementBoard(new ImprovementBoard(cardDictionary))
+                .events(actions.stream()
+                        .map(action -> Event.builder().action(action).build())
+                        .toList())
+                .build();
 
         // 게임방 유저 객체로 아그리 콜라 게임 플레이어 객체를 생성
         this.players = IntStream.range(0, users.size())
@@ -91,18 +118,18 @@ public class AgricolaGame implements Game {
     public void updateStartingPlayer() {
         // 선공 플레이어 검색
         Optional<Player> startingPlayer = players.stream()
-                .filter(player -> player.isStartingToken())
+                .filter(Player::isStartingToken)
                 .findAny();
 
         // 선공 플레이어 변경
-        this.startingPlayer = startingPlayer.orElseThrow(RuntimeException::new);
+        this.startingPlayer = startingPlayer.orElseThrow(NotFoundException::new);
     }
 
 
     public Player findPlayerByUserId(Long userId) {
         // 플레이어 검색
         Optional<Player> targetPlayer = players.stream()
-                .filter(player -> player.getUserId() == userId)
+                .filter(player -> player.getUserId().equals(userId))
                 .findAny();
 
         return targetPlayer.orElseThrow(NoSuchElementException::new);
@@ -117,7 +144,7 @@ public class AgricolaGame implements Game {
         // 현재 차례의 플레이어 인덱스 검색
         int index = players.indexOf(player);
         if (index == -1 || players.size() == 0)
-            throw new RuntimeException("다음 유저를 찾을 수 없습니다.");
+            throw new NotFoundException("다음 유저를 찾을 수 없습니다.");
 
         // 다음플레이어 반환
         if (index + 1 == players.size())
@@ -132,11 +159,12 @@ public class AgricolaGame implements Game {
      * @return 모든 플레이어가 플레이를 마친 경우 null, 아닌 경우 다음 플레이어
      */
     public Optional<Player> findNextActionPlayer(Player player){
-        Player nextPlayer = findNextPlayer(player);
+        Player nextPlayer = player;
         do{
+            nextPlayer = findNextPlayer(player);
             if(!nextPlayer.isCompletedPlayed())
                 return Optional.of(nextPlayer);
-        }while (nextPlayer != player);
+        } while (nextPlayer != player);
         return Optional.empty();
     }
 
@@ -175,7 +203,7 @@ public class AgricolaGame implements Game {
      * 현재 게임보드의 모든 누적 액션의 누적자원량을 증가시킨다.
      */
     public void processStackEvent() {
-        this.gameBoard.processStackEvent(this.round);
+        this.gameBoard.processStackEvent();
     }
 
     /**
@@ -192,10 +220,10 @@ public class AgricolaGame implements Game {
      */
     public void playAction(Long eventId, List<AgricolaActionRequest.ActionFormat> acts) {
         // 액션 플레이를 수행한다.
-        this.gameBoard.playAction(this.getGameState().getPlayer(), eventId, acts);
+        History history = this.gameBoard.playAction(this.getGameState().getPlayer(), eventId, acts, this.cardDictionary);
 
         // 거주자 한명을 임의로 뽑아 플레이 시킨다.
-        this.getGameState().getPlayer().playAction();
+        this.getGameState().getPlayer().playAction(history);
     }
 
     /**
@@ -210,11 +238,15 @@ public class AgricolaGame implements Game {
 
         // 플레이어가 교환할 자원을 가지고 있는지 검증한다.
         if(player.getResource(resource.getResource()) < resource.getCount())
-            throw new RuntimeException("자원이 부족합니다.");
+            throw new ResourceLackException();
 
         // 주설비와 교환 요청 자원을 사용하여 교환 작업을 수행한다.
         // TODO: 교환 후 자원 획득
         player.useResource(resource);
+    }
+
+    public void finish() {
+        players.forEach(Player::finish);
     }
 
     //로그 기능

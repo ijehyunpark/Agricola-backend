@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
+import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,23 +17,11 @@ public class GetStartingPositionAction implements SimpleAction {
     }
 
     /**
-     * 선공권 가져오는 행동의 전제조건은 없습니다.
-     * @param player
-     * @return true
-     */
-    @Override
-    public boolean checkPrecondition(Player player) {
-        return true;
-    }
-
-    /**
      * 선공권을 가져옵니다.
-     * @param player
-     * @return
+     * @param player 행동을 수행한 플레이어
      */
     @Override
-    public boolean runAction(Player player) {
+    public void runAction(Player player, History history) {
         player.setStartingTokenByTrue();
-        return false;
     }
 }

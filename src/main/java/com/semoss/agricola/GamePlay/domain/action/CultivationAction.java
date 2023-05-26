@@ -1,39 +1,32 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
 import com.semoss.agricola.GamePlay.domain.player.Player;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
+import com.semoss.agricola.GamePlay.exception.IllgalRequestException;
+import com.semoss.agricola.GamePlay.exception.ResourceLackException;
 import lombok.Builder;
 import lombok.Getter;
 
 /**
- * TODO: 씨 뿌리기 액션
+ * 경작 이벤트
  */
 
 @Getter
-public class CultivationAction implements MultiInputAction {
+public class CultivationAction implements Action {
     private final ActionType actionType = ActionType.CULTIVATION;
 
     @Builder
     public CultivationAction() {
     }
 
-    /**
-     * TODO: 씨앗 심기 전 빈 밭인지 검증
-     * @param player 씨를 뿌릴 플레이어
-     * @param detail 밭의 y, x 좌표
-     * @return
-     */
-    @Override
-    public boolean checkPrecondition(Player player, Object detail) {
-        return false;
-    }
+    public void runAction(Player player, int y, int x, ResourceType resourceType) {
+        if (resourceType != ResourceType.GRAIN && resourceType != ResourceType.VEGETABLE)
+            throw new IllgalRequestException("씨앗 자원이 아닙니다.");
+        if(player.getResource(resourceType) < 1)
+            throw new ResourceLackException("씨앗 자원이 부족합니다.");
 
-    /**
-     * TODO: 플레이어 밭에 씨를 뿌립니다.
-     * @param player 씨를 뿌릴 플레이어
-     * @param detail 밭의 y, x 좌표
-     * @return
-     */
-    public boolean runAction(Player player, Object detail) {
-        return false;
+        // 씨앗을 심는다.
+        player.cultivate(y, x, resourceType);
+        player.useResource(resourceType, 1);
     }
 }

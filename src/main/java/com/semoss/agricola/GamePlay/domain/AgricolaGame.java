@@ -3,14 +3,18 @@ package com.semoss.agricola.GamePlay.domain;
 import com.fasterxml.jackson.annotation.*;
 import com.semoss.agricola.GamePlay.domain.action.Event;
 import com.semoss.agricola.GamePlay.domain.action.implement.DefaultAction;
+import com.semoss.agricola.GamePlay.domain.card.Card;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
+import com.semoss.agricola.GamePlay.domain.card.CardType;
+import com.semoss.agricola.GamePlay.domain.card.MajorCard;
 import com.semoss.agricola.GamePlay.domain.gameboard.GameBoard;
 import com.semoss.agricola.GamePlay.domain.gameboard.ImprovementBoard;
+import com.semoss.agricola.GamePlay.domain.player.AnimalType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
-import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
 import com.semoss.agricola.GamePlay.exception.NotFoundException;
-import com.semoss.agricola.GamePlay.exception.ResourceLackException;
+import com.semoss.agricola.GamePlay.exception.NotImplementException;
 import com.semoss.agricola.GameRoom.domain.Game;
 import com.semoss.agricola.GameRoom.domain.GameType;
 import com.semoss.agricola.GameRoomCommunication.domain.User;
@@ -236,18 +240,41 @@ public class AgricolaGame implements Game {
      * @param improvementId 자원 교환 작업 시 사용할 주설비 식별자
      * @param resource 교환할 자원의 종류와 개수
      */
-    public void playExchange(Long improvementId, ResourceStruct resource) {
+    public void playExchange(Long improvementId, ResourceType resource, Long count) {
         Player player = this.getGameState().getPlayer();
 
         // TODO: 플레이어가 해당 주설비를 가지고 있는지 검증한다.
+        Card card = cardDictionary.getCard(improvementId);
+        if (card.getCardType() != CardType.MAJOR)
+            throw new RuntimeException("주설비카드가 아닙니다.");
+        if(!player.hasCardInField(((MajorCard) card).getCardID()))
+            throw new NotFoundException("주설비를 가지고 있지 않습니다.");
 
-        // 플레이어가 교환할 자원을 가지고 있는지 검증한다.
-        if(player.getResource(resource.getResource()) < resource.getCount())
-            throw new ResourceLackException();
+        // TODO : 플레이어가 교환할 자원을 가지고 있는지 검증한다.
+        //
 
-        // 주설비와 교환 요청 자원을 사용하여 교환 작업을 수행한다.
-        // TODO: 교환 후 자원 획득
-        player.useResource(resource);
+        // TODO: 주설비와 교환 요청 자원을 사용하여 교환 작업을 수행한다.
+        //
+        throw new NotImplementException("미구현");
+    }
+
+
+    public void playExchange(Long improvementId, AnimalType animal, Long count) {
+        Player player = this.getGameState().getPlayer();
+
+        // TODO: 플레이어가 해당 주설비를 가지고 있는지 검증한다.
+        Card card = cardDictionary.getCard(improvementId);
+        if (card.getCardType() != CardType.MAJOR)
+            throw new RuntimeException("주설비카드가 아닙니다.");
+        if(!player.hasCardInField(((MajorCard) card).getCardID()))
+            throw new NotFoundException("주설비를 가지고 있지 않습니다.");
+
+        // TODO : 플레이어가 교환할 자원을 가지고 있는지 검증한다.
+        //
+
+        // TODO: 주설비와 교환 요청 자원을 사용하여 교환 작업을 수행한다.
+        //
+        throw new NotImplementException("미구현");
     }
 
     public void finish() {

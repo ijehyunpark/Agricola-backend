@@ -102,7 +102,7 @@ public abstract class DefaultAction {
         // 입력 행동값 검증
         isCollectRequest(acts);
 
-        // ToDO: Memento로 실패 시 롤백
+        // TODO: Memento로 실패 시 롤백
 
 
         this.actions.stream()

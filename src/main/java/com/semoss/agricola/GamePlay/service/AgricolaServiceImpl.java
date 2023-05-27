@@ -3,8 +3,9 @@ package com.semoss.agricola.GamePlay.service;
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
 import com.semoss.agricola.GamePlay.domain.GameProgress;
 import com.semoss.agricola.GamePlay.domain.action.implement.DefaultAction;
+import com.semoss.agricola.GamePlay.domain.player.AnimalType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
-import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceStructInterface;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
 import com.semoss.agricola.GameRoom.domain.GameRoom;
@@ -147,28 +148,48 @@ public class AgricolaServiceImpl implements AgricolaService {
     }
 
     /**
-     * 언제나 가능한 행동(플레이어 턴에만 제약)
+     * 언제나 가능한 행동(플레이어 턴에만 제약)\
      * @param gameRoomId
+     * @param improvementId
+     * @param resource
+     * @param count
      */
     @Override
-    public void playExchange(Long gameRoomId, Long improvementId, ResourceStruct resource) {
+    public void playExchange(Long gameRoomId, Long improvementId, ResourceType resource, Long count) {
         log.info("playExchange 요청이 입력되었습니다. : " + improvementId.toString());
-        log.info(resource.getResource());
-        log.info(resource.getCount());
-
-        // 항상 할 수 있는거
-        //- 보드판에 모인 공용 주요 설비 카드를 확인할 수 있다.
-        //- 내 보드판을 눌러 내가 가지고 있는 보조 설비 카드를 확인할 수 있다.
-        //- 내 보드판을 눌러 내가 가지고 있는 직업 카드를 확인할 수 있다.
-        //- 다른 사람의 판을 눌러 그 사람이 가지고 있는 보조 설비 카드와 직업 카드, 자원을 볼 수 있다.
-        //- 지금까지 게임의 진행사항(로그)을 확인할 수 있다.
-        //- 지금까지 게임의 플레이어 점수를 확인할 수 있다.
+        log.info(resource.getName());
+        log.info(count);
 
         // 아그리콜라 게임 추출
         AgricolaGame game = extractGame(gameRoomId);
 
         // 교환 작업 수행
-        game.playExchange(improvementId, resource);
+        game.playExchange(improvementId, resource, count);
+
+        // 만약 게임 상태가 수확단계에서 이루어진 교환이라면 이후에 수확 과정을 진행한다.
+        if(game.getGameState().getGameProgress() == GameProgress.HARVEST){
+            feeding(gameRoomId);
+        }
+    }
+
+    /**
+     * 언제나 가능한 행동(플레이어 턴에만 제약)\
+     * @param gameRoomId
+     * @param improvementId
+     * @param animal
+     * @param count
+     */
+    @Override
+    public void playExchange(Long gameRoomId, Long improvementId, AnimalType animal, Long count) {
+        log.info("playExchange 요청이 입력되었습니다. : " + improvementId.toString());
+        log.info(animal.getName());
+        log.info(count);
+
+        // 아그리콜라 게임 추출
+        AgricolaGame game = extractGame(gameRoomId);
+
+        // 교환 작업 수행
+        game.playExchange(improvementId, animal, count);
 
         // 만약 게임 상태가 수확단계에서 이루어진 교환이라면 이후에 수확 과정을 진행한다.
         if(game.getGameState().getGameProgress() == GameProgress.HARVEST){

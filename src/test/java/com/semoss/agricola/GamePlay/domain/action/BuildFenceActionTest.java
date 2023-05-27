@@ -383,4 +383,29 @@ class BuildFenceActionTest {
 
         // then
     }
+
+    @Test
+    @DisplayName("마구간 설치 되어 있는 곳에 울타리 설치 : 성공")
+    void test11() {
+        // given
+        player.buildField(2,2,FieldType.STABLE);
+        player.addResource(ResourceType.WOOD, 10);
+        List<BuildFenceActionExtensionRequest> requests = List.of(
+                new BuildFenceActionExtensionRequest(2,2, false),
+                new BuildFenceActionExtensionRequest(3,2, false),
+                new BuildFenceActionExtensionRequest(2,2, true),
+                new BuildFenceActionExtensionRequest(2,3, true)
+        );
+
+
+        // when
+        action.runAction(player, requests);
+        printPlayerBoard();
+
+        // then
+        assertTrue(player.getPlayerBoard().getRowFence()[2][2]);
+        assertTrue(player.getPlayerBoard().getRowFence()[3][2]);
+        assertTrue(player.getPlayerBoard().getColFence()[2][2]);
+        assertTrue(player.getPlayerBoard().getColFence()[2][3]);
+    }
 }

@@ -427,4 +427,5 @@ public class Player {
     public void buildFence(int[][] rowPosition,  int[][] colPosition) {
         this.playerBoard.buildFence(rowPosition, colPosition);
     }
+
 }

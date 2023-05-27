@@ -2,9 +2,7 @@ package com.semoss.agricola.GamePlay.domain.resource;
 
 import com.semoss.agricola.GamePlay.domain.player.AnimalType;
 import com.semoss.agricola.GamePlay.exception.MinusResourceException;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 /**
  * 아그리콜라 자원과 해당 개수
@@ -12,6 +10,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class AnimalStruct implements ResourceStructInterface {
     private AnimalType animal;
     private int count;

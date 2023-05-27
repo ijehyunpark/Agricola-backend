@@ -138,10 +138,10 @@ public class PlayerBoard {
                 .forEach(animalStruct -> animals.put(animalStruct.getAnimal(), animalStruct.getCount()));
 
 
-        // 증가 process
+        // 가축이 2마리 이상이면 하나를 얻는다.
         for (Map.Entry<AnimalType, Integer> animal : animals.entrySet()) {
             if (animal.getValue() >= 2) {
-                // TODO : 증가한 동물을 재배치
+                addAnimal(animal.getKey(), 1);
             }
         }
     }

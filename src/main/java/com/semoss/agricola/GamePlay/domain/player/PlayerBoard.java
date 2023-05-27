@@ -218,8 +218,15 @@ public class PlayerBoard {
             throw new NotAllowRequestException("필드 위치가 부적절합니다.");
         }
 
-        if (fields[y][x] != null)
+        if (fields[y][x] != null){
+            // 외양간이 건설 되어 있으면 마구간을 설치
+            if(fields[y][x].getFieldType() == FieldType.BARN && fieldType == FieldType.BARN) {
+               ((Barn) fields[y][x]).addStable();
+               return;
+            }
+
             throw new AlreadyExistException("이미 건설 되어 있습니다.");
+        }
 
         switch (fieldType){
             case FARM -> {
@@ -231,11 +238,9 @@ public class PlayerBoard {
                         .build();
             }
             case STABLE -> {
-                // TODO: 외양간 건설 요청시
-                throw new NotImplementException();
-//                fields[y][x] = Barn.builder()
-//                        .fieldType(FieldType.STABLE)
-//                        .build();
+                fields[y][x] = Barn.builder()
+                        .fieldType(FieldType.STABLE)
+                        .build();
             }
             case FENCE -> {
                 throw new NotAllowRequestException("울타리 건설은 필드에서 지원되지 않습니다/");

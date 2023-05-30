@@ -15,6 +15,7 @@ import com.semoss.agricola.GamePlay.domain.card.Occupation.HarvestTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Occupation.Occupation;
 import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceStructInterface;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.GamePlay.exception.IllegalRequestException;
 import com.semoss.agricola.GamePlay.exception.ResourceLackException;
@@ -41,7 +42,7 @@ public class Player {
     private final List<Long> cardHand = new ArrayList<>();
     private final List<Long> cardField = new ArrayList<>();
     private final List<Occupation> occupations = new ArrayList<>();
-    private List<ResourceStruct>[] roundStackResource = new ArrayList[15];
+    private List<ResourceStructInterface>[] roundStackResource = new ArrayList[15];
 
     @Builder
     public Player(Long userId, AgricolaGame game, boolean isStartPlayer){
@@ -116,6 +117,18 @@ public class Player {
     }
 
     /**
+     * round stack 에 자원을 쌓아둔다.
+     * @param rounds 쌓을 라운드들
+     * @param animalStruct 쌓을 동물
+     */
+    public void addRoundStack(int[] rounds, AnimalStruct animalStruct){
+        for (int round : rounds) {
+            if (round >= roundStackResource.length) throw new IllegalRequestException("잘못된 라운드가 입력되었습니다.");
+            roundStackResource[round].add(animalStruct);
+        }
+    }
+
+    /**
      * 가축을 추가한다.
      * @param animalType 추가할 가축 종류
      * @param count 추가할 가축 개수
@@ -177,8 +190,11 @@ public class Player {
      * @param round 현재 라운드
      */
     public void getRoundStack(int round){
-        for (ResourceStruct resourceStruct : roundStackResource[round]){
-            this.addResource(resourceStruct);
+        for (ResourceStructInterface resourceStruct : roundStackResource[round]){
+            if(resourceStruct.isResource())
+                this.addResource((ResourceStruct) resourceStruct);
+            else if (resourceStruct.isAnimal())
+                this.addAnimal((AnimalStruct) resourceStruct);
         }
     }
 

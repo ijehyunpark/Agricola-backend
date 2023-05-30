@@ -114,18 +114,6 @@ public record GameBoard(@JsonIgnore List<Event> events) {
     }
 
     /**
-     * 해당 라운드에 해당하는 이벤트에 쌓인 예약 자원을 플레이어에게 전달한다.
-     *
-     * @param round
-     */
-    public void processReservationResource(int round) {
-        this.events.stream()
-                .filter(event -> event.getRound() == round)
-                .findAny()
-                .ifPresent(Event::deliverReservation);
-    }
-
-    /**
      * 액션을 플레이한다.
      *
      * @param player  액션을 플레이하는 플레이어

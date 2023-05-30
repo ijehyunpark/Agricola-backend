@@ -74,9 +74,7 @@ public class AgricolaServiceImpl implements AgricolaService {
         gameRoom.setGame(game);
 
         // 선공 플레이어의 경우 음식 토큰 2개, 아닌 경우 3개를 받는다.
-        for (Player player : game.getPlayers()) {
-            player.addResource(ResourceType.FOOD, game.getStartingPlayer() == player ? 2 : 3);
-        }
+        game.setUpStartingFood();
 
         // 게임 시작 후 최초 라운드 시작을 개시한다.
         roundStart(gameRoomId);
@@ -102,9 +100,6 @@ public class AgricolaServiceImpl implements AgricolaService {
 
         // 이번 라운드의 행동이 공개한다.
         game.increaseRound();
-
-        // [직업,보조카드] 공개되는 라운드카드에 누적되어있는 자원을 자원을 배치한사람이 가져간다.
-        game.processReservationResource();
 
         // 자원 누적 칸의 경우 자원을 누적하고 누적되지않는 자원 칸의 경우 비어있는 칸의 자원만 보충한다.
         game.processStackEvent();

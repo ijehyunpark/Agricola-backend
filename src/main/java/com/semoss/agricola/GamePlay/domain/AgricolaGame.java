@@ -97,8 +97,19 @@ public class AgricolaGame implements Game {
                             .build();
                 })
                 .toList();
+
         this.startingPlayer = players.get(0);
         gameState = new GameState();
+    }
+
+    /**
+     * 시작 음식 설정
+     */
+    public void setUpStartingFood() {
+        // 선공 플레이어의 경우 음식 토큰 2개, 아닌 경우 3개를 받는다.
+        for (Player player : getPlayers()) {
+            player.addResource(ResourceType.FOOD, getStartingPlayer() == player ? 2 : 3);
+        }
     }
 
     /**
@@ -207,13 +218,6 @@ public class AgricolaGame implements Game {
      */
     public void processStackEvent() {
         this.gameBoard.processStackEvent();
-    }
-
-    /**
-     * 현재 게임보드에 예약된 자원량을 플레이어에게 선물한다.
-     */
-    public void processReservationResource() {
-        this.gameBoard.processReservationResource(this.gameState.getRound());
     }
 
 

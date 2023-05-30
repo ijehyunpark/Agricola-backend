@@ -2,7 +2,8 @@ package com.semoss.agricola.GamePlay.domain.action;
 
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
-import com.semoss.agricola.GamePlay.domain.card.MajorCard;
+import com.semoss.agricola.GamePlay.domain.card.Majorcard.MajorCard;
+import com.semoss.agricola.GamePlay.domain.card.Majorcard.MajorFactory;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.GamePlay.exception.NotFoundException;
@@ -36,11 +37,8 @@ class BakeActionTest {
                 .build();
         bakeAction = BakeAction.builder()
                 .build();
-        majorCard = MajorCard.builder()
-                .cardID(1L)
-                .bakeEfficiency(1)
-                .owner(1234L)
-                .build();
+        MajorFactory majorFactory = new MajorFactory();
+        majorCard = majorFactory.firePlace1();
         cardDictionary = new CardDictionary();
     }
 
@@ -56,7 +54,7 @@ class BakeActionTest {
         bakeAction.runAction(player, majorCard);
 
         // then
-        assertEquals(1, player.getResource(ResourceType.FOOD));
+        assertEquals(2, player.getResource(ResourceType.FOOD));
     }
 
     @Test

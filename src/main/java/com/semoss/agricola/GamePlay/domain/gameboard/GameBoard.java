@@ -13,6 +13,9 @@ import com.semoss.agricola.GamePlay.exception.NotFoundException;
 import com.semoss.agricola.GamePlay.exception.ServerError;
 import lombok.Builder;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,10 +25,13 @@ import java.util.List;
 /**
  * 아그리콜라 메인 게임 보드
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Log4j2
-public record GameBoard(@JsonIgnore List<Event> events, ImprovementBoard improvementBoard) {
+public record GameBoard(@JsonIgnore List<Event> events) {
+
     @Builder
-    public GameBoard(List<Event> events, ImprovementBoard improvementBoard) {
+    public GameBoard(List<Event> events) {
         log.debug("Game Board가 생성되었습니다." + this.hashCode());
 
         this.events = new ArrayList<>(events);
@@ -36,7 +42,6 @@ public record GameBoard(@JsonIgnore List<Event> events, ImprovementBoard improve
             if (event.getAction().getRoundGroup() != 0)
                 event.setRound(round++);
         }
-        this.improvementBoard = improvementBoard;
     }
 
     /**

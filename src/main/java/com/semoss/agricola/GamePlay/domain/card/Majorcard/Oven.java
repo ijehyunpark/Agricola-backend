@@ -13,4 +13,19 @@ public class Oven extends DefaultMajorCard implements BakeTrigger{
         super(cardID, bonusPoint, ingredients);
         this.bakeEfficiency = bakeEfficiency;
     }
+
+    @Override
+    public boolean hasBakeMajorTrigger() {
+        return true;
+    }
+
+    @Override
+    public boolean hasCookingAnytimeTrigger() {
+        return false;
+    }
+
+    @Override
+    public boolean hasCookingHarvestTrigger() {
+        return false;
+    }
 }

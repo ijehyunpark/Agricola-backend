@@ -2,8 +2,8 @@ package com.semoss.agricola.GamePlay.domain.player;
 
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
-import com.semoss.agricola.GamePlay.domain.card.MajorCard;
-import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
+import com.semoss.agricola.GamePlay.domain.card.Majorcard.MajorCard;
+import com.semoss.agricola.GamePlay.domain.card.Majorcard.MajorFactory;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,14 +17,8 @@ import static org.mockito.Mockito.when;
 class PointCalculatorTest {
     int[][][] fence1 = {{{0,3},{1,2},{1,4},{2,2},{2,4},{3,3}},{{0,3},{0,4},{1,2},{1,5},{2,3},{2,4}}};
     PointCalculator pointCalculator = new PointCalculator();
-    MajorCard majorCard = MajorCard.builder()
-            .cardID(7L)
-            .bonusPoint(2)
-            .ingredients(new ResourceStruct[]{ResourceStruct.builder().resource(ResourceType.WOOD).count(2).build(),
-                    ResourceStruct.builder().resource(ResourceType.STONE).count(2).build()})
-            .resourceToFoodHarvest(ResourceStruct.builder().resource(ResourceType.CLAY).count(2).build())
-            .resourceTypeToPoints(ResourceType.CLAY)
-            .resourceNumToPoints(new int[][]{{3,1},{5,2},{7,3}}).build();
+    MajorFactory majorFactory = new MajorFactory();
+    MajorCard majorCard = majorFactory.woodWorkShop();
     CardDictionary cardDictionary;
 
     AgricolaGame game = mock(AgricolaGame.class);

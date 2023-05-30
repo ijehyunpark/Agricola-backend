@@ -35,4 +35,19 @@ public class Workshop extends DefaultMajorCard implements CookingHarvestTrigger,
         }
         return result;
     }
+
+    @Override
+    public boolean hasBakeMajorTrigger() {
+        return false;
+    }
+
+    @Override
+    public boolean hasCookingAnytimeTrigger() {
+        return false;
+    }
+
+    @Override
+    public boolean hasCookingHarvestTrigger() {
+        return true;
+    }
 }

@@ -7,7 +7,7 @@ import lombok.Getter;
 
 // 화덕, 화로
 @Getter
-public class FirePlace extends DefaultMajorCard implements CookingAnytimeTrigger,BakeTrigger{
+public class FirePlace extends DefaultMajorCard implements CookingAnytimeTrigger, BakeTrigger {
     private final ResourceStruct[] resourcesToFoodAnytime; // 언제든지 음식으로 교환
     private final AnimalStruct[] animalsToFoodAnytime; // 언제든지 음식으로 교환
     private final int bakeEfficiency; // 빵굽기 효율 == 곡물 하나당 음식 개수
@@ -18,5 +18,20 @@ public class FirePlace extends DefaultMajorCard implements CookingAnytimeTrigger
         this.resourcesToFoodAnytime = resourcesToFoodAnytime;
         this.animalsToFoodAnytime = animalsToFoodAnytime;
         this.bakeEfficiency = bakeEfficiency;
+    }
+
+    @Override
+    public boolean hasBakeMajorTrigger() {
+        return true;
+    }
+
+    @Override
+    public boolean hasCookingAnytimeTrigger() {
+        return true;
+    }
+
+    @Override
+    public boolean hasCookingHarvestTrigger() {
+        return false;
     }
 }

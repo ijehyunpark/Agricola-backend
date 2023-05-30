@@ -3,10 +3,9 @@ package com.semoss.agricola.GamePlay.domain.action;
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
-import com.semoss.agricola.GamePlay.domain.card.MajorCard;
-import com.semoss.agricola.GamePlay.domain.player.AnimalType;
+import com.semoss.agricola.GamePlay.domain.card.Majorcard.MajorCard;
+import com.semoss.agricola.GamePlay.domain.card.Majorcard.MajorFactory;
 import com.semoss.agricola.GamePlay.domain.player.Player;
-import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,15 +33,8 @@ class PlaceActionTest {
                 .game(game)
                 .userId(1234L)
                 .build();
-        majorCard = MajorCard.builder()
-                .cardID(1L)
-                .bonusPoint(1)
-                .ingredients(new ResourceStruct[]{ResourceStruct.builder().resource(ResourceType.CLAY).count(2).build()})
-                .resourcesToFoodAnytime(new ResourceStruct[]{ResourceStruct.builder().resource(ResourceType.VEGETABLE).count(2).build()})
-                .animalsToFoodAnytime(new AnimalStruct[]{AnimalStruct.builder().animal(AnimalType.SHEEP).count(2).build(),
-                        AnimalStruct.builder().animal(AnimalType.WILD_BOAR).count(2).build(),
-                        AnimalStruct.builder().animal(AnimalType.CATTLE).count(3).build()})
-                .bakeEfficiency(2).build();
+        MajorFactory majorFactory = new MajorFactory();
+        majorCard = majorFactory.firePlace1();
         cardDictionary = new CardDictionary();
     }
 

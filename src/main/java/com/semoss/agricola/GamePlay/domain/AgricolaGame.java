@@ -6,9 +6,7 @@ import com.semoss.agricola.GamePlay.domain.action.implement.DefaultAction;
 import com.semoss.agricola.GamePlay.domain.card.Card;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
-import com.semoss.agricola.GamePlay.domain.card.MajorCard;
 import com.semoss.agricola.GamePlay.domain.gameboard.GameBoard;
-import com.semoss.agricola.GamePlay.domain.gameboard.ImprovementBoard;
 import com.semoss.agricola.GamePlay.domain.player.AnimalType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
@@ -68,7 +66,7 @@ public class AgricolaGame implements Game {
     private Player startingPlayer;
     private final GameState gameState;
 
-    public AgricolaGame(List<User> users, String strategy, List<DefaultAction> actions) {
+    public AgricolaGame(List<User> users, String strategy, List<DefaultAction> actions, CardDictionary cardDictionary) {
         log.debug("아그리 콜라 게임생성:" + this.hashCode());
         log.debug("입력된 플레이어:" + users.size());
         log.debug("플레이어 생성 전략:" + strategy);
@@ -79,11 +77,10 @@ public class AgricolaGame implements Game {
             throw new RuntimeException("아그리콜라에 필요한 최대 인원수를 초과하였습니다.");
 
         // 카드 사전 제작
-        cardDictionary = new CardDictionary();
+        this.cardDictionary = cardDictionary;
 
         // 게임 보드 제작
         this.gameBoard = GameBoard.builder()
-                .improvementBoard(new ImprovementBoard(cardDictionary))
                 .events(actions.stream()
                         .map(action -> Event.builder().action(action).build())
                         .toList())
@@ -252,7 +249,7 @@ public class AgricolaGame implements Game {
         Card card = cardDictionary.getCard(improvementId);
         if (card.getCardType() != CardType.MAJOR)
             throw new RuntimeException("주설비카드가 아닙니다.");
-        if(!player.hasCardInField(((MajorCard) card).getCardID()))
+        if(!player.hasCardInField(card.getCardID()))
             throw new NotFoundException("주설비를 가지고 있지 않습니다.");
 
         // TODO : 플레이어가 교환할 자원을 가지고 있는지 검증한다.
@@ -271,7 +268,7 @@ public class AgricolaGame implements Game {
         Card card = cardDictionary.getCard(improvementId);
         if (card.getCardType() != CardType.MAJOR)
             throw new RuntimeException("주설비카드가 아닙니다.");
-        if(!player.hasCardInField(((MajorCard) card).getCardID()))
+        if(!player.hasCardInField(card.getCardID()))
             throw new NotFoundException("주설비를 가지고 있지 않습니다.");
 
         // TODO : 플레이어가 교환할 자원을 가지고 있는지 검증한다.

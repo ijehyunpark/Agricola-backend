@@ -39,4 +39,19 @@ public class Well extends DefaultMajorCard implements MajorCard, StackResource {
         }
         player.addRoundStack(list.stream().mapToInt(i -> i).toArray(), stackResource);
     }
+
+    @Override
+    public boolean hasBakeMajorTrigger() {
+        return false;
+    }
+
+    @Override
+    public boolean hasCookingAnytimeTrigger() {
+        return false;
+    }
+
+    @Override
+    public boolean hasCookingHarvestTrigger() {
+        return false;
+    }
 }

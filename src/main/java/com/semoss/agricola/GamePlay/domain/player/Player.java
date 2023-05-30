@@ -51,6 +51,9 @@ public class Player {
         for (ResourceType resource : ResourceType.values()){
             resources.put(resource,0);
         }
+        for (int i = 0; i < 15; i++) {
+            roundStackResource[i] = new ArrayList<>();
+        }
     }
 
     /**

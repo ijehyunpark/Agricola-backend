@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 public class MajorFactory {
 
     //화로1
-    @Bean
+    @Bean(name = "firePlace1")
     public FirePlace firePlace1() {
         return FirePlace.builder()
                 .cardID(1L)
@@ -28,7 +28,7 @@ public class MajorFactory {
     }
 
     // 화로2
-    @Bean
+    @Bean(name = "firePlace2")
     public FirePlace firePlace2() {
         return FirePlace.builder()
                 .cardID(2L)
@@ -43,7 +43,7 @@ public class MajorFactory {
     }
 
     //화덕
-    @Bean
+    @Bean(name = "firePlace3")
     public FirePlace firePlace3() {
         return FirePlace.builder()
                 .cardID(3L)
@@ -58,7 +58,7 @@ public class MajorFactory {
     }
 
     //화덕
-    @Bean
+    @Bean(name = "firePlace4")
     public FirePlace firePlace4() {
         return FirePlace.builder()
                 .cardID(4L)
@@ -73,7 +73,7 @@ public class MajorFactory {
     }
 
     //흙가마 (더미) // 빵효율 증가만 적용
-    @Bean
+    @Bean(name = "clayOven")
     public Oven clayOven(){
         return Oven.builder()
                 .cardID(5L)
@@ -85,7 +85,7 @@ public class MajorFactory {
     }
 
     //돌가마 (더미) // 빵효율 증가만 적용
-    @Bean
+    @Bean(name = "stoneOven")
     public Oven stoneOven(){
         return Oven.builder()
                 .cardID(6L)
@@ -97,7 +97,7 @@ public class MajorFactory {
     }
 
     //가구제작소
-    @Bean
+    @Bean(name = "woodWorkShop")
     public Workshop woodWorkShop(){
         return Workshop.builder()
                 .cardID(7L)
@@ -111,7 +111,7 @@ public class MajorFactory {
     }
 
     //그릇제작소
-    @Bean
+    @Bean(name = "clayWorkShop")
     public Workshop clayWorkShop(){
         return Workshop.builder()
                 .cardID(8L)
@@ -125,7 +125,7 @@ public class MajorFactory {
     }
 
     //바구니제작소
-    @Bean
+    @Bean(name = "reedWorkShop")
     public Workshop reedWorkShop(){
         return Workshop.builder()
                 .cardID(9L)

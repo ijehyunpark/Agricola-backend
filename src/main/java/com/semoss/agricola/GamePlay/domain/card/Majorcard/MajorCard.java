@@ -10,4 +10,8 @@ public interface MajorCard extends Card {
     boolean checkPrerequisites(Player player);
     int getBonusPoint();
     void place(Player player);
+
+    boolean hasBakeMajorTrigger();
+    boolean hasCookingAnytimeTrigger();
+    boolean hasCookingHarvestTrigger();
 }

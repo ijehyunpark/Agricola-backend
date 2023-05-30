@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-public class MinorCard implements Card {
+public class MinorCard implements Card{
 
     private CardType cardType;
     private Long cardID;
@@ -30,19 +30,55 @@ public class MinorCard implements Card {
     private Long owner;
 
     public MinorCard(Long id){
-        cardType = CardType.OCCUPATION;
+        cardType = CardType.MINOR;
         cardID = id;
         owner = null;
     }
 
+    /**
+     * 플레이어가 카드를 가져가기에 충분한 자원을 가지고 있는지 확인
+     * @param player 확인할 플레이어
+     * @return 확인 결과
+     */
     @Override
-    public boolean checkPrerequisites(Player player) {
-        return true;
+    public boolean checkPrerequisites(Player player){
+        if (owner != null) return false;
+        boolean result = true;
+        for (ResourceStruct ingredient : ingredients){
+            result &= player.getResource(ingredient.getResource()) >= ingredient.getCount();
+        }
+        return result;
     }
 
+    /**
+     * 사용자가 가지고 있는 보너스 자원의 개수로 점수 계산
+     * @param player 확인할 플레이어 -- 가능하면 owner를 이용하도록 변경하고 싶습니다
+     * @return 점수
+     */
+    public int checkPoint(Player player){
+        if (resourceNumToPoints == null) return 0;
+        int num = player.getResource(resourceTypeToPoints);
+        int result = 0;
+        for (int[] point : resourceNumToPoints){
+            if(point[0] > num) return result;
+            result = point[1];
+        }
+        return result;
+    }
 
-    @Override
+    /**
+     * 카드를 가져가는데 필요한 자원만큼 player 의 자원을 가져감
+     * @param player 카드를 가져갈 플레이어
+     */
+    public void useResource(Player player) {
+        setOwner(player.getUserId());
+        for (ResourceStruct ingredient : ingredients) {
+            player.useResource(ingredient.getResource(), ingredient.getCount());
+        }
+        player.placeCard(cardID);
+    }
+
     public void place(Player player) {
-
+        ;
     }
 }

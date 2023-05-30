@@ -54,11 +54,12 @@ public class MajorCard implements Card{
 
     /**
      * 사용자가 가지고 있는 보너스 자원의 개수로 점수 계산
-     * @param num this.resourceTypeToPoints 의 개수
+     * @param player 확인할 플레이어 -- 가능하면 owner를 이용하도록 변경하고 싶습니다
      * @return 점수
      */
-    public int checkPoint(int num){
+    public int checkPoint(Player player){
         if (resourceNumToPoints == null) return 0;
+        int num = player.getResource(resourceTypeToPoints);
         int result = 0;
         for (int[] point : resourceNumToPoints){
             if(point[0] > num) return result;

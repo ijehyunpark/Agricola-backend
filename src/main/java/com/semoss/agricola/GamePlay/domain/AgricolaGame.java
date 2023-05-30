@@ -176,6 +176,11 @@ public class AgricolaGame implements Game {
     public void increaseRound() {
         // 라운드를 증가시킨다.
         this.gameState.increaseRound();
+
+        // 플레이어들이 이번 라운드에 쌓아둔 자원을 획득한다.
+        for (Player player : players){
+            player.getRoundStack(this.gameState.getRound());
+        }
     }
 
     /**

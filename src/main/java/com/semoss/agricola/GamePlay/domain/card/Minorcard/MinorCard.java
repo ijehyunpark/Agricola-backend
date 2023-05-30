@@ -1,11 +1,10 @@
-package com.semoss.agricola.GamePlay.domain.card;
+package com.semoss.agricola.GamePlay.domain.card.Minorcard;
 
+import com.semoss.agricola.GamePlay.domain.card.Card;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 
-public interface Card {
+public interface MinorCard extends Card {
     boolean checkPrerequisites(Player player);
-    CardType getCardType();
     int getBonusPoint();
-    Long getCardID();
     void place(Player player);
 }

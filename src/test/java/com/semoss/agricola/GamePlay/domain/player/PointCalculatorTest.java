@@ -9,6 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -25,8 +28,9 @@ class PointCalculatorTest {
 
     @Test
     void calculate() {
-        cardDictionary = new CardDictionary();
-        cardDictionary.addCard(null,majorCard);
+        List<MajorCard> majorCards = new ArrayList<>();
+        majorCards.add(majorCard);
+        cardDictionary = new CardDictionary(majorCards);
         // given
         Player player = Player.builder().game(game).userId(123L).build();
         when(game.getCardDictionary()).thenReturn(cardDictionary);

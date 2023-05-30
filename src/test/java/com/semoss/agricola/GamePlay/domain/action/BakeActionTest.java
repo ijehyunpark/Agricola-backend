@@ -2,6 +2,7 @@ package com.semoss.agricola.GamePlay.domain.action;
 
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
+import com.semoss.agricola.GamePlay.domain.card.Majorcard.BakeTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Majorcard.MajorCard;
 import com.semoss.agricola.GamePlay.domain.card.Majorcard.MajorFactory;
 import com.semoss.agricola.GamePlay.domain.player.Player;
@@ -14,6 +15,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -23,7 +27,7 @@ import static org.mockito.Mockito.when;
 class BakeActionTest {
     Player player;
     BakeAction bakeAction;
-    MajorCard majorCard;
+    BakeTrigger majorCard;
     AgricolaGame game;
     CardDictionary cardDictionary;
 
@@ -38,8 +42,10 @@ class BakeActionTest {
         bakeAction = BakeAction.builder()
                 .build();
         MajorFactory majorFactory = new MajorFactory();
+        List<MajorCard> majorCards = new ArrayList<>();
         majorCard = majorFactory.firePlace1();
-        cardDictionary = new CardDictionary();
+        majorCards.add(majorCard);
+        cardDictionary = new CardDictionary(majorCards);
     }
 
     @Test

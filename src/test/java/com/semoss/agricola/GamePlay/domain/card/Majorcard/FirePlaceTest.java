@@ -12,6 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -27,13 +30,14 @@ class FirePlaceTest {
     @BeforeEach
     void setUp(){
         majorFactory = new MajorFactory();
-        cardDictionary = new CardDictionary();
-        mockedGame = mock(AgricolaGame.class);
+        List<MajorCard> majorCardList = new ArrayList<>();
+        majorCardList.add(majorFactory.firePlace1());
+        majorCardList.add(majorFactory.firePlace2());
+        majorCardList.add(majorFactory.firePlace3());
+        majorCardList.add(majorFactory.firePlace4());
+        cardDictionary = new CardDictionary(majorCardList);
 
-        cardDictionary.addCard(null,majorFactory.firePlace1());
-        cardDictionary.addCard(null,majorFactory.firePlace2());
-        cardDictionary.addCard(null,majorFactory.firePlace3());
-        cardDictionary.addCard(null,majorFactory.firePlace4());
+        mockedGame = mock(AgricolaGame.class);
     }
 
     @Test

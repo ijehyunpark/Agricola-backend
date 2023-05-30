@@ -14,6 +14,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -34,8 +37,10 @@ class PlaceActionTest {
                 .userId(1234L)
                 .build();
         MajorFactory majorFactory = new MajorFactory();
+        List<MajorCard> majorCards = new ArrayList<>();
         majorCard = majorFactory.firePlace1();
-        cardDictionary = new CardDictionary();
+        majorCards.add(majorCard);
+        cardDictionary = new CardDictionary(majorCards);
     }
 
     @Test

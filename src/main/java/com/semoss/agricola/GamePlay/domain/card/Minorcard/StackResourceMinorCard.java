@@ -29,14 +29,14 @@ public class StackResourceMinorCard extends DefaultMinorCard implements StackRes
 
         // 플레이어의 라운드 스택에 자원 추가
         if (isStaticRound) {
-            int now = player.getGame().getRound();
+            int now = player.getGame().getGameState().getRound();
             for (int round : rounds) {
                 if (round > now) list.add(round);
             }
         }
         else {
             for (int round : rounds) {
-                int sum = round + player.getGame().getRound();
+                int sum = round + player.getGame().getGameState().getRound();;
                 if (sum > 14) break;
                 list.add(sum);
             }

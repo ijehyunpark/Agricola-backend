@@ -1,16 +1,19 @@
 package com.semoss.agricola.GamePlay.domain.player;
 
+import com.semoss.agricola.GamePlay.domain.AgricolaGame;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.MajorCard;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+@ExtendWith(MockitoExtension.class)
 class PointCalculatorTest {
     int[][][] fence1 = {{{0,3},{1,2},{1,4},{2,2},{2,4},{3,3}},{{0,3},{0,4},{1,2},{1,5},{2,3},{2,4}}};
     PointCalculator pointCalculator = new PointCalculator();
@@ -24,12 +27,15 @@ class PointCalculatorTest {
             .resourceNumToPoints(new int[][]{{3,1},{5,2},{7,3}}).build();
     CardDictionary cardDictionary;
 
+    AgricolaGame game = mock(AgricolaGame.class);
+
     @Test
     void calculate() {
         cardDictionary = new CardDictionary();
         cardDictionary.addCard(null,majorCard);
         // given
-        Player player = Player.builder().userId(123L).build();
+        Player player = Player.builder().game(game).userId(123L).build();
+        when(game.getCardDictionary()).thenReturn(cardDictionary);
         player.addResource(ResourceType.CLAY,7);
         player.addResource(ResourceType.STONE,2);
         player.addResource(ResourceType.WOOD,2);

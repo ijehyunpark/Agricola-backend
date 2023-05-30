@@ -5,14 +5,15 @@ import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
-import com.semoss.agricola.GamePlay.exception.IllgalRequestException;
+import com.semoss.agricola.GamePlay.exception.IllegalRequestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -91,7 +92,7 @@ class FirePlaceTest {
         assertEquals(expected1,actual1);
         assertEquals(expected2,actual2);
         assertEquals(expected3,actual3);
-        assertThrows(IllgalRequestException.class, () -> {
+        assertThrows(IllegalRequestException.class, () -> {
             cardDictionary.getCard(4L).place(player);
         });
     }

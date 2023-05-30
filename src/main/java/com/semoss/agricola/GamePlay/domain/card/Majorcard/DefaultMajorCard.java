@@ -3,7 +3,7 @@ package com.semoss.agricola.GamePlay.domain.card.Majorcard;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
-import com.semoss.agricola.GamePlay.exception.IllgalRequestException;
+import com.semoss.agricola.GamePlay.exception.IllegalRequestException;
 import lombok.Getter;
 
 @Getter
@@ -40,7 +40,7 @@ public abstract class DefaultMajorCard implements MajorCard{
      */
     @Override
     public void place(Player player) {
-        if (!checkPrerequisites(player)) throw new IllgalRequestException("전제조건 미달성");
+        if (!checkPrerequisites(player)) throw new IllegalRequestException("전제조건 미달성");
         for (ResourceStruct ingredient : ingredients){
             player.useResource(ingredient.getResource(), ingredient.getCount());
         }

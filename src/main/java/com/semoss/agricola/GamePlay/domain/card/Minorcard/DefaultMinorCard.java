@@ -1,10 +1,9 @@
 package com.semoss.agricola.GamePlay.domain.card.Minorcard;
 
-import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
-import com.semoss.agricola.GamePlay.exception.IllgalRequestException;
+import com.semoss.agricola.GamePlay.exception.IllegalRequestException;
 import lombok.Getter;
 
 @Getter
@@ -47,11 +46,11 @@ public abstract class DefaultMinorCard implements MinorCard {
      */
     @Override
     public void place(Player player) {
-        if (!checkPrerequisites(player)) throw new IllgalRequestException("전제조건 미달성");
+        if (!checkPrerequisites(player)) throw new IllegalRequestException("전제조건 미달성");
         for (ResourceStruct ingredient : ingredients){
             player.useResource(ingredient.getResource(), ingredient.getCount());
         }
-        if (!player.getCardHand().contains(cardID)) throw new IllgalRequestException("해당 보조설비카드는 이 플레이어의 카드가 아닙니다.");
+        if (!player.getCardHand().contains(cardID)) throw new IllegalRequestException("해당 보조설비카드는 이 플레이어의 카드가 아닙니다.");
         player.placeCard(cardID);
     }
 }

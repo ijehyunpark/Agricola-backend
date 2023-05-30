@@ -26,7 +26,7 @@ public class Well extends DefaultMajorCard implements MajorCard, StackResource {
     @Override
     public void place(Player player) {
         super.place(player);
-        int nowRound = player.getGame().getRound();
+        int nowRound = player.getGame().getGameState().getRound();
         int sum;
         ArrayList<Integer> list = new ArrayList<>();
 

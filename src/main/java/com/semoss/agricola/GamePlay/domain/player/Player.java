@@ -3,23 +3,20 @@ package com.semoss.agricola.GamePlay.domain.player;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
 import com.semoss.agricola.GamePlay.domain.History;
-import com.semoss.agricola.GamePlay.domain.card.Card;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
 import com.semoss.agricola.GamePlay.domain.card.Majorcard.CookingAnytimeTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Majorcard.CookingHarvestTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Majorcard.ResourceBonusPointTrigger;
-import com.semoss.agricola.GamePlay.domain.card.Minorcard.CookingHarvestMinorTrigger;
-import com.semoss.agricola.GamePlay.domain.card.Minorcard.FieldBonusMinorCard;
 import com.semoss.agricola.GamePlay.domain.card.Minorcard.FieldBonusPoint;
-import com.semoss.agricola.GamePlay.domain.card.Occupation.FinishTrigger;
-import com.semoss.agricola.GamePlay.domain.card.Occupation.Occupation;
 import com.semoss.agricola.GamePlay.domain.card.Occupation.ActionTrigger;
+import com.semoss.agricola.GamePlay.domain.card.Occupation.FinishTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Occupation.HarvestTrigger;
+import com.semoss.agricola.GamePlay.domain.card.Occupation.Occupation;
 import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
-import com.semoss.agricola.GamePlay.exception.IllgalRequestException;
+import com.semoss.agricola.GamePlay.exception.IllegalRequestException;
 import com.semoss.agricola.GamePlay.exception.ResourceLackException;
 import com.semoss.agricola.GamePlay.exception.ServerError;
 import lombok.Builder;
@@ -110,7 +107,7 @@ public class Player {
      */
     public void addRoundStack(int[] rounds, ResourceStruct resourceStruct){
         for (int round : rounds) {
-            if (round >= roundStackResource.length) throw new IllgalRequestException("잘못된 라운드가 입력되었습니다.");
+            if (round >= roundStackResource.length) throw new IllegalRequestException("잘못된 라운드가 입력되었습니다.");
             roundStackResource[round].add(resourceStruct);
         }
     }
@@ -243,8 +240,13 @@ public class Player {
         this.playerBoard.buildField(y, x, fieldType);
     }
 
-    public void buildFence(int[][] rowPos, int[][] colPos){
-        this.playerBoard.buildFence(rowPos,colPos);
+    /**
+     * 울타리를 건설한다.
+     * @param rowPosition 건설할 울타리 row 좌표
+     * @param colPosition 건설할 울타리 col 좌표
+     */
+    public void buildFence(int[][] rowPosition,  int[][] colPosition) {
+        this.playerBoard.buildFence(rowPosition, colPosition);
     }
 
     public void addStable(int row, int col){
@@ -499,15 +501,6 @@ public class Player {
      */
     public void cultivate(int y, int x, ResourceType resourceType) {
         this.playerBoard.cultivate(y, x, resourceType);
-    }
-
-    /**
-     * 울타리를 건설한다.
-     * @param rowPosition 건설할 울타리 row 좌표
-     * @param colPosition 건설할 울타리 col 좌표
-     */
-    public void buildFence(int[][] rowPosition,  int[][] colPosition) {
-        this.playerBoard.buildFence(rowPosition, colPosition);
     }
 
 }

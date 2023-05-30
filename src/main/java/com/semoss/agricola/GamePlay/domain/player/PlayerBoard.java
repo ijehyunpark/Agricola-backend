@@ -613,7 +613,7 @@ public class PlayerBoard {
      * @param fieldType
      * @return
      */
-    public int numField(FieldType fieldType){
+    public int getNumField(FieldType fieldType){
         return (int)Arrays.stream(fields)
                 .flatMap(Arrays::stream)
                 .filter(field -> field != null && field.getFieldType().equals(fieldType))

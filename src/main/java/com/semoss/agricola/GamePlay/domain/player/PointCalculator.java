@@ -30,10 +30,10 @@ public class PointCalculator {
         List<Integer> pointList = new ArrayList<>();
 
         // farm
-        pointList.add(farmPoint[Integer.min(player.numField(FieldType.FARM),farmPoint.length-1)]);
+        pointList.add(farmPoint[Integer.min(player.getNumField(FieldType.FARM),farmPoint.length-1)]);
 
         // barn
-        pointList.add(barnPoint[Integer.min(player.numField(FieldType.BARN),barnPoint.length-1)]);
+        pointList.add(barnPoint[Integer.min(player.getNumField(FieldType.BARN),barnPoint.length-1)]);
 
         // grain
         pointList.add(grainPoint[Integer.min(player.getResource(ResourceType.GRAIN),grainPoint.length-1)]);

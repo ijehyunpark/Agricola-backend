@@ -22,17 +22,19 @@ class PointCalculatorTest {
             .resourceToFoodHarvest(ResourceStruct.builder().resource(ResourceType.CLAY).count(2).build())
             .resourceTypeToPoints(ResourceType.CLAY)
             .resourceNumToPoints(new int[][]{{3,1},{5,2},{7,3}}).build();
+    CardDictionary cardDictionary;
 
     @Test
     void calculate() {
-        CardDictionary.addCard(7L,majorCard);
+        cardDictionary = new CardDictionary();
+        cardDictionary.addCard(null,majorCard);
         // given
         Player player = Player.builder().userId(123L).build();
         player.addResource(ResourceType.CLAY,7);
         player.addResource(ResourceType.STONE,2);
         player.addResource(ResourceType.WOOD,2);
 
-        majorCard.useResource(player);
+        majorCard.place(player);
 
         player.buildField(2,1,FieldType.ROOM);
         player.buildField(0,4,FieldType.FARM);
@@ -44,7 +46,7 @@ class PointCalculatorTest {
         int expectPoint = 11;
 
         //when
-        int actualPoint = pointCalculator.calculate(player);
+        int actualPoint = pointCalculator.calculate(player,cardDictionary);
 
         //then
         assertEquals(expectPoint,actualPoint);

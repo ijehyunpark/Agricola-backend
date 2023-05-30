@@ -4,7 +4,7 @@ import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.player.RoomType;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
-import com.semoss.agricola.GamePlay.exception.IllgalRequestException;
+import com.semoss.agricola.GamePlay.exception.IllegalRequestException;
 import com.semoss.agricola.GamePlay.exception.ResourceLackException;
 import lombok.Builder;
 import lombok.Getter;
@@ -41,7 +41,7 @@ public class RoomUpgradeAction implements SimpleAction {
             case WOOD -> nextRank = RoomType.CLAY;
             case CLAY -> nextRank = RoomType.STONE;
             default -> {
-                throw new IllgalRequestException("최고 랭크 방은 업그레이드가 불가능합니다.");
+                throw new IllegalRequestException("최고 랭크 방은 업그레이드가 불가능합니다.");
             }
         }
 

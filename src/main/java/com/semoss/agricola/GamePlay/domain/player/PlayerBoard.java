@@ -3,7 +3,6 @@ package com.semoss.agricola.GamePlay.domain.player;
 import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
-import com.semoss.agricola.GamePlay.dto.CultivationActionExtentionRequest;
 import com.semoss.agricola.GamePlay.exception.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -139,10 +138,10 @@ public class PlayerBoard {
                 .forEach(animalStruct -> animals.put(animalStruct.getAnimal(), animalStruct.getCount()));
 
 
-        // 증가 process
+        // 가축이 2마리 이상이면 하나를 얻는다.
         for (Map.Entry<AnimalType, Integer> animal : animals.entrySet()) {
             if (animal.getValue() >= 2) {
-                // TODO : 증가한 동물을 재배치
+                addAnimal(animal.getKey(), 1);
             }
         }
     }
@@ -219,8 +218,15 @@ public class PlayerBoard {
             throw new NotAllowRequestException("필드 위치가 부적절합니다.");
         }
 
-        if (fields[y][x] != null)
+        if (fields[y][x] != null){
+            // 외양간이 건설 되어 있으면 마구간을 설치
+            if(fields[y][x].getFieldType() == FieldType.BARN && fieldType == FieldType.BARN) {
+               ((Barn) fields[y][x]).addStable();
+               return;
+            }
+
             throw new AlreadyExistException("이미 건설 되어 있습니다.");
+        }
 
         switch (fieldType){
             case FARM -> {
@@ -232,18 +238,15 @@ public class PlayerBoard {
                         .build();
             }
             case STABLE -> {
-                // TODO: 외양간 건설 요청시
-                throw new NotImplementException();
-//                fields[y][x] = Barn.builder()
-//                        .fieldType(FieldType.STABLE)
-//                        .build();
+                fields[y][x] = Barn.builder()
+                        .fieldType(FieldType.STABLE)
+                        .build();
             }
             case FENCE -> {
-                // TODO: 울타리 건설 요청시
-                throw new NotImplementException();
+                throw new NotAllowRequestException("울타리 건설은 필드에서 지원되지 않습니다/");
             }
             default -> {
-                throw new NotAllowRequestException();
+                throw new ServerError();
             }
         }
     }
@@ -505,7 +508,7 @@ public class PlayerBoard {
      * @return 제거된 동물 수
      */
     protected int removeAnimal(int row, int col, int animalNum){
-        if (fields[row][col] == null || fields[row][col].getFieldType() != FieldType.BARN && fields[row][col].getFieldType() != FieldType.STABLE) throw new IllgalRequestException("해당 필드는 헛간이 아닙니다.");
+        if (fields[row][col] == null || fields[row][col].getFieldType() != FieldType.BARN && fields[row][col].getFieldType() != FieldType.STABLE) throw new IllegalRequestException("해당 필드는 헛간이 아닙니다.");
         AnimalType animalType = ((Barn)fields[row][col]).getAnimal().getAnimal();
         int num = ((Barn)fields[row][col]).removeAnimal(animalNum);
         moveAnimalArr[animalType.getValue()-9].addResource(num);
@@ -519,7 +522,7 @@ public class PlayerBoard {
      * @return 제거된 동물 수
      */
     protected int removeALLAnimals(int row, int col){
-        if (fields[row][col] == null || fields[row][col].getFieldType() != FieldType.BARN && fields[row][col].getFieldType() != FieldType.STABLE) throw new IllgalRequestException("해당 필드는 헛간이 아닙니다.");
+        if (fields[row][col] == null || fields[row][col].getFieldType() != FieldType.BARN && fields[row][col].getFieldType() != FieldType.STABLE) throw new IllegalRequestException("해당 필드는 헛간이 아닙니다.");
         AnimalType animalType = ((Barn)fields[row][col]).getAnimal().getAnimal();
         int num = ((Barn)fields[row][col]).removeAllAnimals();
         moveAnimalArr[animalType.getValue()-9].addResource(num);
@@ -535,7 +538,7 @@ public class PlayerBoard {
      * @return 이동한 동물 수(수용가능한 동물 양에 따라 결과값이 달라짐)
      */
     protected int addRemovedAnimal(int row, int col, AnimalType animalType, int animalNum){
-        if (fields[row][col] == null || fields[row][col].getFieldType() != FieldType.BARN && fields[row][col].getFieldType() != FieldType.STABLE) throw new IllgalRequestException("해당 필드는 헛간이 아닙니다.");
+        if (fields[row][col] == null || fields[row][col].getFieldType() != FieldType.BARN && fields[row][col].getFieldType() != FieldType.STABLE) throw new IllegalRequestException("해당 필드는 헛간이 아닙니다.");
         animalNum = Integer.min(animalNum,moveAnimalArr[animalType.getValue()-9].getCount());
         int num = ((Barn)fields[row][col]).addAnimal(animalType, animalNum);
         moveAnimalArr[animalType.getValue()-9].subResource(num);
@@ -640,7 +643,7 @@ public class PlayerBoard {
         if (this.fields[y][x].getFieldType() != FieldType.FARM ||
                 (((Farm) this.fields[y][x]).getSeed().getResource() != null &&
                         ((Farm) this.fields[y][x]).getSeed().getCount() != 0))
-            throw new IllgalRequestException("빈 밭이 아닙니다.");
+            throw new IllegalRequestException("빈 밭이 아닙니다.");
     }
 
     /**

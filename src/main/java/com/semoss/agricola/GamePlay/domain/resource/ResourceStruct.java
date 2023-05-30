@@ -14,6 +14,12 @@ public class ResourceStruct implements ResourceStructInterface {
     private ResourceType resource;
     private int count;
 
+
+    @Override
+    public String getName() {
+        return resource == null ? null : resource.getName();
+    }
+
     public void addResource(int count) {
         this.count += count;
     }

@@ -1,6 +1,7 @@
 package com.semoss.agricola.GamePlay.domain.action.implement;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,10 +13,7 @@ import com.semoss.agricola.GamePlay.domain.card.CardType;
 import com.semoss.agricola.GamePlay.domain.card.MajorCard;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStructInterface;
-import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
-import com.semoss.agricola.GamePlay.dto.BakeActionExtentionRequest;
-import com.semoss.agricola.GamePlay.dto.BuildActionExtentionRequest;
-import com.semoss.agricola.GamePlay.dto.CultivationActionExtentionRequest;
+import com.semoss.agricola.GamePlay.dto.*;
 import com.semoss.agricola.util.ObjectMapperSingleton;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -25,6 +23,7 @@ import java.util.List;
 
 
 @Getter
+@JsonPropertyOrder({"id", "name", "actions", "doTypes"})
 @Log4j2
 public abstract class DefaultAction {
     @JsonIgnore
@@ -103,7 +102,7 @@ public abstract class DefaultAction {
         // 입력 행동값 검증
         isCollectRequest(acts);
 
-        // ToDO: Memento로 실패 시 롤백
+        // TODO: Memento로 실패 시 롤백
 
 
         this.actions.stream()
@@ -119,10 +118,10 @@ public abstract class DefaultAction {
                         try {
                             ObjectMapper objectMapper = ObjectMapperSingleton.getInstance();
                             String jsonString = objectMapper.writeValueAsString(act.getActs());
-                            BakeActionExtentionRequest request = objectMapper.readValue(jsonString, BakeActionExtentionRequest.class);
-                            request.getImprovmentIds().forEach(
-                                            immprovmentId -> {
-                                                Card card = cardDictionary.getCard(immprovmentId);
+                            BakeActionExtensionRequest request = objectMapper.readValue(jsonString, BakeActionExtensionRequest.class);
+                            request.getImprovementIds().forEach(
+                                            improvementId -> {
+                                                Card card = cardDictionary.getCard(improvementId);
                                                 if (card.getCardType() != CardType.MAJOR)
                                                     throw new RuntimeException("주설비카드가 아닙니다.");
                                                 ((BakeAction) action).runAction(player, (MajorCard) card);
@@ -136,7 +135,7 @@ public abstract class DefaultAction {
                         try {
                             ObjectMapper objectMapper = ObjectMapperSingleton.getInstance();
                             String jsonString = objectMapper.writeValueAsString(act.getActs());
-                            BuildActionExtentionRequest request = objectMapper.readValue(jsonString, BuildActionExtentionRequest.class);
+                            BuildActionExtensionRequest request = objectMapper.readValue(jsonString, BuildActionExtensionRequest.class);
                             ((BuildSimpleAction) action).runAction(player, request.getY(), request.getX());
                         } catch (JsonProcessingException e) {
                             throw new RuntimeException("요청 필드 오류");
@@ -146,8 +145,19 @@ public abstract class DefaultAction {
                         try {
                             ObjectMapper objectMapper = ObjectMapperSingleton.getInstance();
                             String jsonString = objectMapper.writeValueAsString(act.getActs());
-                            BuildActionExtentionRequest request = objectMapper.readValue(jsonString, BuildActionExtentionRequest.class);
+                            BuildActionExtensionRequest request = objectMapper.readValue(jsonString, BuildActionExtensionRequest.class);
                             ((BuildRoomAction) action).runAction(player, request.getY(), request.getX());
+                        } catch (JsonProcessingException e) {
+                            throw new RuntimeException("요청 필드 오류");
+                        }
+                    }
+                    case BUILD_FENCE -> {
+                        try {
+                            ObjectMapper objectMapper = ObjectMapperSingleton.getInstance();
+                            String jsonString = objectMapper.writeValueAsString(act.getActs());
+                            JavaType listType = objectMapper.getTypeFactory().constructCollectionType(List.class, BuildFenceActionExtensionRequest.class);
+                            List<BuildFenceActionExtensionRequest> requestList = objectMapper.readValue(jsonString, listType);
+                            ((BuildFenceAction) action).runAction(player, requestList);
                         } catch (JsonProcessingException e) {
                             throw new RuntimeException("요청 필드 오류");
                         }
@@ -156,8 +166,8 @@ public abstract class DefaultAction {
                         try {
                             ObjectMapper objectMapper = ObjectMapperSingleton.getInstance();
                             String jsonString = objectMapper.writeValueAsString(act.getActs());
-                            JavaType listType = objectMapper.getTypeFactory().constructCollectionType(List.class, CultivationActionExtentionRequest.class);
-                            List<CultivationActionExtentionRequest> requestList = objectMapper.readValue(jsonString, listType);
+                            JavaType listType = objectMapper.getTypeFactory().constructCollectionType(List.class, CultivationActionExtensionRequest.class);
+                            List<CultivationActionExtensionRequest> requestList = objectMapper.readValue(jsonString, listType);
                             requestList.forEach(request -> ((CultivationAction) action).runAction(player, request.getY(), request.getY(), request.getResourceType()));
                         } catch (JsonProcessingException e) {
                             throw new RuntimeException("요청 필드 오류");

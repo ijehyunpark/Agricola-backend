@@ -1,7 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.gameboard;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.semoss.agricola.GamePlay.domain.AgricolaGame;
 import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.action.ActionType;
 import com.semoss.agricola.GamePlay.domain.action.Event;
@@ -24,19 +23,11 @@ import java.util.List;
  * 아그리콜라 메인 게임 보드
  */
 @Log4j2
-public record GameBoard(@JsonIgnore AgricolaGame game, List<Event> events, ImprovementBoard improvementBoard) {
-
-    @Override
-    public List<Event> events() {
-        return events.stream()
-                .filter(event -> event.getRound() <= game.getRound())
-                .toList();
-    }
-
+public record GameBoard(@JsonIgnore List<Event> events, ImprovementBoard improvementBoard) {
     @Builder
-    public GameBoard(AgricolaGame game, List<Event> events, ImprovementBoard improvementBoard) {
+    public GameBoard(List<Event> events, ImprovementBoard improvementBoard) {
         log.debug("Game Board가 생성되었습니다." + this.hashCode());
-        this.game = game;
+
         this.events = new ArrayList<>(events);
         this.events.sort(Comparator.comparingInt(o -> o.getAction().getRoundGroup()));
         shuffleEventsWithinRoundGroup();

@@ -10,4 +10,6 @@ public enum AnimalType {
     AnimalType(int value) { this.value = value; }
 
     public int getValue() { return value; }
+
+    public String getName() {return name(); }
 }

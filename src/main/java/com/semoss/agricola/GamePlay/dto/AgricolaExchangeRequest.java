@@ -1,23 +1,24 @@
 package com.semoss.agricola.GamePlay.dto;
 
-import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
+import com.semoss.agricola.GamePlay.domain.player.AnimalType;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-
-import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 public class AgricolaExchangeRequest {
-    @Getter
-    public static class ExchangeFormat {
-        @NotNull(message = "필수 입력")
-        private String improvementId;
-        @NotNull(message = "필수 입력")
-        private ResourceStruct resource;
-    }
+
     @NotNull(message = "필수 입력")
-    private List<ExchangeFormat> exchange;
+    private Long improvementId;
+
+    private ResourceType resource;
+    private AnimalType animal;
+
+    @NotNull(message = "필수 입력")
+    @Min(value = 1, message = "최소 1개 입력")
+    private Long count;
 }

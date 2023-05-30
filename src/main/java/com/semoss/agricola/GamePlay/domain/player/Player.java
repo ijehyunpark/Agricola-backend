@@ -418,4 +418,14 @@ public class Player {
     public void cultivate(int y, int x, ResourceType resourceType) {
         this.playerBoard.cultivate(y, x, resourceType);
     }
+
+    /**
+     * 울타리를 건설한다.
+     * @param rowPosition 건설할 울타리 row 좌표
+     * @param colPosition 건설할 울타리 col 좌표
+     */
+    public void buildFence(int[][] rowPosition,  int[][] colPosition) {
+        this.playerBoard.buildFence(rowPosition, colPosition);
+    }
+
 }

@@ -6,7 +6,7 @@ import com.semoss.agricola.GamePlay.domain.action.Event;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
-import com.semoss.agricola.GamePlay.dto.PlaceExtentionRequest;
+import com.semoss.agricola.GamePlay.dto.PlaceExtensionRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -94,7 +94,7 @@ class Action2Test {
         // given
         List<AgricolaActionRequest.ActionFormat> acts = List.of(
                 new AgricolaActionRequest.ActionFormat(true, null),
-                new AgricolaActionRequest.ActionFormat(true, new PlaceExtentionRequest(100L)));
+                new AgricolaActionRequest.ActionFormat(true, new PlaceExtensionRequest(100L)));
         when(game.getPlayers()).thenReturn(List.of(startPlayer, secondPlayer));
 
         // when

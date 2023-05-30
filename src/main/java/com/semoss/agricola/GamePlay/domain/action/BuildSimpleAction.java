@@ -3,7 +3,7 @@ package com.semoss.agricola.GamePlay.domain.action;
 import com.semoss.agricola.GamePlay.domain.player.FieldType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
-import com.semoss.agricola.GamePlay.exception.IllgalRequestException;
+import com.semoss.agricola.GamePlay.exception.IllegalRequestException;
 import com.semoss.agricola.GamePlay.exception.ResourceLackException;
 import com.semoss.agricola.util.Pair;
 import lombok.Builder;
@@ -47,7 +47,7 @@ public class BuildSimpleAction implements Action {
 
     public void runAction(Player player, int y, int x) {
         if(buildMaxCount == 0)
-            throw new IllgalRequestException("허용되지 않은 건설 작업입니다.");
+            throw new IllegalRequestException("허용되지 않은 건설 작업입니다.");
 
 
         if(!checkPrecondition(player, 1))
@@ -69,7 +69,7 @@ public class BuildSimpleAction implements Action {
     public void runAction(Player player, List<Pair<Integer, Integer>> positions) {
         int buildCount = positions.size();
         if (buildMaxCount != -1 && buildCount > buildMaxCount)
-            throw new IllgalRequestException("최대 건설 횟수를 초과하였습니다.");
+            throw new IllegalRequestException("최대 건설 횟수를 초과하였습니다.");
 
         positions.forEach(
                 position -> runAction(player, position.first(), position.second())

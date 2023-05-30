@@ -7,6 +7,7 @@ import com.semoss.agricola.GameRoom.domain.GameRoom;
 import com.semoss.agricola.GameRoom.service.GameRoomService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -14,8 +15,11 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 
+import java.util.List;
+
 @Controller
 @RequiredArgsConstructor
+@Log4j2
 public class AgricolaController {
 
     private final SimpMessageSendingOperations simpMessageSendingOperations;
@@ -68,7 +72,7 @@ public class AgricolaController {
      * @param headerAccessor 웹 소켓 메세지 헤더 접근자
      */
     @MessageMapping("/play-exchange/{gameRoomId}")
-    public void playExchange(@DestinationVariable Long gameRoomId, @Payload @Valid  AgricolaExchangeRequest exchangeRequest, SimpMessageHeaderAccessor headerAccessor) {
+    public void playExchange(@DestinationVariable Long gameRoomId, @Payload @Valid List<AgricolaExchangeRequest> exchangeRequest, SimpMessageHeaderAccessor headerAccessor) {
         // 현재 플레이어 턴인지 확인
         if(!agricolaService.validatePlayer(gameRoomId, headerAccessor.getSessionAttributes().get("userId")))
             throw new RuntimeException("잘못된 요청");
@@ -77,8 +81,12 @@ public class AgricolaController {
         GameRoom gameRoom = gameRoomService.getOne(gameRoomId);
 
         // 플레이어 교환 진행
-        for(AgricolaExchangeRequest.ExchangeFormat exchange : exchangeRequest.getExchange()){
-            agricolaService.playExchange(gameRoomId, exchange.getImprovementId(), exchange.getResource());
+        for(AgricolaExchangeRequest exchange : exchangeRequest){
+            if(exchange.getResource() != null)
+                agricolaService.playExchange(gameRoomId, exchange.getImprovementId(), exchange.getResource(), exchange.getCount());
+            else
+                agricolaService.playExchange(gameRoomId, exchange.getImprovementId(), exchange.getAnimal(), exchange.getCount());
+
         }
 
         // 게임 상태 전송

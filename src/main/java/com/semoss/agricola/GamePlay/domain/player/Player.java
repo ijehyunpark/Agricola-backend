@@ -3,15 +3,21 @@ package com.semoss.agricola.GamePlay.domain.player;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
 import com.semoss.agricola.GamePlay.domain.History;
-import com.semoss.agricola.GamePlay.domain.card.Card;
+import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
+import com.semoss.agricola.GamePlay.domain.card.Majorcard.CookingAnytimeTrigger;
+import com.semoss.agricola.GamePlay.domain.card.Majorcard.CookingHarvestTrigger;
+import com.semoss.agricola.GamePlay.domain.card.Majorcard.ResourceBonusPointTrigger;
+import com.semoss.agricola.GamePlay.domain.card.Minorcard.FieldBonusPoint;
 import com.semoss.agricola.GamePlay.domain.card.Occupation.ActionTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Occupation.FinishTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Occupation.HarvestTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Occupation.Occupation;
 import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceStructInterface;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
+import com.semoss.agricola.GamePlay.exception.IllegalRequestException;
 import com.semoss.agricola.GamePlay.exception.ResourceLackException;
 import com.semoss.agricola.GamePlay.exception.ServerError;
 import lombok.Builder;
@@ -36,6 +42,7 @@ public class Player {
     private final List<Long> cardHand = new ArrayList<>();
     private final List<Long> cardField = new ArrayList<>();
     private final List<Occupation> occupations = new ArrayList<>();
+    private List<ResourceStructInterface>[] roundStackResource = new ArrayList[15];
 
     @Builder
     public Player(Long userId, AgricolaGame game, boolean isStartPlayer){
@@ -45,48 +52,79 @@ public class Player {
         for (ResourceType resource : ResourceType.values()){
             resources.put(resource,0);
         }
+        for (int i = 0; i < 15; i++) {
+            roundStackResource[i] = new ArrayList<>();
+        }
     }
 
     /**
      * 빈 방 존재 여부 확인
-     * @return 만약 플레이어가 빈 방을 가지고 있다면 true를 반환한다.아닌 경우 false를 반환한다.
+     * @return 만약 플레이어가 빈 방을 가지고 있다면 true, 아닌 경우 false 반환
      */
     public boolean existEmptyRoom(){
         return playerBoard.existEmptyRoom();
     }
 
     /**
-     * get player's resource
-     * @param resourceType resource type to get
-     * @return amount of resource
+     * 플레이어의 자원 수 확인
+     * @param resourceType 확인할 자원 종류
+     * @return 자원 수
      */
     public int getResource(ResourceType resourceType){
         return resources.get(resourceType);
     }
 
+    public int getAnimal(AnimalType animalType) {
+        return playerBoard.getAnimal(animalType);
+    }
+
     /**
-     * add resources to storage
-     * @param resource resource type and amout to add
+     * 저장소에 자원 저장
+     * @param resource 저장할 자원
      */
     public void addResource(ResourceStruct resource){
         resources.compute(resource.getResource(), (key, value) -> value + resource.getCount());
     }
     /**
-     * add resources to storage
-     * @param resourceType resource type to add
-     * @param num amount of resource
+     * 저장소에 자원 저장 (위의 메소드로 대체 됐음)
+     * @param resourceType 자원 종류
+     * @param num 자원 수
      */
     public void addResource(ResourceType resourceType, int num){
         resources.compute(resourceType, (key, value) -> value + num);
     }
 
     /**
-     * add resources to storage
-     * @param resources List of a pair of resource and amount of resource
+     * 저장소에 자원 저장
+     * @param resources 저장할 자원 리스트
      */
     public void addResource(List<ResourceStruct> resources) {
         for (ResourceStruct resource : resources) {
             addResource(resource.getResource(), resource.getCount());
+        }
+    }
+
+    /**
+     * round stack 에 자원을 쌓아둔다.
+     * @param rounds 쌓을 라운드들
+     * @param resourceStruct 쌓을 자원
+     */
+    public void addRoundStack(int[] rounds, ResourceStruct resourceStruct){
+        for (int round : rounds) {
+            if (round >= roundStackResource.length) throw new IllegalRequestException("잘못된 라운드가 입력되었습니다.");
+            roundStackResource[round].add(resourceStruct);
+        }
+    }
+
+    /**
+     * round stack 에 자원을 쌓아둔다.
+     * @param rounds 쌓을 라운드들
+     * @param animalStruct 쌓을 동물
+     */
+    public void addRoundStack(int[] rounds, AnimalStruct animalStruct){
+        for (int round : rounds) {
+            if (round >= roundStackResource.length) throw new IllegalRequestException("잘못된 라운드가 입력되었습니다.");
+            roundStackResource[round].add(animalStruct);
         }
     }
 
@@ -119,27 +157,27 @@ public class Player {
     }
 
     /**
-     * use resource
-     * @param resourceType resource type to use
-     * @param num amount of resource
+     * 자원 사용
+     * @param resourceType 사용할 자원
+     * @param num 사용할 자원 수
      */
     public void useResource(ResourceType resourceType, int num){
         if (resources.get(resourceType) < num)
-            throw new RuntimeException("자원이 부족합니다.");
+            throw new ResourceLackException("자원이 부족합니다.");
         resources.compute(resourceType, (key, value) -> value - num);
     }
 
     /**
-     * use resource
-     * @param resource resource type and amount to use
+     * 자원 사용
+     * @param resource 사용할 자원
      */
     public void useResource(ResourceStruct resource){
         useResource(resource.getResource(), resource.getCount());
     }
 
     /**
-     * use resource
-     * @param resources resource type and amount to use
+     * 자원 사용
+     * @param resources 사용할 자원 리스트
      */
     public void useResource(List<ResourceStruct> resources){
         for (ResourceStruct resource : resources) {
@@ -148,9 +186,22 @@ public class Player {
     }
 
     /**
-     * get player's resource
-     * @param resourceType resource type to get
-     * @return amount of resource
+     * 해당 라운드가 시작될 때 쌓여 있는 자원 획득
+     * @param round 현재 라운드
+     */
+    public void getRoundStack(int round){
+        for (ResourceStructInterface resourceStruct : roundStackResource[round]){
+            if(resourceStruct.isResource())
+                this.addResource((ResourceStruct) resourceStruct);
+            else if (resourceStruct.isAnimal())
+                this.addAnimal((AnimalStruct) resourceStruct);
+        }
+    }
+
+    /**
+     * 자원 확인
+     * @param resourceType 확인할 자원
+     * @return ResourceStruct 형태로 반환
      */
     public ResourceStruct getResourceStruct(ResourceType resourceType){
         return ResourceStruct.builder()
@@ -193,7 +244,7 @@ public class Player {
      */
     @JsonIgnore
     public int getRoomCount() {
-        return playerBoard.getRoomCount();
+        return playerBoard.getNumField(FieldType.ROOM);
     }
 
     /**
@@ -208,6 +259,18 @@ public class Player {
         this.playerBoard.buildField(y, x, fieldType);
     }
 
+    /**
+     * 울타리를 건설한다.
+     * @param rowPosition 건설할 울타리 row 좌표
+     * @param colPosition 건설할 울타리 col 좌표
+     */
+    public void buildFence(int[][] rowPosition,  int[][] colPosition) {
+        this.playerBoard.buildFence(rowPosition, colPosition);
+    }
+
+    public void addStable(int row, int col){
+        playerBoard.addStable(row,col);
+    }
 
     /** TODO
      * 플레이어의 핸드에 해당 타입의 카드가 있는지 확인
@@ -231,6 +294,18 @@ public class Player {
         return cardField.contains(cardID);
     }
 
+    /**
+     * 카드 타입의 카드를 필드에 얼마나 깔았는지 확인
+     * @param cardType 확인할 카드 타입
+     * @return 필드에 깐 카드 개수
+     */
+    public int numCardInField(CardType cardType) {
+        CardDictionary cardDictionary = game.getCardDictionary();
+        return (int) cardField.stream()
+                .filter(id -> cardDictionary.getCard(id).getCardType() == cardType)
+                .count();
+    }
+
     /** TODO
      * place card in hand to field. card becomes available.
      * @param cardID card ID
@@ -249,6 +324,7 @@ public class Player {
      */
     public void addMajorCard(Long cardID){
         cardField.add(cardID);
+        game.getCardDictionary().changeOwner(cardID,this);
     }
 
     /**
@@ -318,7 +394,8 @@ public class Player {
     public List<ResourceStruct> resourceToFoodHarvest() {
         return cardField.stream()
                 .map(game.getCardDictionary().getCardDict()::get)
-                .map(Card::getResourceToFoodHarvest)
+                .filter(card -> card instanceof CookingHarvestTrigger)
+                .map(card -> ((CookingHarvestTrigger) card).getResourceToFoodHarvest())
                 .toList();
     }
 
@@ -329,7 +406,8 @@ public class Player {
     public List<ResourceStruct> resourceToFoodAnytime() {
         return cardField.stream()
                 .map(game.getCardDictionary().cardDict::get)
-                .flatMap(card -> Arrays.stream(card.getResourcesToFoodAnytime()))
+                .filter(card -> card instanceof CookingAnytimeTrigger)
+                .flatMap(card -> Arrays.stream(((CookingAnytimeTrigger) card).getResourcesToFoodAnytime()))
                 .collect(Collectors.groupingBy(ResourceStruct::getResource))
                 .values().stream()
                 .map(tuples -> tuples.stream()
@@ -346,7 +424,8 @@ public class Player {
     public List<AnimalStruct> animalToFoodAnytime(){
         return cardField.stream()
                 .map(game.getCardDictionary().cardDict::get)
-                .flatMap(card -> Arrays.stream(card.getAnimalsToFoodAnytime()))
+                .filter(card -> card instanceof CookingAnytimeTrigger)
+                .flatMap(card -> Arrays.stream(((CookingAnytimeTrigger) card).getAnimalsToFoodAnytime()))
                 .collect(Collectors.groupingBy(AnimalStruct::getAnimal))
                 .values().stream()
                 .map(tuples -> tuples.stream()
@@ -390,7 +469,31 @@ public class Player {
                 .forEach(occupation -> occupation.actionTrigger(this, history));
     }
 
-    public int numField(FieldType fieldType) { return playerBoard.numField(fieldType); }
+    public int getNumField(FieldType fieldType) { return playerBoard.getNumField(fieldType); }
+
+    public int numEmptyField(){ return playerBoard.numEmptyField(); }
+
+    public int numStableInBarn() { return playerBoard.numStableInBarn(); }
+
+    //TODO 각 카드 종류별로 판별
+    public int getCardPointsResource(CardDictionary cardDictionary) {
+        int result = 0;
+        result += (int)cardField.stream()
+                .filter(id -> cardDictionary.getCard(id) instanceof ResourceBonusPointTrigger)
+                .mapToLong(id -> ((ResourceBonusPointTrigger)cardDictionary.getCard(id)).checkPoint(this))
+                .sum();
+        result += (int)cardField.stream()
+                .filter(id -> cardDictionary.getCard(id) instanceof FieldBonusPoint)
+                .mapToLong(id -> ((FieldBonusPoint)cardDictionary.getCard(id)).checkPoint(this))
+                .sum();
+        return result;
+    }
+
+    public int getCardBonusPoints(CardDictionary cardDictionary) {
+        return (int)cardField.stream()
+                .mapToLong(id -> cardDictionary.getCard(id).getBonusPoint())
+                .sum();
+    }
 
 
     /**
@@ -417,15 +520,6 @@ public class Player {
      */
     public void cultivate(int y, int x, ResourceType resourceType) {
         this.playerBoard.cultivate(y, x, resourceType);
-    }
-
-    /**
-     * 울타리를 건설한다.
-     * @param rowPosition 건설할 울타리 row 좌표
-     * @param colPosition 건설할 울타리 col 좌표
-     */
-    public void buildFence(int[][] rowPosition,  int[][] colPosition) {
-        this.playerBoard.buildFence(rowPosition, colPosition);
     }
 
 }

@@ -6,28 +6,21 @@ import com.semoss.agricola.GamePlay.domain.action.implement.DefaultAction;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
-import com.semoss.agricola.GamePlay.domain.resource.Reservation;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStructInterface;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Component
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class Event {
     @JsonUnwrapped
     private final DefaultAction action;
     private final List<ResourceStructInterface> stacks = new ArrayList<>(); // 누적 쌓인 자원
-    private final List<Reservation> reservations = new ArrayList<>(); // 예약으로 쌓인 자원
 
     @Setter
     private int round;
@@ -95,16 +88,6 @@ public class Event {
                         stack -> stack.addResource(animal.getCount()),
                         () -> stacks.add(animal)
                 );
-    }
-
-    /**
-     * 예약 자원을 플레이어에게 전달하고 삭제한다.
-     */
-    public void deliverReservation() {
-        List<Reservation> toRemove = reservations.stream()
-                .peek(Reservation::resolve)
-                .toList();
-        toRemove.forEach(reservations::remove);
     }
 
     /**

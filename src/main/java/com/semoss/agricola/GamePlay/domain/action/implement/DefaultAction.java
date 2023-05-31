@@ -10,7 +10,8 @@ import com.semoss.agricola.GamePlay.domain.action.*;
 import com.semoss.agricola.GamePlay.domain.card.Card;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
-import com.semoss.agricola.GamePlay.domain.card.MajorCard;
+import com.semoss.agricola.GamePlay.domain.card.Majorcard.BakeTrigger;
+import com.semoss.agricola.GamePlay.domain.card.Majorcard.MajorCard;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStructInterface;
 import com.semoss.agricola.GamePlay.dto.*;
@@ -122,9 +123,9 @@ public abstract class DefaultAction {
                             request.getImprovementIds().forEach(
                                             improvementId -> {
                                                 Card card = cardDictionary.getCard(improvementId);
-                                                if (card.getCardType() != CardType.MAJOR)
-                                                    throw new RuntimeException("주설비카드가 아닙니다.");
-                                                ((BakeAction) action).runAction(player, (MajorCard) card);
+                                                if (card.getCardType() != CardType.MAJOR || !((MajorCard) card).hasBakeMajorTrigger())
+                                                    throw new RuntimeException("주설비 카드가 아니거나 빵 굽기 관련 주설비카드가 아닙니다.");
+                                                ((BakeAction) action).runAction(player, (BakeTrigger) card);
                                             }
                                     );
                         } catch (JsonProcessingException e) {

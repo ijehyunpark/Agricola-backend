@@ -3,9 +3,9 @@ package com.semoss.agricola.GamePlay.service;
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
 import com.semoss.agricola.GamePlay.domain.GameProgress;
 import com.semoss.agricola.GamePlay.domain.action.implement.DefaultAction;
+import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.player.AnimalType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
-import com.semoss.agricola.GamePlay.domain.resource.ResourceStructInterface;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
 import com.semoss.agricola.GameRoom.domain.GameRoom;
@@ -28,6 +28,7 @@ public class AgricolaServiceImpl implements AgricolaService {
     private final GameRoomRepository gameRoomRepository;
     private final ObjectProvider<AgricolaGame> agricolaGameProvider;
     private final ObjectProvider<DefaultAction> actionProvider;
+    private final ObjectProvider<CardDictionary> cardDictionaryProvider;
 
     /**
      * 아그리콜라 게임 추출
@@ -67,13 +68,13 @@ public class AgricolaServiceImpl implements AgricolaService {
 //      }
 
         // 새로운 아그리콜라 게임 시스템을 제작한다.
-        gameRoom.setGame(agricolaGameProvider, actionProvider, GameType.Agricola, "NONE");
-        AgricolaGame game = (AgricolaGame) gameRoom.getGame();
+        List<DefaultAction> actions = actionProvider.stream().toList();
+        CardDictionary cardDictionary = cardDictionaryProvider.getObject();
+        AgricolaGame game = agricolaGameProvider.getObject(gameRoom.getParticipants(), "NONE", actions, cardDictionary);
+        gameRoom.setGame(game);
 
         // 선공 플레이어의 경우 음식 토큰 2개, 아닌 경우 3개를 받는다.
-        game.getPlayers().stream().forEach(
-                player -> player.addResource(ResourceType.FOOD, game.getStartingPlayer() == player ? 2 : 3)
-        );
+        game.setUpStartingFood();
 
         // 게임 시작 후 최초 라운드 시작을 개시한다.
         roundStart(gameRoomId);
@@ -99,9 +100,6 @@ public class AgricolaServiceImpl implements AgricolaService {
 
         // 이번 라운드의 행동이 공개한다.
         game.increaseRound();
-
-        // [직업,보조카드] 공개되는 라운드카드에 누적되어있는 자원을 자원을 배치한사람이 가져간다.
-        game.processReservationResource();
 
         // 자원 누적 칸의 경우 자원을 누적하고 누적되지않는 자원 칸의 경우 비어있는 칸의 자원만 보충한다.
         game.processStackEvent();

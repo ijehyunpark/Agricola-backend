@@ -2,28 +2,65 @@ package com.semoss.agricola.GamePlay.domain.card;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.semoss.agricola.GamePlay.domain.card.Majorcard.MajorCard;
+import com.semoss.agricola.GamePlay.domain.player.Player;
+import lombok.Getter;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+@Getter
 public class CardDictionary {
-    public Map<Long,Card> cardDict = new HashMap<>();
+    @JsonIgnore
+    public final Map<Long, Card> cardDict = new HashMap<>();
+    public final Map<Long, Player> ownerDict = new HashMap<>();
+
+    public CardDictionary(List<MajorCard> majorCards){
+        // 주설비 카드 등록
+        majorCards.forEach(majorCard -> cardDict.put(majorCard.getCardID(), majorCard));
+
+        // TODO: 보조 설비 카드 등록
+
+        // TODO: 직업 카드 등록
+
+    }
 
     @JsonAlias("cardDict")
-    public List<Card> getCardDictList(){
+    public List<Card> getCardDictList() {
         return cardDict.values().stream().toList();
     }
-    @JsonIgnore
-    public Map<Long,Card> getCardDict() {
-        return cardDict;
+
+    public void clear() {
+        cardDict.clear();
+        ownerDict.clear();
     }
 
-    public void clear(){
-        cardDict.clear();
+    public void addCard(Player player, Card card) {
+        cardDict.put(card.getCardID(), card);
+        ownerDict.put(card.getCardID(), player);
     }
-    public void addCard(Long id,Card card){
-        cardDict.put(id,card);
+
+    public Card getCard(Long id) {
+        return cardDict.get(id);
     }
-    public Card getCard(Long id) {return cardDict.get(id); }
+
+    public List<Long> getCards(Player player) {
+        return ownerDict.entrySet().stream()
+                .filter(entry -> entry.getValue().equals(player))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+    }
+
+    public Player getOwner(Long id){ return ownerDict.get(id); }
+
+    public void changeOwner(Long cardID, Player player){
+        ownerDict.put(cardID,player);
+    }
 }

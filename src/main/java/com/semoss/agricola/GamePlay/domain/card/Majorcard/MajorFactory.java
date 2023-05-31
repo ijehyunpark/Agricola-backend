@@ -1,24 +1,21 @@
-package com.semoss.agricola.GamePlay.domain.gameboard;
+package com.semoss.agricola.GamePlay.domain.card.Majorcard;
 
-import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
-import com.semoss.agricola.GamePlay.domain.card.MajorCard;
-import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
 import com.semoss.agricola.GamePlay.domain.player.AnimalType;
+import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
-import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-import java.util.ArrayList;
-import java.util.List;
+@Configuration
+@RequiredArgsConstructor
+public class MajorFactory {
 
-@Getter
-public class ImprovementBoard {
-    private final List<Long> majorCards;
-
-    public ImprovementBoard(CardDictionary cardDictionary){
-        majorCards = new ArrayList<>();
-        //화로
-        cardDictionary.addCard(1L, MajorCard.builder()
+    //화로1
+    @Bean(name = "firePlace1")
+    public FirePlace firePlace1() {
+        return FirePlace.builder()
                 .cardID(1L)
                 .bonusPoint(1)
                 .ingredients(new ResourceStruct[]{ResourceStruct.builder().resource(ResourceType.CLAY).count(2).build()})
@@ -26,11 +23,14 @@ public class ImprovementBoard {
                 .animalsToFoodAnytime(new AnimalStruct[]{AnimalStruct.builder().animal(AnimalType.SHEEP).count(2).build(),
                         AnimalStruct.builder().animal(AnimalType.WILD_BOAR).count(2).build(),
                         AnimalStruct.builder().animal(AnimalType.CATTLE).count(3).build()})
-                .bakeEfficiency(2).build());
-        majorCards.add(1L);
+                .bakeEfficiency(2)
+                .build();
+    }
 
-        //화로
-        cardDictionary.addCard(2L, MajorCard.builder()
+    // 화로2
+    @Bean(name = "firePlace2")
+    public FirePlace firePlace2() {
+        return FirePlace.builder()
                 .cardID(2L)
                 .bonusPoint(1)
                 .ingredients(new ResourceStruct[]{ResourceStruct.builder().resource(ResourceType.CLAY).count(3).build()})
@@ -38,11 +38,14 @@ public class ImprovementBoard {
                 .animalsToFoodAnytime(new AnimalStruct[]{AnimalStruct.builder().animal(AnimalType.SHEEP).count(2).build(),
                         AnimalStruct.builder().animal(AnimalType.WILD_BOAR).count(2).build(),
                         AnimalStruct.builder().animal(AnimalType.CATTLE).count(3).build()})
-                .bakeEfficiency(2).build());
-        majorCards.add(2L);
+                .bakeEfficiency(2)
+                .build();
+    }
 
-        //화덕 (카드 반납은 구현 안돼있음)
-        cardDictionary.addCard(3L, MajorCard.builder()
+    //화덕
+    @Bean(name = "firePlace3")
+    public FirePlace firePlace3() {
+        return FirePlace.builder()
                 .cardID(3L)
                 .bonusPoint(1)
                 .ingredients(new ResourceStruct[]{ResourceStruct.builder().resource(ResourceType.CLAY).count(4).build()})
@@ -50,11 +53,14 @@ public class ImprovementBoard {
                 .animalsToFoodAnytime(new AnimalStruct[]{AnimalStruct.builder().animal(AnimalType.SHEEP).count(2).build(),
                         AnimalStruct.builder().animal(AnimalType.WILD_BOAR).count(3).build(),
                         AnimalStruct.builder().animal(AnimalType.CATTLE).count(4).build()})
-                .bakeEfficiency(3).build());
-        majorCards.add(3L);
+                .bakeEfficiency(3)
+                .build();
+    }
 
-        //화덕 (카드 반납은 구현 안돼있음)
-        cardDictionary.addCard(4L, MajorCard.builder()
+    //화덕
+    @Bean(name = "firePlace4")
+    public FirePlace firePlace4() {
+        return FirePlace.builder()
                 .cardID(4L)
                 .bonusPoint(1)
                 .ingredients(new ResourceStruct[]{ResourceStruct.builder().resource(ResourceType.CLAY).count(5).build()})
@@ -62,66 +68,87 @@ public class ImprovementBoard {
                 .animalsToFoodAnytime(new AnimalStruct[]{AnimalStruct.builder().animal(AnimalType.SHEEP).count(2).build(),
                         AnimalStruct.builder().animal(AnimalType.WILD_BOAR).count(3).build(),
                         AnimalStruct.builder().animal(AnimalType.CATTLE).count(4).build()})
-                .bakeEfficiency(3).build());
-        majorCards.add(4L);
+                .bakeEfficiency(3)
+                .build();
+    }
 
-        //흙가마 (더미) // 빵효율 증가만 적용
-        cardDictionary.addCard(5L, MajorCard.builder()
+    //흙가마 (더미) // 빵효율 증가만 적용
+    @Bean(name = "clayOven")
+    public Oven clayOven(){
+        return Oven.builder()
                 .cardID(5L)
                 .bonusPoint(2)
                 .ingredients(new ResourceStruct[]{ResourceStruct.builder().resource(ResourceType.CLAY).count(3).build(),
                         ResourceStruct.builder().resource(ResourceType.STONE).count(1).build()})
-                .bakeEfficiency(5).build());
-        majorCards.add(5L);
+                .bakeEfficiency(5)
+                .build();
+    }
 
-        //돌가마 (더미) // 빵효율 증가만 적용
-        cardDictionary.addCard(6L, MajorCard.builder()
+    //돌가마 (더미) // 빵효율 증가만 적용
+    @Bean(name = "stoneOven")
+    public Oven stoneOven(){
+        return Oven.builder()
                 .cardID(6L)
                 .bonusPoint(3)
                 .ingredients(new ResourceStruct[]{ResourceStruct.builder().resource(ResourceType.CLAY).count(1).build(),
                         ResourceStruct.builder().resource(ResourceType.STONE).count(3).build()})
-                .bakeEfficiency(4).build());
-        majorCards.add(6L);
+                .bakeEfficiency(4)
+                .build();
+    }
 
-        //가구제작소
-        cardDictionary.addCard(7L, MajorCard.builder()
+    //가구제작소
+    @Bean(name = "woodWorkShop")
+    public Workshop woodWorkShop(){
+        return Workshop.builder()
                 .cardID(7L)
-                .bonusPoint(2)
-                .ingredients(new ResourceStruct[]{ResourceStruct.builder().resource(ResourceType.WOOD).count(2).build(),
-                        ResourceStruct.builder().resource(ResourceType.STONE).count(2).build()})
-                .resourceToFoodHarvest(ResourceStruct.builder().resource(ResourceType.CLAY).count(2).build())
-                .resourceTypeToPoints(ResourceType.CLAY)
-                .resourceNumToPoints(new int[][]{{3,1},{5,2},{7,3}}).build());
-        majorCards.add(7L);
-
-        //그릇제작소
-        cardDictionary.addCard(8L, MajorCard.builder()
-                .cardID(8L)
-                .bonusPoint(2)
-                .ingredients(new ResourceStruct[]{ResourceStruct.builder().resource(ResourceType.REED).count(2).build(),
-                        ResourceStruct.builder().resource(ResourceType.STONE).count(2).build()})
-                .resourceToFoodHarvest(ResourceStruct.builder().resource(ResourceType.REED).count(2).build())
-                .resourceTypeToPoints(ResourceType.REED)
-                .resourceNumToPoints(new int[][]{{3,1},{5,2},{7,3}}).build());
-        majorCards.add(8L);
-
-        //바구니제작소
-        cardDictionary.addCard(9L, MajorCard.builder()
-                .cardID(9L)
                 .bonusPoint(2)
                 .ingredients(new ResourceStruct[]{ResourceStruct.builder().resource(ResourceType.WOOD).count(2).build(),
                         ResourceStruct.builder().resource(ResourceType.STONE).count(2).build()})
                 .resourceToFoodHarvest(ResourceStruct.builder().resource(ResourceType.WOOD).count(2).build())
                 .resourceTypeToPoints(ResourceType.WOOD)
-                .resourceNumToPoints(new int[][]{{3,1},{5,2},{7,3}}).build());
-        majorCards.add(9L);
+                .resourceNumToPoints(new int[][]{{3,1},{5,2},{7,3}})
+                .build();
+    }
 
-        //우물 (더미) 능력 없음
-        cardDictionary.addCard(10L, MajorCard.builder()
+    //그릇제작소
+    @Bean(name = "clayWorkShop")
+    public Workshop clayWorkShop(){
+        return Workshop.builder()
+                .cardID(8L)
+                .bonusPoint(2)
+                .ingredients(new ResourceStruct[]{ResourceStruct.builder().resource(ResourceType.CLAY).count(2).build(),
+                        ResourceStruct.builder().resource(ResourceType.STONE).count(2).build()})
+                .resourceToFoodHarvest(ResourceStruct.builder().resource(ResourceType.CLAY).count(2).build())
+                .resourceTypeToPoints(ResourceType.CLAY)
+                .resourceNumToPoints(new int[][]{{3,1},{5,2},{7,3}})
+                .build();
+    }
+
+    //바구니제작소
+    @Bean(name = "reedWorkShop")
+    public Workshop reedWorkShop(){
+        return Workshop.builder()
+                .cardID(9L)
+                .bonusPoint(2)
+                .ingredients(new ResourceStruct[]{ResourceStruct.builder().resource(ResourceType.REED).count(2).build(),
+                        ResourceStruct.builder().resource(ResourceType.STONE).count(2).build()})
+                .resourceToFoodHarvest(ResourceStruct.builder().resource(ResourceType.REED).count(2).build())
+                .resourceTypeToPoints(ResourceType.REED)
+                .resourceNumToPoints(new int[][]{{3,1},{5,2},{7,3}})
+                .build();
+    }
+
+    //우물
+    @Bean
+    public Well well(){
+        return Well.builder()
                 .cardID(10L)
                 .bonusPoint(4)
                 .ingredients(new ResourceStruct[]{ResourceStruct.builder().resource(ResourceType.WOOD).count(1).build(),
-                        ResourceStruct.builder().resource(ResourceType.STONE).count(3).build()}).build());
-        majorCards.add(10L);
+                        ResourceStruct.builder().resource(ResourceType.STONE).count(3).build()})
+                .rounds(new int[]{1,2,3,4,5})
+                .stackResource(ResourceStruct.builder().resource(ResourceType.FOOD).count(1).build())
+                .isStaticRound(false)
+                .build();
     }
 }

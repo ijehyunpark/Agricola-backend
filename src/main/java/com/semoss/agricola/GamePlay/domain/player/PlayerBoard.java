@@ -251,6 +251,11 @@ public class PlayerBoard {
         }
     }
 
+    protected void addStable(int row, int col){
+        if (fields[row][col] == null || fields[row][col].getFieldType() != FieldType.BARN) return;
+        ((Barn)fields[row][col]).addStable();
+    }
+
     /**
      * 현재 울타리를 설치할 수 있는 위치를 확인합니다.
      * @return [row : boolean[][], col : boolean[][]]
@@ -607,14 +612,36 @@ public class PlayerBoard {
     }
 
     /**
-     *
+     * 필드 개수
      * @param fieldType
      * @return
      */
-    public int numField(FieldType fieldType){
+    public int getNumField(FieldType fieldType){
         return (int)Arrays.stream(fields)
                 .flatMap(Arrays::stream)
-                .filter(field -> field.getFieldType().equals(fieldType))
+                .filter(field -> field != null && field.getFieldType().equals(fieldType))
+                .count();
+    }
+
+    /**
+     * 헛간안에 외양간이 있는 수(포인트 계산용)
+     * @return
+     */
+    public int numStableInBarn(){
+        return (int) Arrays.stream(fields)
+                .flatMap(Arrays::stream)
+                .filter(field -> field != null && field.getFieldType().equals(FieldType.BARN) && ((Barn)field).isStable())
+                .count();
+    }
+
+    /**
+     * 보드의 빈칸 개수(포인트 계산용)
+     * @return
+     */
+    public int numEmptyField(){
+        return (int) Arrays.stream(fields)
+                .flatMap(Arrays::stream)
+                .filter(Objects::isNull)
                 .count();
     }
 
@@ -678,5 +705,22 @@ public class PlayerBoard {
                 .findFirst()
                 .orElseThrow(ServerError::new)
                 .play();
+    }
+
+    public int getAnimal(AnimalType animalType) {
+        int num;
+        num = (int)Arrays.stream(fields)
+                .flatMap(Arrays::stream)
+                .filter(field -> field != null &&
+                        (field.getFieldType() == FieldType.BARN || field.getFieldType() == FieldType.STABLE) &&
+                        ((Barn)field).getAnimal().getAnimal() == animalType)
+                .mapToLong(field -> ((Barn)field).getAnimal().getCount())
+                .sum();
+
+        //애완동물
+        if(((Room)fields[1][0]).getPet() != null && ((Room)fields[1][0]).getPet() == animalType) {
+            num += 1;
+        }
+        return num;
     }
 }

@@ -19,7 +19,6 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(MockitoExtension.class)
 class GameBoardTest {
     AgricolaGame game;
-    ImprovementBoard improvementBoard;
     GameBoard board;
 
     List<Event> buildEvents() {
@@ -103,8 +102,7 @@ class GameBoardTest {
     @BeforeEach
     void setUp() {
         game = mock(AgricolaGame.class);
-        improvementBoard = mock(ImprovementBoard.class);
-        board = new GameBoard(buildEvents(), improvementBoard);
+        board = new GameBoard(buildEvents());
     }
     @Test
     @DisplayName("라운드 셔플 테스트")

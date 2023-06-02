@@ -1,4 +1,4 @@
-package com.semoss.agricola.GamePlay.domain.player;
+package com.semoss.agricola.GamePlay.domain.resource;
 
 public enum AnimalType {
     WILD_BOAR(0),

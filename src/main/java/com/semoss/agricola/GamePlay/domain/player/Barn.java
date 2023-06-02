@@ -1,6 +1,7 @@
 package com.semoss.agricola.GamePlay.domain.player;
 
 import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
+import com.semoss.agricola.GamePlay.domain.resource.AnimalType;
 import com.semoss.agricola.GamePlay.exception.AlreadyExistException;
 import lombok.Builder;
 import lombok.Getter;

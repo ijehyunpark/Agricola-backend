@@ -13,10 +13,7 @@ import com.semoss.agricola.GamePlay.domain.card.Occupation.ActionTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Occupation.FinishTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Occupation.HarvestTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Occupation.Occupation;
-import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
-import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
-import com.semoss.agricola.GamePlay.domain.resource.ResourceStructInterface;
-import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
+import com.semoss.agricola.GamePlay.domain.resource.*;
 import com.semoss.agricola.GamePlay.exception.IllegalRequestException;
 import com.semoss.agricola.GamePlay.exception.ResourceLackException;
 import com.semoss.agricola.GamePlay.exception.ServerError;
@@ -234,6 +231,7 @@ public class Player {
      * 현재 필드 단계를 반환한다.
      * @return
      */
+    @JsonIgnore
     public RoomType getRoomType() {
         return playerBoard.getRoomType();
     }
@@ -387,7 +385,7 @@ public class Player {
             throw new ResourceLackException("음식 토큰 부족");
     }
 
-    /** TODO
+    /**
      * 수확 때 1회 사용가능한 음식 교환을 모두 반환 (동물 제외)
      * @return (사용할 자원, 변환될 음식 양)인 튜플을 가지는 리스트
      */
@@ -399,15 +397,17 @@ public class Player {
                 .toList();
     }
 
-    /** TODO
+    /**
      * 카드 중 언제든 음식 교환이 있는 경우 가장 좋은 효율을 가진 경우들을 모아서 반환
      * @return (사용할 자원, 변환될 음식 양)인 튜플을 가지는 리스트
      */
-    public List<ResourceStruct> resourceToFoodAnytime() {
+    public List<ResourceStructInterface> resourceToFoodAnytime() {
         return cardField.stream()
                 .map(game.getCardDictionary().cardDict::get)
                 .filter(card -> card instanceof CookingAnytimeTrigger)
-                .flatMap(card -> Arrays.stream(((CookingAnytimeTrigger) card).getResourcesToFoodAnytime()))
+                .flatMap(card -> ((CookingAnytimeTrigger) card).getResourcesToFoodAnytime().stream())
+                .filter(ResourceStructInterface::isResource)
+                .map(resourceStructInterface -> (ResourceStruct) resourceStructInterface)
                 .collect(Collectors.groupingBy(ResourceStruct::getResource))
                 .values().stream()
                 .map(tuples -> tuples.stream()
@@ -425,7 +425,9 @@ public class Player {
         return cardField.stream()
                 .map(game.getCardDictionary().cardDict::get)
                 .filter(card -> card instanceof CookingAnytimeTrigger)
-                .flatMap(card -> Arrays.stream(((CookingAnytimeTrigger) card).getAnimalsToFoodAnytime()))
+                .flatMap(card -> ((CookingAnytimeTrigger) card).getResourcesToFoodAnytime().stream())
+                .filter(ResourceStructInterface::isAnimal)
+                .map(resourceStructInterface -> (AnimalStruct) resourceStructInterface)
                 .collect(Collectors.groupingBy(AnimalStruct::getAnimal))
                 .values().stream()
                 .map(tuples -> tuples.stream()

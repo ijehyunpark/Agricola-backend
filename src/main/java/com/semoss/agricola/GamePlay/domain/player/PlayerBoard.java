@@ -1,6 +1,8 @@
 package com.semoss.agricola.GamePlay.domain.player;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
+import com.semoss.agricola.GamePlay.domain.resource.AnimalType;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.GamePlay.exception.*;
@@ -17,7 +19,6 @@ import java.util.stream.Collectors;
 @Getter
 @Log4j2
 public class PlayerBoard {
-    private int roomCount;
     private RoomType roomType;
     private static final int FIELD_COLUMN = 3;
     private static final int FIELD_ROW = 5;
@@ -25,6 +26,7 @@ public class PlayerBoard {
     private Field[][] fields = new Field[FIELD_COLUMN][FIELD_ROW];
     private boolean[][] colFence = new boolean[3][6];
     private boolean[][] rowFence = new boolean[4][5];
+    @JsonIgnore
     private AnimalStruct[] moveAnimalArr = new AnimalStruct[3];
 
     @Builder
@@ -45,8 +47,6 @@ public class PlayerBoard {
                 .build();
         room.addResident(ResidentType.ADULT);
         this.fields[2][0] = room;
-
-        this.roomCount = 2;
 
         moveAnimalArr[0] = AnimalStruct.builder().animal(AnimalType.SHEEP).count(0).build();
         moveAnimalArr[1] = AnimalStruct.builder().animal(AnimalType.WILD_BOAR).count(0).build();

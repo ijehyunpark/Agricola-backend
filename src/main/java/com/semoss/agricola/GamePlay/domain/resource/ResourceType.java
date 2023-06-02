@@ -18,7 +18,7 @@ public enum ResourceType {
     @JsonCreator
     public static ResourceType fromValue(String name) {
         for (ResourceType resourceType : ResourceType.values()) {
-            if (resourceType.name().equals(name)) {
+            if (resourceType.name().equals(name.toUpperCase())) {
                 return resourceType;
             }
         }

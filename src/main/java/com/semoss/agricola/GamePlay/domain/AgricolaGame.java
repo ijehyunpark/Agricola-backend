@@ -45,7 +45,7 @@ public class AgricolaGame implements Game {
         private GameProgress gameProgress;
         @JsonProperty("playerId")
         @JsonIdentityReference(alwaysAsId = true)
-        @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@userId")
+        @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "userId")
         private Player player;
         private void update(GameProgress gameProgress, Player player) {
             this.gameProgress = gameProgress;
@@ -62,7 +62,7 @@ public class AgricolaGame implements Game {
 
     @JsonProperty("startingPlayerId")
     @JsonIdentityReference(alwaysAsId = true)
-    @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@userId")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "userId")
     private Player startingPlayer;
     private final GameState gameState;
 

@@ -27,7 +27,7 @@ public class Event {
 
     @JsonProperty("playerId")
     @JsonIdentityReference(alwaysAsId = true)
-    @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@userId")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "userId")
     private Player isPlayed;
 
     @Builder

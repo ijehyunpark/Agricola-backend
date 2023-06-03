@@ -17,8 +17,8 @@ public class ActionNameMinorCard extends DefaultMinorCard implements ActionNameT
     private final ResourceStruct[] bonusResources;
 
     @Builder
-    ActionNameMinorCard(Long cardID, int bonusPoint, ResourceStruct[] ingredients, CardType preconditionCardType, int minCardNum, ActionName[] actionNames, ResourceStruct[] bonusResources) {
-        super(cardID, bonusPoint, ingredients, preconditionCardType, minCardNum);
+    ActionNameMinorCard(Long cardID, int bonusPoint, ResourceStruct[] ingredients, CardType preconditionCardType, int minCardNum, String name, String description, ActionName[] actionNames, ResourceStruct[] bonusResources) {
+        super(cardID, bonusPoint, ingredients, preconditionCardType, minCardNum, name, description);
         this.actionNames = actionNames;
         this.bonusResources = bonusResources;
     }

@@ -24,6 +24,8 @@ public class MajorFactory {
                         AnimalStruct.builder().animal(AnimalType.WILD_BOAR).count(2).build(),
                         AnimalStruct.builder().animal(AnimalType.CATTLE).count(3).build()})
                 .bakeEfficiency(2)
+                .name("화로1")
+                .description("언제든 자원을 음식으로 교환, 교환 비율 : 야채 : 2, 양 : 2, 돼지 : 2, 소 : 3, 빵굽기시 음식 2개 생성")
                 .build();
     }
 
@@ -39,6 +41,8 @@ public class MajorFactory {
                         AnimalStruct.builder().animal(AnimalType.WILD_BOAR).count(2).build(),
                         AnimalStruct.builder().animal(AnimalType.CATTLE).count(3).build()})
                 .bakeEfficiency(2)
+                .name("화로2")
+                .description("언제든 자원을 음식으로 교환, 교환 비율 : 야채 : 2, 양 : 2, 돼지 : 2, 소 : 3, 빵굽기시 음식 2개 생성")
                 .build();
     }
 
@@ -54,6 +58,8 @@ public class MajorFactory {
                         AnimalStruct.builder().animal(AnimalType.WILD_BOAR).count(3).build(),
                         AnimalStruct.builder().animal(AnimalType.CATTLE).count(4).build()})
                 .bakeEfficiency(3)
+                .name("화덕1")
+                .description("언제든 자원을 음식으로 교환, 교환 비율 : 야채 : 3, 양 : 2, 돼지 : 3, 소 : 4, 빵굽기시 음식 3개 생성")
                 .build();
     }
 
@@ -69,6 +75,8 @@ public class MajorFactory {
                         AnimalStruct.builder().animal(AnimalType.WILD_BOAR).count(3).build(),
                         AnimalStruct.builder().animal(AnimalType.CATTLE).count(4).build()})
                 .bakeEfficiency(3)
+                .name("화덕2")
+                .description("언제든 자원을 음식으로 교환, 교환 비율 : 야채 : 3, 양 : 2, 돼지 : 3, 소 : 4, 빵굽기시 음식 3개 생성")
                 .build();
     }
 
@@ -81,6 +89,8 @@ public class MajorFactory {
                 .ingredients(new ResourceStruct[]{ResourceStruct.builder().resource(ResourceType.CLAY).count(3).build(),
                         ResourceStruct.builder().resource(ResourceType.STONE).count(1).build()})
                 .bakeEfficiency(5)
+                .name("흙가마")
+                .description("빵굽기 효율 5개로 증가")
                 .build();
     }
 
@@ -93,6 +103,8 @@ public class MajorFactory {
                 .ingredients(new ResourceStruct[]{ResourceStruct.builder().resource(ResourceType.CLAY).count(1).build(),
                         ResourceStruct.builder().resource(ResourceType.STONE).count(3).build()})
                 .bakeEfficiency(4)
+                .name("돌가마")
+                .description("빵굽기 효율 4개로 증가")
                 .build();
     }
 
@@ -107,6 +119,8 @@ public class MajorFactory {
                 .resourceToFoodHarvest(ResourceStruct.builder().resource(ResourceType.WOOD).count(2).build())
                 .resourceTypeToPoints(ResourceType.WOOD)
                 .resourceNumToPoints(new int[][]{{3,1},{5,2},{7,3}})
+                .name("탁자 제작소")
+                .description("수확시 나무 1개를 음식 2개로 교환 가능. 게임 종료시 3/5/7개의 나무를 보유중이면 1/2/3의 추가 점수를 획득")
                 .build();
     }
 
@@ -121,6 +135,8 @@ public class MajorFactory {
                 .resourceToFoodHarvest(ResourceStruct.builder().resource(ResourceType.CLAY).count(2).build())
                 .resourceTypeToPoints(ResourceType.CLAY)
                 .resourceNumToPoints(new int[][]{{3,1},{5,2},{7,3}})
+                .name("도자기 제작소")
+                .description("수확시 점토 1개를 음식 2개로 교환 가능. 게임 종료시 3/5/7개의 점토를 보유중이면 1/2/3의 추가 점수를 획득")
                 .build();
     }
 
@@ -135,11 +151,13 @@ public class MajorFactory {
                 .resourceToFoodHarvest(ResourceStruct.builder().resource(ResourceType.REED).count(2).build())
                 .resourceTypeToPoints(ResourceType.REED)
                 .resourceNumToPoints(new int[][]{{3,1},{5,2},{7,3}})
+                .name("바구니 제작소")
+                .description("수확시 갈대 1개를 음식 3개로 교환 가능. 게임 종료시 2/4/5개의 갈대를 보유중이면 1/2/3의 추가 점수를 획득")
                 .build();
     }
 
     //우물
-    @Bean
+    @Bean(name = "well")
     public Well well(){
         return Well.builder()
                 .cardID(10L)
@@ -149,6 +167,8 @@ public class MajorFactory {
                 .rounds(new int[]{1,2,3,4,5})
                 .stackResource(ResourceStruct.builder().resource(ResourceType.FOOD).count(1).build())
                 .isStaticRound(false)
+                .name("우물")
+                .description("남은 5개의 라운드에 음식을 1개씩 두고 해당 라운드가 시작될 때 쌓아둔 음식을 가져감")
                 .build();
     }
 }

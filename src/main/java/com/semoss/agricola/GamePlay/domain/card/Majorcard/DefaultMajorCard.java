@@ -6,17 +6,24 @@ import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.exception.IllegalRequestException;
 import lombok.Getter;
 
+/**
+ * 기본 주설비 카드
+ */
 @Getter
 public abstract class DefaultMajorCard implements MajorCard{
     protected final CardType cardType = CardType.MAJOR;
     protected final Long cardID;
     protected final int bonusPoint;
     protected final ResourceStruct[] ingredients;
+    protected final String name;
+    protected final String description;
 
-    protected DefaultMajorCard(Long cardID, int bonusPoint, ResourceStruct[] ingredients) {
+    protected DefaultMajorCard(Long cardID, int bonusPoint, ResourceStruct[] ingredients, String name, String description) {
         this.cardID = cardID;
         this.bonusPoint = bonusPoint;
         this.ingredients = ingredients;
+        this.name = name;
+        this.description = description;
     }
 
     /**

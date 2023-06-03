@@ -1,6 +1,7 @@
 package com.semoss.agricola.GamePlay.domain.card.Occupation;
 
 import com.semoss.agricola.GamePlay.domain.History;
+import com.semoss.agricola.GamePlay.domain.card.ActionTrigger;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
@@ -9,33 +10,21 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+/**
+ * 특정 행동시 추가 자원 획득
+ */
 @Getter
 @Component
 @Scope("prototype")
-public class LandAgent extends DefaultOccupation implements ActionTrigger{
-    private Long id;
-    private String name;
+public class LandAgent extends DefaultOccupation implements ActionTrigger {
     private int playerRequirement;
-    private String description;
 
-    public LandAgent(@Value("${landAgent.id}") Long id,
+    public LandAgent(@Value("${landAgent.id}") Long cardID,
                      @Value("${landAgent.name}") String name,
                      @Value("${landAgent.players}") Integer playerRequirement,
                      @Value("${landAgent.description}") String description) {
-        this.id = id;
-        this.name = name;
+        super(cardID, name, description);
         this.playerRequirement = playerRequirement;
-        this.description = description;
-    }
-
-    @Override
-    public Player getOwner() {
-        return super.getOwner();
-    }
-
-    @Override
-    public void setOwner(Player player) {
-        super.setOwner(player);
     }
 
     @Override
@@ -49,6 +38,7 @@ public class LandAgent extends DefaultOccupation implements ActionTrigger{
                 .count(1)
                 .build());
     }
+
 
     @Override
     public void place(Player player) {

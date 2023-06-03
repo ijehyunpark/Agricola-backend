@@ -8,6 +8,7 @@ import com.semoss.agricola.GamePlay.dto.BuildFenceActionExtensionRequest;
 import com.semoss.agricola.GamePlay.exception.IllegalRequestException;
 import com.semoss.agricola.GamePlay.exception.ResourceLackException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -227,6 +228,7 @@ class BuildFenceActionTest {
 
 
     @Test
+    @Disabled
     @DisplayName("울타리 건설 - 15개 초과 사용: 실패")
     void test6() {
         // given

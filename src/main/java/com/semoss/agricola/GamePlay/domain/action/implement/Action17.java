@@ -1,8 +1,8 @@
 package com.semoss.agricola.GamePlay.domain.action.implement;
 
 import com.semoss.agricola.GamePlay.domain.action.DoType;
-import com.semoss.agricola.GamePlay.domain.action.IncreaseFamily;
-import com.semoss.agricola.GamePlay.domain.action.PlaceAction;
+import com.semoss.agricola.GamePlay.domain.action.component.IncreaseFamilyAction;
+import com.semoss.agricola.GamePlay.domain.action.component.PlaceAction;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,12 +15,10 @@ import org.springframework.stereotype.Component;
 @Log4j2
 public class Action17 extends DefaultAction {
     @Autowired
-    public Action17(@Qualifier("growFamilyWithoutUrgencyAction") IncreaseFamily growFamilyWithoutUrgencyAction, @Qualifier("placeMinorCardAction") PlaceAction placeMinorCardAction) {
+    public Action17(@Qualifier("growFamilyWithoutUrgencyAction") IncreaseFamilyAction growFamilyWithoutUrgencyAction, @Qualifier("placeMinorCardAction") PlaceAction placeMinorCardAction) {
         super(ActionName.ACTION17, 2);
 
         addAction(growFamilyWithoutUrgencyAction, DoType.AFTER);
         addAction(placeMinorCardAction, DoType.FINISH);
-
-        log.debug("ACTION17 생성되었습니다: " + this.hashCode());
     }
 }

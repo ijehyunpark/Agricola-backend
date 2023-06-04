@@ -1,7 +1,7 @@
 package com.semoss.agricola.GamePlay.domain.action.implement;
 
 import com.semoss.agricola.GamePlay.domain.action.DoType;
-import com.semoss.agricola.GamePlay.domain.action.StackResourceAction;
+import com.semoss.agricola.GamePlay.domain.action.component.StackResourceAction;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,7 +17,6 @@ public class Action10 extends DefaultAction {
         super(ActionName.ACTION10, 0);
 
         addAction(fishingAction, DoType.FINISH);
-        
-        log.debug("ACTION10 생성되었습니다: " + this.hashCode());
+
     }
 }

@@ -2,6 +2,9 @@ package com.semoss.agricola.GamePlay.domain.action;
 
 import com.fasterxml.jackson.annotation.*;
 import com.semoss.agricola.GamePlay.domain.History;
+import com.semoss.agricola.GamePlay.domain.action.component.ActionType;
+import com.semoss.agricola.GamePlay.domain.action.component.StackAnimalAction;
+import com.semoss.agricola.GamePlay.domain.action.component.StackResourceAction;
 import com.semoss.agricola.GamePlay.domain.action.implement.DefaultAction;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.player.Player;
@@ -57,10 +60,25 @@ public class Event {
         return history;
     }
     /**
+     * 누적 액션을 실행하여 자원을 행동칸에 쌓는다.
+     */
+    public void processStackEvent(){
+        action.getActions().stream()
+                .filter(action -> action.getActionType() == ActionType.STACK)
+                .map(action -> ((StackResourceAction) action).getStackResource())
+                .forEach(this::addStackResource);
+
+        action.getActions().stream()
+                .filter(action -> action.getActionType() == ActionType.STACK_ANIMAL)
+                .map(action -> ((StackAnimalAction) action).getStackAnimal())
+                .forEach(this::stackAnimal);
+    }
+
+    /**
      * 스택 개수만큼 자원을 행동칸에 쌓는다.
      * @param resource 쌓을 자원 스택
      */
-    public void stackResource(ResourceStruct resource){
+    private void addStackResource(ResourceStruct resource) {
         // 이미 쌓인 자원인 경우 찾아서 더하고, 없는 경우 새로 추가한다.
         stacks.stream()
                 .filter(ResourceStructInterface::isResource)

@@ -1,7 +1,7 @@
 package com.semoss.agricola.GamePlay.domain.action.implement;
 
-import com.semoss.agricola.GamePlay.domain.action.BuildRoomAction;
-import com.semoss.agricola.GamePlay.domain.action.BuildSimpleAction;
+import com.semoss.agricola.GamePlay.domain.action.component.BuildRoomAction;
+import com.semoss.agricola.GamePlay.domain.action.component.BuildSimpleAction;
 import com.semoss.agricola.GamePlay.domain.action.DoType;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,5 @@ public class Action1 extends DefaultAction {
 
         // 1-2 외양간 짓기
         addAction(buildStableAction, DoType.FINISH);
-
-        log.debug("ACTION1 생성되었습니다: " + this.hashCode());
     }
 }

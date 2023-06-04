@@ -2,10 +2,7 @@ package com.semoss.agricola.GamePlay.domain.gameboard;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.semoss.agricola.GamePlay.domain.History;
-import com.semoss.agricola.GamePlay.domain.action.ActionType;
 import com.semoss.agricola.GamePlay.domain.action.Event;
-import com.semoss.agricola.GamePlay.domain.action.StackAnimalAction;
-import com.semoss.agricola.GamePlay.domain.action.StackResourceAction;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
@@ -99,18 +96,7 @@ public record GameBoard(@JsonIgnore List<Event> events) {
      * 현재 필드의 모든 누적 액션의 누적자원량을 증가시킨다.
      */
     public void processStackEvent() {
-        for (Event event : events()) {
-            // 해당 이벤트의 모든 스택 액에 대해 자원을 쌓는다.
-            event.getAction().getActions().stream()
-                    .filter(action -> action.getActionType() == ActionType.STACK)
-                    .map(action -> ((StackResourceAction) action).getStackResource())
-                    .forEach(event::stackResource);
-
-            event.getAction().getActions().stream()
-                    .filter(action -> action.getActionType() == ActionType.STACK_ANIMAL)
-                    .map(action -> ((StackAnimalAction) action).getStackAnimal())
-                    .forEach(event::stackAnimal);
-        }
+        events().forEach(Event::processStackEvent);
     }
 
     /**

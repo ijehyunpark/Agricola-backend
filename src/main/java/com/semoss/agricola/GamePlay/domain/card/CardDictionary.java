@@ -9,6 +9,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,5 +63,20 @@ public class CardDictionary {
 
     public void changeOwner(Long cardID, Player player){
         ownerDict.put(cardID,player);
+    }
+
+    /**
+     * 해당 소유자가 가진 모든 카드를 찾는다.
+     * @param player 카드 소유자
+     * @return 해당 소유자가 가진 모든 카드의 식별자 리스트
+     */
+    public List<Long> findCardsByOwner(Player player) {
+        List<Long> keys = new ArrayList<>();
+        for (Map.Entry<Long, Player> entry : ownerDict.entrySet()) {
+            if (entry.getValue().equals(player)) {
+                keys.add(entry.getKey());
+            }
+        }
+        return keys;
     }
 }

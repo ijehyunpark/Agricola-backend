@@ -770,13 +770,16 @@ public class PlayerBoard {
      */
     protected boolean addAnimal(AnimalType animalType, int animalNum){
         Barn barn;
-        for (int i = 0; i < fields[0].length; i++) {
+        int num;
+        for (int i = 0; i < fields.length; i++) {
             for (int j = 0; j < fields[0].length; j++) {
                 if (fields[i][j] != null && (fields[i][j].getFieldType() == FieldType.BARN || fields[i][j].getFieldType() == FieldType.STABLE)) {
                     barn = (Barn) fields[i][j];
-                    animalNum -= barn.addAnimal(animalType, animalNum);
+                    num = barn.addAnimal(animalType, animalNum);
+                    animalNum -= num;
+                    if (num > 0)
+                        setSameAnimalType(i,j);
                 }
-                setSameAnimalType(i,j);
                 if (animalNum == 0) return true;
             }
         }

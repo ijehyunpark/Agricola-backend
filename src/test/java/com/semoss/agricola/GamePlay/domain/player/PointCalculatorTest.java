@@ -37,16 +37,19 @@ class PointCalculatorTest {
         when(game.getCardDictionary()).thenReturn(cardDictionary);
         player.addResource(ResourceType.CLAY,7);
         player.addResource(ResourceType.STONE,2);
-        player.addResource(ResourceType.WOOD,2);
+        player.addResource(ResourceType.WOOD,9);
 
         majorCard.place(player);
 
         player.buildField(2,1,FieldType.ROOM);
         player.buildField(0,4,FieldType.FARM);
+
         player.upgradeRoom();
         player.buildFence(fence1[0],fence1[1]);
+
         player.addStable(1,3);
         player.addStable(1,2);
+
         player.getPlayerBoard().addAnimal(AnimalType.CATTLE,3);
         int expectPoint = 11;
 

@@ -1,6 +1,7 @@
 package com.semoss.agricola.GamePlay.domain.card.Majorcard;
 
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
+import com.semoss.agricola.GamePlay.domain.card.Card;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
@@ -90,6 +91,7 @@ class FirePlaceTest {
         Player actual1 = cardDictionary.getOwner(1L);
         Player actual2 = cardDictionary.getOwner(2L);
         Player actual3 = cardDictionary.getOwner(3L);
+        Card card = cardDictionary.getCard(4L);
 
 
         //then
@@ -97,7 +99,7 @@ class FirePlaceTest {
         assertEquals(expected2,actual2);
         assertEquals(expected3,actual3);
         assertThrows(IllegalRequestException.class, () -> {
-            cardDictionary.getCard(4L).place(player);
+            card.place(player);
         });
     }
 }

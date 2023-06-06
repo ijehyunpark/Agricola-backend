@@ -15,7 +15,7 @@ public enum ActionName {
     ACTION10(10, "낚시"),
     ACTION11(11, "양 시장"),
     ACTION12(12, "울타리"),
-    ACTION13(13, "주요 설비"),
+    ACTION13(13, "설비"),
     ACTION14(14, "곡식 활용"),
     ACTION15(15, "기본 가족 늘리기"),
     ACTION16(16, "서부 채석장"),

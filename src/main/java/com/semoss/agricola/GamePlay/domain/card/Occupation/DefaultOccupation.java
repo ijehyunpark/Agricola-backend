@@ -1,31 +1,34 @@
 package com.semoss.agricola.GamePlay.domain.card.Occupation;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import lombok.Getter;
 
+/**
+ * 기본 직업 카드
+ */
 @Getter
 public abstract class DefaultOccupation implements Occupation {
-    private CardType cardType = CardType.OCCUPATION;
+    private final CardType cardType = CardType.OCCUPATION;
+    private final int bonusPoint = 0;
+    protected final Long cardID;
+    private final String name;
+    private final String description;
 
-    @JsonProperty("playerId")
-    @JsonIdentityReference(alwaysAsId = true)
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "userId")
-    private Player owner;
-
-    @Override
-    public void setOwner(Player player) {
-        if(owner != null)
-            throw new RuntimeException("이미 사용 중인 카드입니다.");
+    protected DefaultOccupation(Long cardID, String name, String description) {
+        this.cardID = cardID;
+        this.name = name;
+        this.description = description;
     }
 
     @Override
     public void place(Player player) {
-        setOwner(player);
         player.addOccupations(this);
     }
+
+    @Override
+    public boolean checkPrerequisites(Player player) {
+        return true;
+    }
+
 }

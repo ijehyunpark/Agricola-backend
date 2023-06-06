@@ -2,7 +2,7 @@ package com.semoss.agricola.GamePlay.domain.action;
 
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
-import com.semoss.agricola.GamePlay.domain.card.Majorcard.BakeTrigger;
+import com.semoss.agricola.GamePlay.domain.card.BakeTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Majorcard.MajorCard;
 import com.semoss.agricola.GamePlay.domain.card.Majorcard.MajorFactory;
 import com.semoss.agricola.GamePlay.domain.player.Player;
@@ -44,7 +44,7 @@ class BakeActionTest {
         MajorFactory majorFactory = new MajorFactory();
         List<MajorCard> majorCards = new ArrayList<>();
         majorCard = majorFactory.firePlace1();
-        majorCards.add(majorCard);
+        majorCards.add((MajorCard) majorCard);
         cardDictionary = new CardDictionary(majorCards);
     }
 

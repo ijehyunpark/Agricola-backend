@@ -1,6 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.action;
 
-import com.semoss.agricola.GamePlay.domain.card.Majorcard.BakeTrigger;
+import com.semoss.agricola.GamePlay.domain.card.BakeTrigger;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.GamePlay.exception.NotFoundException;

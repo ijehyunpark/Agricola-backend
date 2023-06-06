@@ -5,11 +5,12 @@ import com.semoss.agricola.GamePlay.domain.AgricolaGame;
 import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
-import com.semoss.agricola.GamePlay.domain.card.Majorcard.CookingAnytimeTrigger;
-import com.semoss.agricola.GamePlay.domain.card.Majorcard.CookingHarvestTrigger;
+import com.semoss.agricola.GamePlay.domain.card.CookingAnytimeTrigger;
+import com.semoss.agricola.GamePlay.domain.card.CookingHarvestTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Majorcard.ResourceBonusPointTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Minorcard.FieldBonusPoint;
-import com.semoss.agricola.GamePlay.domain.card.Occupation.ActionTrigger;
+import com.semoss.agricola.GamePlay.domain.card.ActionTrigger;
+import com.semoss.agricola.GamePlay.domain.card.Occupation.ActionCrossTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Occupation.FinishTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Occupation.HarvestTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Occupation.Occupation;
@@ -469,6 +470,15 @@ public class Player {
                 .filter(occupation -> occupation instanceof ActionTrigger)
                 .map(occupation -> (ActionTrigger) occupation)
                 .forEach(occupation -> occupation.actionTrigger(this, history));
+        //액션 크로스 트리거 발동
+        CardDictionary cardDictionary = game.getCardDictionary();
+        List<Long> keys = cardDictionary.getCardDict().entrySet().stream()
+                .filter(entry -> entry.getValue() instanceof ActionCrossTrigger)
+                .map(Map.Entry::getKey)
+                .toList();
+        keys.stream()
+                .filter(id -> cardDictionary.getOwner(id).hasCardInField(id))
+                .forEach(id -> ((ActionCrossTrigger)cardDictionary.getCard(id)).actionCrossTrigger(cardDictionary.getOwner(id),history));
     }
 
     public int getNumField(FieldType fieldType) { return playerBoard.getNumField(fieldType); }

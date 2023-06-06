@@ -1,40 +1,26 @@
 package com.semoss.agricola.GamePlay.domain.card.Occupation;
 
-import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.player.Player;
-import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+/**
+ * 미구현입니다. 안쓸거에요. 지워도 될까요?
+ */
 @Getter
 @Component
 @Scope("prototype")
 public class Baker extends DefaultOccupation implements HarvestTrigger {
-    private Long id;
-    private String name;
     private int playerRequirement;
-    private String description;
 
-    public Baker(@Value("${baker.id}") Long id,
+    public Baker(@Value("${baker.id}") Long cardID,
                        @Value("${baker.name}") String name,
                        @Value("${baker.players}") Integer playerRequirement,
                        @Value("${baker.description}") String description) {
-        this.id = id;
-        this.name = name;
+        super(cardID, name, description);
         this.playerRequirement = playerRequirement;
-        this.description = description;
-    }
-
-    @Override
-    public Player getOwner() {
-        return super.getOwner();
-    }
-
-    @Override
-    public void setOwner(Player player) {
-        super.setOwner(player);
     }
 
     @Override

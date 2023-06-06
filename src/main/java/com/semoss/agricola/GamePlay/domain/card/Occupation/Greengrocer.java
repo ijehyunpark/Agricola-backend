@@ -11,15 +11,15 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
- * 특정 행동시 추가 자원 획득
+ * 특정 행동시 자원 추가 획득
  */
 @Getter
 @Component
 @Scope("prototype")
-public class LandAgent extends DefaultOccupation implements ActionTrigger {
+public class Greengrocer extends DefaultOccupation implements ActionTrigger {
     private int playerRequirement;
 
-    public LandAgent(@Value("${landAgent.id}") Long cardID,
+    public Greengrocer(@Value("${landAgent.id}") Long cardID,
                      @Value("${landAgent.name}") String name,
                      @Value("${landAgent.players}") Integer playerRequirement,
                      @Value("${landAgent.description}") String description) {
@@ -33,16 +33,6 @@ public class LandAgent extends DefaultOccupation implements ActionTrigger {
         if (history.getEventName().getId() != 3)
             return;
 
-        player.addResource(ResourceStruct.builder()
-                .resource(ResourceType.GRAIN)
-                .count(1)
-                .build());
-    }
-
-
-    @Override
-    public void place(Player player) {
-        super.place(player);
         player.addResource(ResourceStruct.builder()
                 .resource(ResourceType.VEGETABLE)
                 .count(1)

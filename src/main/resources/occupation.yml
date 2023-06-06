@@ -86,5 +86,30 @@ underGardener:
   name: "정원일꾼"
   players: 4
   decks: "E"
-  id: 160
+  id: 166
   description: "당신이 날품팔이 행동칸을 이용할때마다 채소 하나를 추가로 받습니다."
+greengrocer:
+  name: "청과물상인"
+  players: 3
+  decks: "E"
+  id: 168
+  description: "'1 그레인' 액션 공간을 사용할 때마다 야채 1개도받습니다."
+clayDeliveryman:
+  name: "점토 배달원"
+  players: 1
+  decks: "E"
+  id: 187
+  description: "6~14 라운드에 1개의 점토를 놓습니다. 이 라운드가 시작될 때 점토를받습니다."
+reedCollector:
+  name: "리드 수집가"
+  players: 3
+  decks: "E"
+  id: 205
+  description: "다음 4개의 라운드에 갈대 1개를 놓습니다. 이 라운드가 시작될 때 갈대를 받습니다."
+potter:
+  name: "도공"
+  players: 1
+  decks: "E"
+  id: 214
+  description: "수확시기에 점토 1개를 2개의 음식으로 교환 할 수 있습니다."
+

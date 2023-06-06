@@ -1,6 +1,5 @@
-package com.semoss.agricola.GamePlay.domain.card.Majorcard;
+package com.semoss.agricola.GamePlay.domain.card;
 
-import com.semoss.agricola.GamePlay.domain.card.Card;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import org.junit.jupiter.api.Disabled;
 

@@ -1,6 +1,8 @@
 package com.semoss.agricola.GamePlay.domain.card.Occupation;
 
-import com.semoss.agricola.GamePlay.domain.player.Player;
+import com.semoss.agricola.GamePlay.domain.card.CookingAnytimeTrigger;
+import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,26 +10,21 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
- * 게임 종료시 행동 (구걸 카드 2장 버림)
+ * 언제든 자원을 음식으로 교환
  */
 @Getter
 @Component
 @Scope("prototype")
-public class Mendicant extends DefaultOccupation implements FinishTrigger {
+public class Turner extends DefaultOccupation implements CookingAnytimeTrigger {
     private int playerRequirement;
+    private final ResourceStruct[] resourcesToFoodAnytime = new ResourceStruct[]{ResourceStruct.builder().resource(ResourceType.WOOD).count(1).build()}; // 언제든지 음식으로 교환
+    private final AnimalStruct[] animalsToFoodAnytime = new AnimalStruct[]{};
 
-    public Mendicant(@Value("${mendicant.id}") Long cardID,
+    public Turner(@Value("${mendicant.id}") Long cardID,
                      @Value("${mendicant.name}") String name,
                      @Value("${mendicant.players}") Integer playerRequirement,
                      @Value("${mendicant.description}") String description) {
         super(cardID, name, description);
         this.playerRequirement = playerRequirement;
-    }
-
-    @Override
-    public void finishTrigger(Player player) {
-        // 구걸 카드 최대 2장 버림
-        int drop = Math.max(2, player.getResource(ResourceType.BEGGING));
-        player.useResource(ResourceType.BEGGING, drop);
     }
 }

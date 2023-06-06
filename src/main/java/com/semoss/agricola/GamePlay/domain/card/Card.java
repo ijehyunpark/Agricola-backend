@@ -8,4 +8,6 @@ public interface Card {
     int getBonusPoint();
     Long getCardID();
     void place(Player player);
+    String getName();
+    String getDescription();
 }

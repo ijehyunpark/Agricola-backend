@@ -1,7 +1,7 @@
 package com.semoss.agricola.GamePlay.domain.action.implement;
 
 import com.semoss.agricola.GamePlay.domain.action.DoType;
-import com.semoss.agricola.GamePlay.domain.action.StackResourceAction;
+import com.semoss.agricola.GamePlay.domain.action.component.StackResourceAction;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,7 +18,5 @@ public class Action16 extends DefaultAction {
         super(ActionName.ACTION16, 2);
 
         addAction(westernQuarryAction, DoType.FINISH);
-
-        log.debug("ACTION16 생성되었습니다: " + this.hashCode());
     }
 }

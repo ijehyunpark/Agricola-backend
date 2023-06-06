@@ -40,7 +40,7 @@ public class Player {
     private final List<Long> cardHand = new ArrayList<>();
     private final List<Long> cardField = new ArrayList<>();
     private final List<Occupation> occupations = new ArrayList<>();
-    private List<ResourceStructInterface>[] roundStackResource = new ArrayList[15];
+    private final List<ResourceStructInterface>[] roundStackResource = new ArrayList[15];
 
     @Builder
     public Player(Long userId, AgricolaGame game, boolean isStartPlayer){

@@ -1,6 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.action.implement;
 
-import com.semoss.agricola.GamePlay.domain.action.BasicAction;
+import com.semoss.agricola.GamePlay.domain.action.component.BasicAction;
 import com.semoss.agricola.GamePlay.domain.action.DoType;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,5 @@ public class Action19 extends DefaultAction {
         super(ActionName.ACTION19, 3);
 
         addAction(getVegetable1Action, DoType.FINISH);
-
-        log.debug("ACTION19 생성되었습니다: " + this.hashCode());
     }
 }

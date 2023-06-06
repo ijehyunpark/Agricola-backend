@@ -1,7 +1,7 @@
 package com.semoss.agricola.GamePlay.domain.action.implement;
 
-import com.semoss.agricola.GamePlay.domain.action.BakeAction;
-import com.semoss.agricola.GamePlay.domain.action.CultivationAction;
+import com.semoss.agricola.GamePlay.domain.action.component.BakeAction;
+import com.semoss.agricola.GamePlay.domain.action.component.CultivationAction;
 import com.semoss.agricola.GamePlay.domain.action.DoType;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,5 @@ public class Action14 extends DefaultAction {
 
         addAction(cultivationAction, DoType.ANDOR);
         addAction(bakeAction, DoType.FINISH);
-
-        log.debug("ACTION14 생성되었습니다: " + this.hashCode());
     }
 }

@@ -1,7 +1,7 @@
 package com.semoss.agricola.GamePlay.domain.gameboard;
 
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
-import com.semoss.agricola.GamePlay.domain.action.ActionFactory;
+import com.semoss.agricola.GamePlay.domain.action.component.ActionFactory;
 import com.semoss.agricola.GamePlay.domain.action.Event;
 import com.semoss.agricola.GamePlay.domain.action.implement.*;
 import org.junit.jupiter.api.BeforeEach;

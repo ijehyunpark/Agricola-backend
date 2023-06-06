@@ -1,8 +1,8 @@
 package com.semoss.agricola.GamePlay.domain.card.Occupation;
 
 import com.semoss.agricola.GamePlay.domain.History;
-import com.semoss.agricola.GamePlay.domain.action.ActionType;
 import com.semoss.agricola.GamePlay.domain.card.ActionTrigger;
+import com.semoss.agricola.GamePlay.domain.action.component.ActionType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.util.Pair;

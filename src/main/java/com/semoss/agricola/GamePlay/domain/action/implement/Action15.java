@@ -1,8 +1,8 @@
 package com.semoss.agricola.GamePlay.domain.action.implement;
 
 import com.semoss.agricola.GamePlay.domain.action.DoType;
-import com.semoss.agricola.GamePlay.domain.action.PlaceAction;
-import com.semoss.agricola.GamePlay.domain.action.RoomUpgradeAction;
+import com.semoss.agricola.GamePlay.domain.action.component.PlaceAction;
+import com.semoss.agricola.GamePlay.domain.action.component.RoomUpgradeAction;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,7 +21,5 @@ public class Action15 extends DefaultAction {
         addAction(roomUpgradeAction, DoType.ANDOR);
         addAction(placeMajorCardAction, DoType.OR);
         addAction(placeMinorCardAction, DoType.FINISH);
-
-        log.debug("ACTION15 생성되었습니다: " + this.hashCode());
     }
 }

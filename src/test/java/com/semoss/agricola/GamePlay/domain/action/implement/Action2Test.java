@@ -1,7 +1,7 @@
 package com.semoss.agricola.GamePlay.domain.action.implement;
 
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
-import com.semoss.agricola.GamePlay.domain.action.ActionFactory;
+import com.semoss.agricola.GamePlay.domain.action.component.ActionFactory;
 import com.semoss.agricola.GamePlay.domain.action.Event;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.player.Player;

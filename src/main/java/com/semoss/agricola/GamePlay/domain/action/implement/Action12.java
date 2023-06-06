@@ -1,6 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.action.implement;
 
-import com.semoss.agricola.GamePlay.domain.action.BuildFenceAction;
+import com.semoss.agricola.GamePlay.domain.action.component.BuildFenceAction;
 import com.semoss.agricola.GamePlay.domain.action.DoType;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,5 @@ public class Action12 extends DefaultAction {
         super(ActionName.ACTION12, 1);
 
         addAction(buildFenceAction, DoType.FINISH);
-        
-        log.debug("ACTION12 생성되었습니다: " + this.hashCode());
     }
 }

@@ -1,6 +1,6 @@
 package com.semoss.agricola.GamePlay.domain;
 
-import com.semoss.agricola.GamePlay.domain.action.ActionType;
+import com.semoss.agricola.GamePlay.domain.action.component.ActionType;
 import com.semoss.agricola.GamePlay.domain.action.implement.ActionName;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStructInterface;
 import com.semoss.agricola.util.Pair;

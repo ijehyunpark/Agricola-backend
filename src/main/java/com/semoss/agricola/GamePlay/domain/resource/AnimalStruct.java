@@ -1,6 +1,5 @@
 package com.semoss.agricola.GamePlay.domain.resource;
 
-import com.semoss.agricola.GamePlay.domain.player.AnimalType;
 import com.semoss.agricola.GamePlay.exception.MinusResourceException;
 import lombok.*;
 

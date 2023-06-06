@@ -6,6 +6,9 @@ import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.exception.IllegalRequestException;
 import lombok.Getter;
 
+/**
+ * 기본 보조 설비 카드
+ */
 @Getter
 public abstract class DefaultMinorCard implements MinorCard {
     protected final CardType cardType = CardType.MINOR;
@@ -15,13 +18,17 @@ public abstract class DefaultMinorCard implements MinorCard {
     // 전제조건으로 필요한 카드 종류와 필드에 깔아둔 최소 개수
     protected final CardType preconditionCardType;
     protected final int minCardNum;
+    protected final String name;
+    protected final String description;
 
-    protected DefaultMinorCard(Long cardID, int bonusPoint, ResourceStruct[] ingredients, CardType preconditionCardType, int minCardNum) {
+    protected DefaultMinorCard(Long cardID, int bonusPoint, ResourceStruct[] ingredients, CardType preconditionCardType, int minCardNum, String name, String description) {
         this.cardID = cardID;
         this.bonusPoint = bonusPoint;
         this.ingredients = ingredients;
         this.preconditionCardType = preconditionCardType;
         this.minCardNum = minCardNum;
+        this.name = name;
+        this.description = description;
     }
 
     /**

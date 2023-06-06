@@ -7,7 +7,7 @@ import com.semoss.agricola.GamePlay.domain.card.Card;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
 import com.semoss.agricola.GamePlay.domain.gameboard.GameBoard;
-import com.semoss.agricola.GamePlay.domain.player.AnimalType;
+import com.semoss.agricola.GamePlay.domain.resource.AnimalType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
@@ -45,7 +45,7 @@ public class AgricolaGame implements Game {
         private GameProgress gameProgress;
         @JsonProperty("playerId")
         @JsonIdentityReference(alwaysAsId = true)
-        @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@userId")
+        @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "userId")
         private Player player;
         private void update(GameProgress gameProgress, Player player) {
             this.gameProgress = gameProgress;
@@ -56,13 +56,14 @@ public class AgricolaGame implements Game {
         }
     }
 
+    @JsonIgnore
     private final GameBoard gameBoard;
     private final CardDictionary cardDictionary;
     private final List<Player> players;
 
     @JsonProperty("startingPlayerId")
     @JsonIdentityReference(alwaysAsId = true)
-    @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@userId")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "userId")
     private Player startingPlayer;
     private final GameState gameState;
 

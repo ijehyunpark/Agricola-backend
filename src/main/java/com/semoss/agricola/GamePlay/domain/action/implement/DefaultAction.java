@@ -7,10 +7,11 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.action.*;
+import com.semoss.agricola.GamePlay.domain.action.component.*;
 import com.semoss.agricola.GamePlay.domain.card.Card;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
-import com.semoss.agricola.GamePlay.domain.card.Majorcard.BakeTrigger;
+import com.semoss.agricola.GamePlay.domain.card.BakeTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Majorcard.MajorCard;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStructInterface;
@@ -36,6 +37,7 @@ public abstract class DefaultAction {
     private final int roundGroup;
 
     protected DefaultAction(ActionName eventName, int roundGroup) {
+        log.debug("ACTION" + eventName.getId() + "이 생성되었습니다: " + this.hashCode());
         this.eventName = eventName;
         this.roundGroup = roundGroup;
     }
@@ -63,7 +65,7 @@ public abstract class DefaultAction {
      * 올바른 행동 입력인지 검증
      * @param acts 요청 필드
      */
-    private void isCollectRequest(List<AgricolaActionRequest.ActionFormat> acts) {
+    protected void isCollectRequest(List<AgricolaActionRequest.ActionFormat> acts) {
         int actionSize = actions.size();
         for (int i = 0; i < actionSize; i++) {
             DoType doType = this.doTypes.get(i);
@@ -123,7 +125,7 @@ public abstract class DefaultAction {
                             request.getImprovementIds().forEach(
                                             improvementId -> {
                                                 Card card = cardDictionary.getCard(improvementId);
-                                                if (card.getCardType() != CardType.MAJOR || !((MajorCard) card).hasBakeMajorTrigger())
+                                                if (card.getCardType() != CardType.MAJOR || card instanceof BakeTrigger)
                                                     throw new RuntimeException("주설비 카드가 아니거나 빵 굽기 관련 주설비카드가 아닙니다.");
                                                 ((BakeAction) action).runAction(player, (BakeTrigger) card);
                                             }
@@ -179,7 +181,7 @@ public abstract class DefaultAction {
                         ((PlaceAction) action).runAction(player, card);
                     }
                     case STACK, STACK_ANIMAL -> {
-                        ((StackAction) action).runstackAction(player, stacks);
+                        ((StackAction) action).runStackAction(player, stacks);
                         history.writeResourceChange(stacks);
                         stacks.clear();
                     }

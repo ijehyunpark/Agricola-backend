@@ -31,6 +31,4 @@ public enum MajorName {
                 .findAny()
                 .orElseThrow(RuntimeException::new);
     }
-
-
 }

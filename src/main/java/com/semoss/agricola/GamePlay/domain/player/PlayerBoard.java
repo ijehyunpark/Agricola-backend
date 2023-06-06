@@ -1,6 +1,8 @@
 package com.semoss.agricola.GamePlay.domain.player;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
+import com.semoss.agricola.GamePlay.domain.resource.AnimalType;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.GamePlay.exception.*;
@@ -17,14 +19,14 @@ import java.util.stream.Collectors;
 @Getter
 @Log4j2
 public class PlayerBoard {
-    private int roomCount;
     private RoomType roomType;
-    private static final int FIELD_COLUMN = 3;
-    private static final int FIELD_ROW = 5;
+    private static final int FIELD_ROW = 3;
+    private static final int FIELD_COL = 5;
 
-    private Field[][] fields = new Field[FIELD_COLUMN][FIELD_ROW];
+    private Field[][] fields = new Field[FIELD_ROW][FIELD_COL];
     private boolean[][] colFence = new boolean[3][6];
     private boolean[][] rowFence = new boolean[4][5];
+    @JsonIgnore
     private AnimalStruct[] moveAnimalArr = new AnimalStruct[3];
 
     @Builder
@@ -45,8 +47,6 @@ public class PlayerBoard {
                 .build();
         room.addResident(ResidentType.ADULT);
         this.fields[2][0] = room;
-
-        this.roomCount = 2;
 
         moveAnimalArr[0] = AnimalStruct.builder().animal(AnimalType.SHEEP).count(0).build();
         moveAnimalArr[1] = AnimalStruct.builder().animal(AnimalType.WILD_BOAR).count(0).build();
@@ -214,13 +214,13 @@ public class PlayerBoard {
      * @param fieldType 설치하고자하는 필드
      */
     protected void buildField(int y, int x, FieldType fieldType) {
-        if (y < 0 || y >= FIELD_COLUMN || x < 0 || x >= FIELD_ROW) {
+        if (y < 0 || y >= FIELD_ROW || x < 0 || x >= FIELD_COL) {
             throw new NotAllowRequestException("필드 위치가 부적절합니다.");
         }
 
         if (fields[y][x] != null){
             // 외양간이 건설 되어 있으면 마구간을 설치
-            if(fields[y][x].getFieldType() == FieldType.BARN && fieldType == FieldType.BARN) {
+            if(fields[y][x].getFieldType() == FieldType.BARN && fieldType == FieldType.STABLE) {
                ((Barn) fields[y][x]).addStable();
                return;
             }
@@ -301,26 +301,155 @@ public class PlayerBoard {
      * @return 설치하려는 위치에 이미 울타리가 있는 경우, 울타리가 적합하지 않은 경우 false
      */
     protected boolean buildFence(int[][] rowPos, int[][] colPos){
-        boolean[][] tmpRow = rowFence.clone();
-        boolean[][] tmpCol = colFence.clone();
-        int i;
-        int j;
+        // 울타리를 설치할 수 있는 위치인지 확인
+        boolean[][][] available = availableFencePos();
+        boolean[][] row = available[0];
+        boolean[][] col = available[1];
+
+        for(int[] pos : rowPos){
+            if (!row[pos[0]][pos[1]]) throw new IllegalRequestException("설치할 수 없는 위치입니다.");
+        }
+
+        for(int[] pos : colPos){
+            if (!col[pos[0]][pos[1]]) throw new IllegalRequestException("설치할 수 없는 위치입니다.");
+        }
+
+        boolean[][] tmpRow = new boolean[rowFence.length][rowFence[0].length];
+        boolean[][] tmpCol = new boolean[colFence.length][colFence[0].length];
+        int i=0;
+        int j=0;
+        for (i=0;i< tmpRow.length;i++){
+            tmpRow[i] = rowFence[i].clone();
+        }
+        for (i=0;i< tmpCol.length;i++){
+            tmpCol[i] = colFence[i].clone();
+        }
         // 이미 설치가 되어있는 경우 return false
         for (i=0;i<rowPos.length;i++){
-            if (tmpRow[rowPos[i][0]][rowPos[i][1]]) return false;
+            if (tmpRow[rowPos[i][0]][rowPos[i][1]]) throw new IllegalRequestException("설치할 수 없는 위치입니다.");
             tmpRow[rowPos[i][0]][rowPos[i][1]] = true;
         }
         for (i=0;i<colPos.length;i++){
-            if (tmpCol[colPos[i][0]][colPos[i][1]]) return false;
+            if (tmpCol[colPos[i][0]][colPos[i][1]]) throw new IllegalRequestException("설치할 수 없는 위치입니다.");
             tmpCol[colPos[i][0]][colPos[i][1]] = true;
         }
         // 설치된 울타리 적합성 검사
+        // 모든 울타리가 붙어있는지 확인
+        boolean exist = false;
+        for (i=0;i<FIELD_ROW+1;i++){
+            for (j=0;j<FIELD_COL;j++){
+                if (tmpRow[i][j]) {
+                    exist = true;
+                    break;
+                }
+            }
+            if (exist) break;
+        }
+
+        boolean[][] visitedRowFence = new boolean[tmpRow.length][tmpRow[0].length];
+        boolean[][] visitedColFence = new boolean[tmpCol.length][tmpCol[0].length];
+        boolean isRow = true;
+        Stack<int[]> stack = new Stack<>();
+        while(true){
+            if(isRow) {
+                visitedRowFence[i][j] = true;
+                //왼쪽 위 세로
+                if (i != 0 && tmpCol[i-1][j] && !visitedColFence[i-1][j]){
+                    stack.push(new int[]{i,j,0});
+                    i--;
+                    isRow = false;
+                }
+                //왼쪽 아래 세로
+                else if (i != FIELD_ROW && tmpCol[i][j] && !visitedColFence[i][j]){
+                    stack.push(new int[]{i,j,0});
+                    isRow = false;
+                }
+                //오른쪽 위 세로
+                else if (i != 0 && j != FIELD_COL && tmpCol[i-1][j+1] && !visitedColFence[i-1][j+1]){
+                    stack.push(new int[]{i,j,0});
+                    i--;
+                    j++;
+                    isRow = false;
+                }
+                //오른쪽 아래 세로
+                else if (i != FIELD_ROW && j != FIELD_COL && tmpCol[i][j+1] && !visitedColFence[i][j+1]){
+                    stack.push(new int[]{i,j,0});
+                    j++;
+                    isRow = false;
+                }
+                //왼쪽 가로
+                else if (j != 0 && tmpRow[i][j-1] && !visitedRowFence[i][j-1]){
+                    stack.push(new int[]{i,j,0});
+                    j--;
+                }
+                //오른쪽 가로
+                else if (j != FIELD_COL-1 && tmpRow[i][j+1] && !visitedRowFence[i][j+1]){
+                    stack.push(new int[]{i,j,0});
+                    j++;
+                }
+                else if (stack.empty()) break;
+                else {
+                    int[] pos = stack.pop();
+                    i = pos[0];
+                    j = pos[1];
+                    if (pos[2] == 1) isRow = false;
+                }
+            }
+            else {
+                visitedColFence[i][j] = true;
+                //왼쪽 위 가로
+                if (j != 0 && tmpRow[i][j-1] && !visitedRowFence[i][j-1]){
+                    stack.push(new int[]{i,j,1});
+                    j--;
+                    isRow = true;
+                }
+                //왼쪽 아래 가로
+                else if (i != FIELD_ROW && j != 0 && tmpRow[i+1][j-1] && !visitedRowFence[i+1][j-1]){
+                    stack.push(new int[]{i,j,1});
+                    i++;
+                    j--;
+                    isRow = true;
+                }
+                //오른쪽 위 가로
+                else if (j != FIELD_COL && tmpRow[i][j] && !visitedRowFence[i][j]){
+                    stack.push(new int[]{i,j,1});
+                    isRow = true;
+                }
+                //오른쪽 아래 가로
+                else if (i != FIELD_ROW && j != FIELD_COL && tmpRow[i+1][j] && !visitedRowFence[i+1][j]){
+                    stack.push(new int[]{i,j,1});
+                    i++;
+                    isRow = true;
+                }
+                //위 세로
+                else if (i != 0 && tmpCol[i-1][j] && !visitedColFence[i-1][j]){
+                    stack.push(new int[]{i,j,1});
+                    i--;
+                }
+                //아래 세로
+                else if (i != FIELD_ROW-1 && tmpCol[i+1][j] && !visitedColFence[i+1][j]){
+                    stack.push(new int[]{i,j,1});
+                    i++;
+                }
+                else if (stack.empty()) break;
+                else {
+                    int[] pos = stack.pop();
+                    i = pos[0];
+                    j = pos[1];
+                    if (pos[2] == 0) isRow = true;
+                }
+            }
+        }
+        if (!Arrays.deepEquals(tmpRow,visitedRowFence) || !Arrays.deepEquals(tmpCol,visitedColFence)) throw new IllegalRequestException("울타리가 이어지지 않았습니다.");
+
+        // 울타리 모양이 적합한지 확인
         boolean[][] check = new boolean[fields.length][fields[0].length];//false
         boolean[][] checkCol = new boolean[tmpCol.length][tmpCol[0].length];
         Stack<int[]> explorer = new Stack<>();
         Stack<int[]> buildPos = new Stack<>();
         int fieldRow = fields.length;
         int fieldCol = fields[0].length;
+        int buildNum = 0;
         int[] pos = new int[2];
         for (i=0;i<tmpRow.length-1;i++){
             for (j=0;j<tmpRow[0].length;j++){
@@ -353,10 +482,11 @@ public class PlayerBoard {
                             buildPos.push(pos.clone());
                             break;
                         }
-                        else if (explorer.empty()) return false;
+                        else if (explorer.empty()) throw new IllegalRequestException("적합하지 않은 위치입니다.");
                         else if ((pos[0]==0 && !tmpRow[pos[0]][pos[1]]) || (pos[1]==0 && !tmpCol[pos[0]][pos[1]]) ||
                                 (pos[0]==check.length-1 && !tmpRow[pos[0]+1][pos[1]]) || (pos[1]==check[0].length-1 && !tmpCol[pos[0]][pos[1]+1])) {
                             explorer.removeAllElements();
+                            buildPos.removeAllElements();
                             break;
                         }
                         else {
@@ -366,6 +496,7 @@ public class PlayerBoard {
                     }
                     while (!buildPos.empty()){
                         pos = buildPos.pop();
+                        buildNum++;
                         checkCol[pos[0]][pos[1]] = tmpCol[pos[0]][pos[1]];
                         checkCol[pos[0]][pos[1]+1] = tmpCol[pos[0]][pos[1]+1];
                     }
@@ -373,8 +504,8 @@ public class PlayerBoard {
                 }
             }
         }
-        if (!Arrays.deepEquals(checkCol,tmpCol)) return false;
-
+        if (!Arrays.deepEquals(checkCol,tmpCol)) throw new IllegalRequestException("적합하지 않은 위치입니다.");
+        if (buildNum == 0) throw new IllegalRequestException("적합하지 않은 울타리입니다.");
         // 울타리 설치 적용
         rowFence = tmpRow.clone();
         colFence = tmpCol.clone();
@@ -414,13 +545,14 @@ public class PlayerBoard {
                         else if ((pos[0]==0 && !tmpRow[pos[0]][pos[1]]) || (pos[1]==0 && !tmpCol[pos[0]][pos[1]]) ||
                                 (pos[0]==check.length-1 && !tmpRow[pos[0]+1][pos[1]]) || (pos[1]==check[0].length-1 && !tmpCol[pos[0]][pos[1]+1])) {
                             explorer.removeAllElements();
+                            buildPos.removeAllElements();
                             break;
                         }
                         else if (pos[0] == i && pos[1] == j){
                             buildPos.push(pos.clone());
                             break;
                         }
-                        else if (explorer.empty()) return false;
+                        else if (explorer.empty()) throw new IllegalRequestException("적합하지 않은 위치입니다.");
                         else {
                             if (fields[pos[0]][pos[1]] != null && ((Barn)(fields[pos[0]][pos[1]])).isStable()) stableNum++;
                             buildPos.push(pos.clone());
@@ -428,6 +560,7 @@ public class PlayerBoard {
                         }
                     }
                     // 헛간 지정
+                    boolean isEmpty = buildPos.empty();
                     while (!buildPos.empty()){
                         pos = buildPos.pop();
                         if (fields[pos[0]][pos[1]] == null) {
@@ -437,6 +570,7 @@ public class PlayerBoard {
                         }
                         ((Barn)fields[pos[0]][pos[1]]).setCapacity(stableNum);
                     }
+                    if (!isEmpty) setSameAnimalType(pos[0],pos[1]);
                 }
             }
         }
@@ -517,6 +651,7 @@ public class PlayerBoard {
         AnimalType animalType = ((Barn)fields[row][col]).getAnimal().getAnimal();
         int num = ((Barn)fields[row][col]).removeAnimal(animalNum);
         moveAnimalArr[animalType.getValue()-9].addResource(num);
+        ifEmptyBarn(row,col);
         return num;
     }
 
@@ -531,7 +666,82 @@ public class PlayerBoard {
         AnimalType animalType = ((Barn)fields[row][col]).getAnimal().getAnimal();
         int num = ((Barn)fields[row][col]).removeAllAnimals();
         moveAnimalArr[animalType.getValue()-9].addResource(num);
+        ifEmptyBarn(row,col);
         return num;
+    }
+
+    private void ifEmptyBarn(int row, int col){
+        Barn barn = (Barn)fields[row][col];
+        if (barn.getAnimal() != null) return;
+        setSameAnimalType(row, col);
+    }
+
+    private void setSameAnimalType(int row, int col) {
+        Barn barn;
+        List<int[]> list = sameBarnList(row, col);
+        AnimalType exist = null;
+        for (int[] pos : list){
+            barn = (Barn)fields[pos[0]][pos[1]];
+            if (barn.getAnimal() != null) {
+                exist = barn.getAnimal().getAnimal();
+                break;
+            }
+        }
+        for (int[] pos : list){
+            barn = (Barn)fields[pos[0]][pos[1]];
+            if (exist == null) barn.getAnimal().setAnimal(null);
+            else barn.getAnimal().setAnimal(exist);
+        }
+    }
+
+    private List<int[]> sameBarnList(int row, int col) {
+        Stack<int[]> explorer = new Stack<>();
+        List<int[]> list = new ArrayList<>();
+        list.add(new int[]{row, col});
+        boolean[][] check = new boolean[FIELD_ROW][FIELD_COL];
+        int i = row;
+        int j = col;
+        while(true) {
+            check[row][col] = true;
+            // 오른쪽
+            if (col != FIELD_COL-1 && !colFence[row][col +1] && !check[row][col +1]){
+                explorer.push(new int[]{row, col});
+                col += 1;
+            }
+            // 아래
+            else if (row != FIELD_ROW-1 && !rowFence[row +1][col] && !check[row +1][col]){
+                explorer.push(new int[]{row, col});
+                row += 1;
+            }
+            // 왼쪽
+            else if (col != 0 && !colFence[row][col] && !check[row][col -1]){
+                explorer.push(new int[]{row, col});
+                col -= 1;
+            }
+            // 위
+            else if (row != 0 && !rowFence[row][col] && !check[row -1][col]){
+                explorer.push(new int[]{row, col});
+                row -= 1;
+            }
+            // 정상적으로 설치했으면 호출될일 없음
+            else if ((row ==0 && !rowFence[row][col]) || (col ==0 && !colFence[row][col]) ||
+                    (row ==FIELD_ROW-1 && !rowFence[row +1][col]) || (col ==FIELD_COL-1 && !colFence[row][col +1])) {
+                explorer.removeAllElements();
+                throw new RuntimeException("울타리 구조가 비정상적입니다. 이거 호출되면 안되는데");
+            }
+            else if (row == i && col == j){
+                list.add(new int[]{row, col});
+                break;
+            }
+            else if (explorer.empty()) return null;
+            else {
+                list.add(new int[]{row,col});
+                int[] pos = explorer.pop();
+                row = pos[0];
+                col = pos[1];
+            }
+        }
+        return list;
     }
 
     /**
@@ -547,10 +757,12 @@ public class PlayerBoard {
         animalNum = Integer.min(animalNum,moveAnimalArr[animalType.getValue()-9].getCount());
         int num = ((Barn)fields[row][col]).addAnimal(animalType, animalNum);
         moveAnimalArr[animalType.getValue()-9].subResource(num);
+        setSameAnimalType(row,col);
         return num;
     }
 
     /**
+     * TODO 초과된 동물을 removed animal 로 간주하고 추가 입력
      * 행동칸이나 수확행동을 통해 동물을 추가 하였을때 자동으로 배치하는 함수
      * @param animalType 동물 타입
      * @param animalNum 동물 수
@@ -558,11 +770,15 @@ public class PlayerBoard {
      */
     protected boolean addAnimal(AnimalType animalType, int animalNum){
         Barn barn;
-        for (Field[] field : fields) {
+        int num;
+        for (int i = 0; i < fields.length; i++) {
             for (int j = 0; j < fields[0].length; j++) {
-                if (field[j] != null && (field[j].getFieldType() == FieldType.BARN || field[j].getFieldType() == FieldType.STABLE)) {
-                    barn = (Barn) field[j];
-                    animalNum -= barn.addAnimal(animalType, animalNum);
+                if (fields[i][j] != null && (fields[i][j].getFieldType() == FieldType.BARN || fields[i][j].getFieldType() == FieldType.STABLE)) {
+                    barn = (Barn) fields[i][j];
+                    num = barn.addAnimal(animalType, animalNum);
+                    animalNum -= num;
+                    if (num > 0)
+                        setSameAnimalType(i,j);
                 }
                 if (animalNum == 0) return true;
             }
@@ -585,13 +801,16 @@ public class PlayerBoard {
         Barn barn;
         AnimalType animalType;
         int num;
-        for (Field[] field : fields) {
+        for (int i = 0; i < fields[0].length; i++) {
             for (int j = 0; j < fields[0].length; j++) {
-                if (field[j] != null && (field[j].getFieldType() == FieldType.BARN || field[j].getFieldType() == FieldType.STABLE)) {
-                    barn = (Barn) field[j];
+                if (fields[i][j] != null && (fields[i][j].getFieldType() == FieldType.BARN || fields[i][j].getFieldType() == FieldType.STABLE)) {
+                    barn = (Barn) fields[i][j];
                     animalType = barn.getAnimal().getAnimal();
-                    num = barn.removeAllAnimals();
-                    moveAnimalArr[animalType.getValue()].addResource(num);
+                    if (animalType != null) {
+                        num = barn.removeAllAnimals();
+                        moveAnimalArr[animalType.getValue()].addResource(num);
+                        setSameAnimalType(i,j);
+                    }
                 }
             }
         }
@@ -663,7 +882,7 @@ public class PlayerBoard {
      * 경작 가능성 검증
      */
     private void acceptFarm(int y, int x) {
-        if (y < 0 || y >= FIELD_COLUMN || x < 0 || x >= FIELD_ROW) {
+        if (y < 0 || y >= FIELD_ROW || x < 0 || x >= FIELD_COL) {
             throw new NotAllowRequestException("필드 위치가 부적절합니다.");
         }
 

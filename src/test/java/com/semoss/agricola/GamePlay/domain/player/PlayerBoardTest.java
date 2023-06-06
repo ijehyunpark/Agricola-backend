@@ -1,5 +1,7 @@
 package com.semoss.agricola.GamePlay.domain.player;
 
+import com.semoss.agricola.GamePlay.domain.resource.AnimalType;
+import com.semoss.agricola.GamePlay.exception.IllegalRequestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -79,15 +81,22 @@ class PlayerBoardTest {
 
     @Test
     void buildFence() {
+        int i = 0;
         assertTrue(playerBoard1.buildFence(fence1[0],fence1[1]));
         assertTrue(playerBoard2.buildFence(fence2[0],fence2[1]));
         assertTrue(playerBoard3.buildFence(fence3_1[0],fence3_1[1]));
         assertTrue(playerBoard3.buildFence(fence3_2[0],fence3_2[1]));
         assertTrue(playerBoard3.buildFence(fence3_3[0],fence3_3[1]));
 
-        assertFalse(playerBoard1.buildFence(fence_error[0],fence_error[1]));
-        assertFalse(playerBoard2.buildFence(fence_error[0],fence_error[1]));
-        assertFalse(playerBoard3.buildFence(fence_error[0],fence_error[1]));
+        assertThrows(IllegalRequestException.class, () -> {
+            playerBoard1.buildFence(fence_error[0],fence_error[1]);
+        });
+        assertThrows(IllegalRequestException.class, () -> {
+            playerBoard2.buildFence(fence_error[0],fence_error[1]);
+        });
+        assertThrows(IllegalRequestException.class, () -> {
+            playerBoard3.buildFence(fence_error[0],fence_error[1]);
+        });
 
     }
 

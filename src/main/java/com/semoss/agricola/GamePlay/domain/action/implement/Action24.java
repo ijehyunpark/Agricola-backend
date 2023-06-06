@@ -1,8 +1,8 @@
 package com.semoss.agricola.GamePlay.domain.action.implement;
 
-import com.semoss.agricola.GamePlay.domain.action.BuildFenceAction;
+import com.semoss.agricola.GamePlay.domain.action.component.BuildFenceAction;
 import com.semoss.agricola.GamePlay.domain.action.DoType;
-import com.semoss.agricola.GamePlay.domain.action.RoomUpgradeAction;
+import com.semoss.agricola.GamePlay.domain.action.component.RoomUpgradeAction;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,7 +19,5 @@ public class Action24 extends DefaultAction {
 
         addAction(roomUpgradeAction, DoType.ANDOR);
         addAction(buildFenceAction, DoType.FINISH);
-
-        log.debug("ACTION24 생성되었습니다: " + this.hashCode());
     }
 }

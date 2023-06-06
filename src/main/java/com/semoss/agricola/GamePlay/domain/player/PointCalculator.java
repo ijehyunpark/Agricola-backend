@@ -1,6 +1,7 @@
 package com.semoss.agricola.GamePlay.domain.player;
 
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
+import com.semoss.agricola.GamePlay.domain.resource.AnimalType;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 
 import java.util.ArrayList;

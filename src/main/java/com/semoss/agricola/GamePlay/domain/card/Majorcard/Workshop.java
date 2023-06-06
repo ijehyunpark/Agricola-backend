@@ -1,11 +1,15 @@
 package com.semoss.agricola.GamePlay.domain.card.Majorcard;
 
+import com.semoss.agricola.GamePlay.domain.card.CookingHarvestTrigger;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.Builder;
 import lombok.Getter;
 
+/**
+ * 제작소
+ */
 @Getter
 public class Workshop extends DefaultMajorCard implements CookingHarvestTrigger, ResourceBonusPointTrigger{
     private final ResourceStruct resourceToFoodHarvest; // 수확시 1회에 한해 자원을 음식으로 교환
@@ -13,8 +17,8 @@ public class Workshop extends DefaultMajorCard implements CookingHarvestTrigger,
     private final int[][] resourceNumToPoints; // [[개수,점수],[]] 가장 뒤에서부터 만족하는 것 적용(가장 큰점수 적용)
 
     @Builder
-    public Workshop(Long cardID, int bonusPoint, ResourceStruct[] ingredients, ResourceStruct resourceToFoodHarvest, ResourceType resourceTypeToPoints, int[][] resourceNumToPoints) {
-        super(cardID, bonusPoint, ingredients);
+    public Workshop(Long cardID, int bonusPoint, ResourceStruct[] ingredients, String name, String description, ResourceStruct resourceToFoodHarvest, ResourceType resourceTypeToPoints, int[][] resourceNumToPoints) {
+        super(cardID, bonusPoint, ingredients, name, description);
         this.resourceToFoodHarvest = resourceToFoodHarvest;
         this.resourceTypeToPoints = resourceTypeToPoints;
         this.resourceNumToPoints = resourceNumToPoints;
@@ -36,18 +40,4 @@ public class Workshop extends DefaultMajorCard implements CookingHarvestTrigger,
         return result;
     }
 
-    @Override
-    public boolean hasBakeMajorTrigger() {
-        return false;
-    }
-
-    @Override
-    public boolean hasCookingAnytimeTrigger() {
-        return false;
-    }
-
-    @Override
-    public boolean hasCookingHarvestTrigger() {
-        return true;
-    }
 }

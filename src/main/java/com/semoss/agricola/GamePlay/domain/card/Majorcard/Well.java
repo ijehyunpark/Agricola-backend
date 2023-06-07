@@ -28,14 +28,13 @@ public class Well extends DefaultMajorCard implements MajorCard, StackResource {
     }
 
     @Override
-    public void place(Player player, CardDictionary cardDictionary) {
-        super.place(player, cardDictionary);
-        int nowRound = player.getGame().getGameState().getRound();
+    public void place(Player player, CardDictionary cardDictionary, int round) {
+        super.place(player, cardDictionary, round);
         int sum;
         ArrayList<Integer> list = new ArrayList<>();
 
         for (int stackRound : rounds) {
-            sum = stackRound + nowRound;
+            sum = stackRound + round;
             if (sum > 14) {
                 break;
             }

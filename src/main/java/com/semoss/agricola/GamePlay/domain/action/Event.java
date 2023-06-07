@@ -44,7 +44,7 @@ public class Event {
      * @param player 액션을 플레이하는 플레이어
      * @param acts 액션 수행관련 세부 사항
      */
-    public History runActions(Player player, List<AgricolaActionRequest.ActionFormat> acts, CardDictionary cardDictionary) {
+    public History runActions(Player player, Player startingPlayer, int gameRound, List<AgricolaActionRequest.ActionFormat> acts, CardDictionary cardDictionary) {
         // 이미 플레이된 상태인지 확인
         if(this.isPlayed != null)
             throw new RuntimeException("이미 플레이한 액션칸입니다.");
@@ -53,7 +53,7 @@ public class Event {
                 .eventName(this.action.getEventName())
                 .build();
 
-        this.action.runAction(player, acts, this.stacks, cardDictionary, history);
+        this.action.runAction(player, startingPlayer, gameRound, acts, this.stacks, cardDictionary, history);
 
         this.isPlayed = player;
 

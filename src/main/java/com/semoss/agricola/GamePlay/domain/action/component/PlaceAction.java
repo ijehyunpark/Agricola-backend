@@ -29,7 +29,7 @@ public class PlaceAction implements Action {
      * @param cardId cardId
      * @return result
      */
-    public void runAction(Player player, Long cardId, CardDictionary cardDictionary){
+    public void runAction(Player player, Long cardId, CardDictionary cardDictionary, int round){
         Card card = cardDictionary.getCard(cardId);
         if(!(card.getCardType() == this.placeType))
             throw new IllegalRequestException("허용되지 않은 카드 타입입니다.");
@@ -45,6 +45,6 @@ public class PlaceAction implements Action {
 
         // 해당 card의 소유주를 player로 변경
         // card.useResource 에서 재료 사용 및 소유자 이전을 모두 수행
-        card.place(player, cardDictionary);
+        card.place(player, cardDictionary, round);
     }
 }

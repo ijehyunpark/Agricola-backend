@@ -100,7 +100,7 @@ public abstract class DefaultAction {
      * @param history 행동 기록 객체
      * @return 해당 행동을 수행한 후 해당 기록을 반환
      */
-    public History runAction(Player player, List<AgricolaActionRequest.ActionFormat> acts, List<ResourceStructInterface> stacks, CardDictionary cardDictionary, History history) {
+    public History runAction(Player player, Player startingPlayer, int round, List<AgricolaActionRequest.ActionFormat> acts, List<ResourceStructInterface> stacks, CardDictionary cardDictionary, History history) {
         // 입력 행동값 검증
         isCollectRequest(acts);
 
@@ -113,8 +113,12 @@ public abstract class DefaultAction {
                 AgricolaActionRequest.ActionFormat act = acts.get(actions.indexOf(action));
                 Integer times = 1; // TODO 액션 횟수 요청 정의 후 해당 값 바인딩
                 switch (action.getActionType()) {
-                    case BASIC, STARTING, UPGRADE, ADOPT -> {
+                    case BASIC, UPGRADE, ADOPT -> {
                         ((SimpleAction) action).runAction(player, history);
+                    }
+                    case STARTING -> {
+                        ((GetStartingPositionAction) action).runAction(player, startingPlayer, history);
+
                     }
                     case BAKE -> {
                         try {
@@ -176,7 +180,7 @@ public abstract class DefaultAction {
                         }
                     }
                     case PLACE -> {
-                        ((PlaceAction) action).runAction(player, (Long) act.getActs(), cardDictionary);
+                        ((PlaceAction) action).runAction(player, (Long) act.getActs(), cardDictionary, round);
                     }
                     case STACK, STACK_ANIMAL -> {
                         ((StackAction) action).runStackAction(player, stacks);

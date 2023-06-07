@@ -42,8 +42,8 @@ public class LandAgent extends DefaultOccupation implements ActionTrigger {
 
 
     @Override
-    public void place(Player player, CardDictionary cardDictionary) {
-        super.place(player, cardDictionary);
+    public void place(Player player, CardDictionary cardDictionary, int round) {
+        super.place(player, cardDictionary, round);
         player.addResource(ResourceStruct.builder()
                 .resource(ResourceType.VEGETABLE)
                 .count(1)

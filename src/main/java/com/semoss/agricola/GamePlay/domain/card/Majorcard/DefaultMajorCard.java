@@ -47,7 +47,7 @@ public abstract class DefaultMajorCard implements MajorCard{
      * @param player 카드를 가져갈 플레이어
      */
     @Override
-    public void place(Player player, CardDictionary cardDictionary) {
+    public void place(Player player, CardDictionary cardDictionary, int round) {
         if (!checkPrerequisites(player, cardDictionary)) throw new IllegalRequestException("전제조건 미달성");
         for (ResourceStruct ingredient : ingredients){
             player.useResource(ingredient.getResource(), ingredient.getCount());

@@ -31,8 +31,8 @@ public class Baker extends DefaultOccupation implements HarvestTrigger {
     }
 
     @Override
-    public void place(Player player, CardDictionary cardDictionary) {
-        super.place(player, cardDictionary);
+    public void place(Player player, CardDictionary cardDictionary, int round) {
+        super.place(player, cardDictionary, round);
         // TODO : 빵굽기
         throw new RuntimeException("미구현");
     }

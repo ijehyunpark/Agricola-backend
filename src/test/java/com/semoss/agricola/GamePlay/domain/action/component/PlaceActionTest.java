@@ -36,7 +36,6 @@ class PlaceActionTest {
     void setUp() {
         game = mock(AgricolaGame.class);
         player = Player.builder()
-                .game(game)
                 .build();
         MajorFactory majorFactory = new MajorFactory();
         List<MajorCard> majorCards = new ArrayList<>();
@@ -63,7 +62,7 @@ class PlaceActionTest {
 
 
         // when
-        placeAction.runAction(player, majorCard.getCardID(), cardDictionary);
+        placeAction.runAction(player, majorCard.getCardID(), cardDictionary, 0);
 
         // then
         assertTrue(cardDictionary.hasCardInField(player, majorCard));
@@ -80,7 +79,7 @@ class PlaceActionTest {
 
 
         // when
-        assertThrows(RuntimeException.class, () -> placeAction.runAction(player, majorCard.getCardID(), cardDictionary));
+        assertThrows(RuntimeException.class, () -> placeAction.runAction(player, majorCard.getCardID(), cardDictionary, 0));
 
         // then
     }
@@ -99,7 +98,7 @@ class PlaceActionTest {
 
 
         // when
-        assertThrows(RuntimeException.class, () -> placeAction.runAction(player, majorCard.getCardID(), cardDictionary));
+        assertThrows(RuntimeException.class, () -> placeAction.runAction(player, majorCard.getCardID(), cardDictionary, 0));
 
         // then
     }
@@ -120,11 +119,11 @@ class PlaceActionTest {
                 .resource(ResourceType.CLAY)
                 .count(2)
                 .build());
-        placeAction.runAction(other, majorCard.getCardID(), cardDictionary);
+        placeAction.runAction(other, majorCard.getCardID(), cardDictionary, 0);
 
 
         // when
-        assertThrows(IllegalRequestException.class, () -> placeAction.runAction(player, majorCard.getCardID(), cardDictionary));
+        assertThrows(IllegalRequestException.class, () -> placeAction.runAction(player, majorCard.getCardID(), cardDictionary, 0));
 
         // then
     }

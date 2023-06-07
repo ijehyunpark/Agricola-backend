@@ -34,7 +34,7 @@ public class Action29 extends DefaultAction {
     }
 
     @Override
-    public History runAction(Player player, List<AgricolaActionRequest.ActionFormat> acts, List<ResourceStructInterface> stacks, CardDictionary cardDictionary, History history) {
+    public History runAction(Player player, Player startingPlayer, int round,  List<AgricolaActionRequest.ActionFormat> acts, List<ResourceStructInterface> stacks, CardDictionary cardDictionary, History history) {
         // 입력 행동값 검증
         super.isCollectRequest(acts);
 
@@ -59,7 +59,7 @@ public class Action29 extends DefaultAction {
             player.useResource(ResourceType.FOOD, 1);
         }
 
-        placeAction.runAction(player, cardId, cardDictionary);
+        placeAction.runAction(player, cardId, cardDictionary, round);
         history.writeActionType(placeAction.getActionType(), 1);
         return history;
     }

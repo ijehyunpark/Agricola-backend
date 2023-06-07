@@ -23,7 +23,7 @@ public abstract class DefaultOccupation implements Occupation {
     }
 
     @Override
-    public void place(Player player, CardDictionary cardDictionary) {
+    public void place(Player player, CardDictionary cardDictionary, int round) {
         cardDictionary.place(player, this);
     }
 

@@ -92,8 +92,8 @@ class FirePlaceTest {
         Player expected3 = player; // 경계값
 
         //when
-        firePlace1.place(player,cardDictionary);
-        firePlace3.place(player,cardDictionary);
+        firePlace1.place(player,cardDictionary, 0);
+        firePlace3.place(player,cardDictionary, 0);
         Player actual1 = cardDictionary.getOwner(firePlace1).orElse(null);
         Player actual2 = cardDictionary.getOwner(firePlace2).orElse(null);;
         Player actual3 = cardDictionary.getOwner(firePlace3).orElse(null);;
@@ -105,7 +105,7 @@ class FirePlaceTest {
         assertEquals(expected2,actual2);
         assertEquals(expected3,actual3);
         assertThrows(IllegalRequestException.class, () -> {
-            card.place(player, cardDictionary);
+            card.place(player, cardDictionary, 0);
         });
     }
 }

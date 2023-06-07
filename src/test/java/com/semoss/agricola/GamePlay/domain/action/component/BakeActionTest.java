@@ -37,8 +37,6 @@ class BakeActionTest {
     void setUp() {
         game = mock(AgricolaGame.class);
         player = Player.builder()
-                .game(game)
-                .userId(1234L)
                 .isStartPlayer(true)
                 .build();
         bakeAction = BakeAction.builder()

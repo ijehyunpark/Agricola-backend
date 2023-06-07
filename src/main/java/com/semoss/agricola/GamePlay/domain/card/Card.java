@@ -7,7 +7,7 @@ public interface Card {
     CardType getCardType();
     int getBonusPoint();
     Long getCardID();
-    void place(Player player, CardDictionary cardDictionary);
+    void place(Player player, CardDictionary cardDictionary, int round);
     String getName();
     String getDescription();
 }

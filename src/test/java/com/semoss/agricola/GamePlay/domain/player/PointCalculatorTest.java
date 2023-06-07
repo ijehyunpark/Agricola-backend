@@ -39,13 +39,13 @@ class PointCalculatorTest {
         cardDictionary = new CardDictionary(majorCards, new ArrayList<>(), dummyMinorCards, new ArrayList<>(), dummyOccupations);
 
         // given
-        Player player = Player.builder().game(game).userId(123L).build();
+        Player player = Player.builder().build();
         when(game.getCardDictionary()).thenReturn(cardDictionary);
         player.addResource(ResourceType.CLAY,7);
         player.addResource(ResourceType.STONE,2);
         player.addResource(ResourceType.WOOD,9);
 
-        majorCard.place(player, cardDictionary);
+        majorCard.place(player, cardDictionary, 0);
 
         player.buildField(2,1,FieldType.ROOM);
         player.buildField(0,4,FieldType.FARM);

@@ -1,7 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.player;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.semoss.agricola.GamePlay.domain.AgricolaGame;
 import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.card.ActionTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Card;
@@ -15,7 +14,6 @@ import com.semoss.agricola.GamePlay.domain.card.Occupation.HarvestTrigger;
 import com.semoss.agricola.GamePlay.domain.resource.*;
 import com.semoss.agricola.GamePlay.exception.IllegalRequestException;
 import com.semoss.agricola.GamePlay.exception.ResourceLackException;
-import com.semoss.agricola.GamePlay.exception.ServerError;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,17 +29,14 @@ import java.util.List;
 @NoArgsConstructor
 public class Player {
     private Long userId;
-    @JsonIgnore
-    private AgricolaGame game;
     private boolean startingToken;
     private final EnumMap<ResourceType,Integer> resources = new EnumMap<>(ResourceType.class);
     private final PlayerBoard playerBoard = PlayerBoard.builder().build();
     private final List<ResourceStructInterface>[] roundStackResource = new ArrayList[15];
 
     @Builder
-    public Player(Long userId, AgricolaGame game, boolean isStartPlayer){
+    public Player(Long userId, boolean isStartPlayer){
         this.userId = userId;
-        this.game = game;
         this.startingToken = isStartPlayer;
         for (ResourceType resource : ResourceType.values()){
             resources.put(resource,0);
@@ -208,19 +203,13 @@ public class Player {
      * 시작 토큰을 가지도록 설정한다.
      */
     public void setStartingTokenByTrue() {
-        this.game.getPlayers().stream()
-                .filter(Player::isStartingToken)
-                .findAny()
-                .orElseThrow(ServerError::new)
-                .disableStartingToken();
-
         this.startingToken = true;
     }
 
     /**
      * 시작 토큰을 제거한다.
      */
-    private void disableStartingToken() {
+    public void disableStartingToken() {
         this.startingToken = false;
     }
 
@@ -443,15 +432,6 @@ public class Player {
                 .mapToInt(Card::getBonusPoint)
                 .sum();
     }
-
-
-//    /**
-//     * 직업 추가
-//     * @param occupation
-//     */
-//    public void addOccupations(Occupation occupation) {
-//        this.occupations.add(occupation);
-//    }
 
     /**
      * 종료 트리거 발동

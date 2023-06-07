@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.action.Event;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
-import com.semoss.agricola.GamePlay.domain.card.Occupation.ActionCrossTrigger;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
 import com.semoss.agricola.GamePlay.exception.NotFoundException;
@@ -15,7 +14,10 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * 아그리콜라 메인 게임 보드
@@ -104,12 +106,12 @@ public record GameBoard(@JsonIgnore List<Event> events) {
      * @param eventId 플레이할 액션
      * @param acts    액션에 필요한 추가 요청
      */
-    public History playAction(Player player, Long eventId, List<AgricolaActionRequest.ActionFormat> acts, CardDictionary cardDictionary) {
+    public History playAction(Player player, Player startingPlayer, int gameRound, Long eventId, List<AgricolaActionRequest.ActionFormat> acts, CardDictionary cardDictionary) {
         return events.stream()
                 .filter(event -> event.getAction().getEventName().getId() == eventId.intValue())
                 .findAny()
                 .orElseThrow(() -> new NotFoundException("이벤트가 존재하지 않습니다"))
-                .runActions(player, acts, cardDictionary);
+                .runActions(player, startingPlayer, gameRound, acts, cardDictionary);
     }
 
     /**

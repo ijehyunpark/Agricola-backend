@@ -9,12 +9,13 @@ import com.semoss.agricola.GamePlay.domain.card.CardType;
 import com.semoss.agricola.GamePlay.domain.card.Minorcard.MinorCard;
 import com.semoss.agricola.GamePlay.domain.card.Occupation.Occupation;
 import com.semoss.agricola.GamePlay.domain.gameboard.GameBoard;
-import com.semoss.agricola.GamePlay.domain.resource.AnimalType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
+import com.semoss.agricola.GamePlay.domain.resource.AnimalType;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
 import com.semoss.agricola.GamePlay.exception.NotFoundException;
 import com.semoss.agricola.GamePlay.exception.NotImplementException;
+import com.semoss.agricola.GamePlay.exception.ServerError;
 import com.semoss.agricola.GameRoom.domain.Game;
 import com.semoss.agricola.GameRoom.domain.GameType;
 import com.semoss.agricola.GameRoomCommunication.domain.User;
@@ -24,10 +25,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.IntStream;
 
 /**
@@ -96,7 +94,6 @@ public class AgricolaGame implements Game {
                 .mapToObj(i -> {
                     boolean isFirst = i == 0;
                     return Player.builder()
-                            .game(this)
                             .userId(users.get(i).getId())
                             .isStartPlayer(isFirst)
                             .build();
@@ -127,7 +124,7 @@ public class AgricolaGame implements Game {
             Random random = new Random();
 
             // 보조설비 분배
-            List<MinorCard> allMinorCards = cardDictionary.getAllMinorCards();
+            List<MinorCard> allMinorCards = new ArrayList<>(cardDictionary.getAllMinorCards());
             players.forEach(
                     player -> {
                         int select = 0;
@@ -141,7 +138,7 @@ public class AgricolaGame implements Game {
             );
 
             // 직업 분배
-            List<Occupation> allOccupations = cardDictionary.getAllOccupations();
+            List<Occupation> allOccupations = new ArrayList<>(cardDictionary.getAllOccupations());
             players.forEach(
                     player -> {
                         int select = 0;
@@ -278,8 +275,14 @@ public class AgricolaGame implements Game {
      * @param acts 액션에 필요한 추가 요청
      */
     public void playAction(Long eventId, List<AgricolaActionRequest.ActionFormat> acts) {
+        // 선공 플레이어를 검색한다.
+        Player startingPlayer = this.players.stream()
+                .filter(Player::isStartingToken)
+                .findAny()
+                .orElseThrow(ServerError::new);
+
         // 액션 플레이를 수행한다.
-        History history = this.gameBoard.playAction(this.getGameState().getPlayer(), eventId, acts, this.cardDictionary);
+        History history = this.gameBoard.playAction(this.getGameState().getPlayer(), startingPlayer, this.getGameState().getRound(), eventId, acts, this.cardDictionary);
 
         // 거주자 한명을 임의로 뽑아 플레이 시킨다.
         this.getGameState().getPlayer().playAction(history, this.cardDictionary);

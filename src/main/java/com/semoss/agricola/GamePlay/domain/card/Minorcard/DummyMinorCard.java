@@ -6,17 +6,12 @@ import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 /**
  * 더미 보조설비 카드 입니다.
  * 구걸카드 1장 획득
  */
 @Getter
-@Component
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Log4j2
 public class DummyMinorCard extends DefaultMinorCard {
     private final ResourceStruct bonusResource = ResourceStruct.builder().resource(ResourceType.BEGGING).count(1).build();
@@ -30,8 +25,8 @@ public class DummyMinorCard extends DefaultMinorCard {
 
 
     @Override
-    public void place(Player player, CardDictionary CardDictionary) {
-        super.place(player, CardDictionary);
+    public void place(Player player, CardDictionary CardDictionary, int round) {
+        super.place(player, CardDictionary, round);
         player.addResource(bonusResource);
     }
 }

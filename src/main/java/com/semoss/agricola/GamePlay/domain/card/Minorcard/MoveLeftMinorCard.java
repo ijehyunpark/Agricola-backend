@@ -21,8 +21,8 @@ public class MoveLeftMinorCard extends DefaultMinorCard implements PlaceGetResou
     }
 
     @Override
-    public void place(Player player, CardDictionary cardDictionary) {
-        super.place(player, cardDictionary);
+    public void place(Player player, CardDictionary cardDictionary, int round) {
+        super.place(player, cardDictionary, round);
         player.addResource(bonusResource);
     }
 }

@@ -9,6 +9,7 @@ import com.semoss.agricola.GamePlay.domain.resource.AnimalType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
+import com.semoss.agricola.GamePlay.exception.BlockingException;
 import com.semoss.agricola.GameRoom.domain.GameRoom;
 import com.semoss.agricola.GameRoom.domain.GameType;
 import com.semoss.agricola.GameRoom.repository.GameRoomRepository;
@@ -309,6 +310,8 @@ public class AgricolaServiceImpl implements AgricolaService {
         game.update(GameProgress.FINISH, null);
 
         game.finish();
+
+        throw new BlockingException("게임 종료");
     }
 
     @Override

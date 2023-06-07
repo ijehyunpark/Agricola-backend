@@ -650,7 +650,7 @@ public class PlayerBoard {
         if (fields[col][row] == null || fields[col][row].getFieldType() != FieldType.BARN && fields[col][row].getFieldType() != FieldType.STABLE) throw new IllegalRequestException("해당 필드는 헛간이 아닙니다.");
         AnimalType animalType = ((Barn)fields[col][row]).getAnimal().getAnimal();
         int num = ((Barn)fields[col][row]).removeAnimal(animalNum);
-        moveAnimalArr[animalType.getValue()-9].addResource(num);
+        moveAnimalArr[animalType.getValue()].addResource(num);
         ifEmptyBarn(col,row);
         return num;
     }
@@ -665,7 +665,7 @@ public class PlayerBoard {
         if (fields[col][row] == null || fields[col][row].getFieldType() != FieldType.BARN && fields[col][row].getFieldType() != FieldType.STABLE) throw new IllegalRequestException("해당 필드는 헛간이 아닙니다.");
         AnimalType animalType = ((Barn)fields[col][row]).getAnimal().getAnimal();
         int num = ((Barn)fields[col][row]).removeAllAnimals();
-        moveAnimalArr[animalType.getValue()-9].addResource(num);
+        moveAnimalArr[animalType.getValue()].addResource(num);
         ifEmptyBarn(col,row);
         return num;
     }
@@ -754,9 +754,9 @@ public class PlayerBoard {
      */
     protected int addRemovedAnimal(int row, int col, AnimalType animalType, int animalNum){
         if (fields[row][col] == null || fields[row][col].getFieldType() != FieldType.BARN && fields[row][col].getFieldType() != FieldType.STABLE) throw new IllegalRequestException("해당 필드는 헛간이 아닙니다.");
-        animalNum = Integer.min(animalNum,moveAnimalArr[animalType.getValue()-9].getCount());
+        animalNum = Integer.min(animalNum,moveAnimalArr[animalType.getValue()].getCount());
         int num = ((Barn)fields[row][col]).addAnimal(animalType, animalNum);
-        moveAnimalArr[animalType.getValue()-9].subResource(num);
+        moveAnimalArr[animalType.getValue()].subResource(num);
         setSameAnimalType(row,col);
         return num;
     }

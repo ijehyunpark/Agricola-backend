@@ -6,6 +6,8 @@ import com.semoss.agricola.GamePlay.domain.action.implement.DefaultAction;
 import com.semoss.agricola.GamePlay.domain.card.Card;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
+import com.semoss.agricola.GamePlay.domain.card.Minorcard.MinorCard;
+import com.semoss.agricola.GamePlay.domain.card.Occupation.Occupation;
 import com.semoss.agricola.GamePlay.domain.gameboard.GameBoard;
 import com.semoss.agricola.GamePlay.domain.resource.AnimalType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
@@ -25,6 +27,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.IntStream;
 
 /**
@@ -38,6 +41,7 @@ import java.util.stream.IntStream;
 @Log4j2
 public class AgricolaGame implements Game {
     private final GameType gameType = GameType.Agricola;
+
 
     @Getter
     public static class GameState {
@@ -110,6 +114,45 @@ public class AgricolaGame implements Game {
         // 선공 플레이어의 경우 음식 토큰 2개, 아닌 경우 3개를 받는다.
         for (Player player : getPlayers()) {
             player.addResource(ResourceType.FOOD, getStartingPlayer() == player ? 2 : 3);
+        }
+    }
+
+    /**
+     * 초기 보조설비 및 직업카드를 배포한다.
+     */
+    public void distributeMinorCardsAndOccupations(CardDistributeStrategy strategy) {
+        int SELECT_MINOR_CARD_NUM = 7;
+        int SELECT_OCCUPATION_NUM = 7;
+        if (strategy == CardDistributeStrategy.RANDOM) {
+            Random random = new Random();
+
+            // 보조설비 분배
+            List<MinorCard> allMinorCards = cardDictionary.getAllMinorCards();
+            players.forEach(
+                    player -> {
+                        int select = 0;
+                        while (select < SELECT_MINOR_CARD_NUM) {
+                            int randomIndex = random.nextInt(allMinorCards.size());
+                            MinorCard selected = allMinorCards.remove(randomIndex);
+                            cardDictionary.addCardInPlayerHand(player, selected);
+                            select++;
+                        }
+                    }
+            );
+
+            // 직업 분배
+            List<Occupation> allOccupations = cardDictionary.getAllOccupations();
+            players.forEach(
+                    player -> {
+                        int select = 0;
+                        while (select < SELECT_MINOR_CARD_NUM) {
+                            int randomIndex = random.nextInt(allOccupations.size());
+                            Occupation selected = allOccupations.remove(randomIndex);
+                            cardDictionary.addCardInPlayerHand(player, selected);
+                            select++;
+                        }
+                    }
+            );
         }
     }
 
@@ -239,7 +282,7 @@ public class AgricolaGame implements Game {
         History history = this.gameBoard.playAction(this.getGameState().getPlayer(), eventId, acts, this.cardDictionary);
 
         // 거주자 한명을 임의로 뽑아 플레이 시킨다.
-        this.getGameState().getPlayer().playAction(history);
+        this.getGameState().getPlayer().playAction(history, this.cardDictionary);
     }
 
     /**
@@ -254,7 +297,7 @@ public class AgricolaGame implements Game {
         Card card = cardDictionary.getCard(improvementId);
         if (card.getCardType() != CardType.MAJOR)
             throw new RuntimeException("주설비카드가 아닙니다.");
-        if(!player.hasCardInField(card.getCardID()))
+        if(!cardDictionary.hasCardInField(player, card))
             throw new NotFoundException("주설비를 가지고 있지 않습니다.");
 
         // TODO : 플레이어가 교환할 자원을 가지고 있는지 검증한다.
@@ -273,7 +316,7 @@ public class AgricolaGame implements Game {
         Card card = cardDictionary.getCard(improvementId);
         if (card.getCardType() != CardType.MAJOR)
             throw new RuntimeException("주설비카드가 아닙니다.");
-        if(!player.hasCardInField(card.getCardID()))
+        if(!cardDictionary.hasCardInField(player, card))
             throw new NotFoundException("주설비를 가지고 있지 않습니다.");
 
         // TODO : 플레이어가 교환할 자원을 가지고 있는지 검증한다.
@@ -284,8 +327,12 @@ public class AgricolaGame implements Game {
         throw new NotImplementException("미구현");
     }
 
+    public void harvest(Player player) {
+        player.harvest(this.cardDictionary);
+    }
+
     public void finish() {
-        players.forEach(Player::finish);
+        players.forEach(player -> player.finish(this.cardDictionary));
     }
 
     //로그 기능

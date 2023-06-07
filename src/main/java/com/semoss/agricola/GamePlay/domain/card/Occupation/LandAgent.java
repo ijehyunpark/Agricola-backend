@@ -2,6 +2,7 @@ package com.semoss.agricola.GamePlay.domain.card.Occupation;
 
 import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.card.ActionTrigger;
+import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
@@ -41,8 +42,8 @@ public class LandAgent extends DefaultOccupation implements ActionTrigger {
 
 
     @Override
-    public void place(Player player) {
-        super.place(player);
+    public void place(Player player, CardDictionary cardDictionary) {
+        super.place(player, cardDictionary);
         player.addResource(ResourceStruct.builder()
                 .resource(ResourceType.VEGETABLE)
                 .count(1)

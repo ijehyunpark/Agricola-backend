@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.card.Occupation;
 
+import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import lombok.Getter;
@@ -22,12 +23,12 @@ public abstract class DefaultOccupation implements Occupation {
     }
 
     @Override
-    public void place(Player player) {
-        player.addOccupations(this);
+    public void place(Player player, CardDictionary cardDictionary) {
+        cardDictionary.place(player, this);
     }
 
     @Override
-    public boolean checkPrerequisites(Player player) {
+    public boolean checkPrerequisites(Player player, CardDictionary cardDictionary) {
         return true;
     }
 

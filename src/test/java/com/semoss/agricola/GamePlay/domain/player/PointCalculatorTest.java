@@ -4,11 +4,14 @@ import com.semoss.agricola.GamePlay.domain.AgricolaGame;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.Majorcard.MajorCard;
 import com.semoss.agricola.GamePlay.domain.card.Majorcard.MajorFactory;
+import com.semoss.agricola.GamePlay.domain.card.Minorcard.DummyMinorCard;
+import com.semoss.agricola.GamePlay.domain.card.Occupation.DummyOccupation;
 import com.semoss.agricola.GamePlay.domain.resource.AnimalType;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.ObjectProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +34,10 @@ class PointCalculatorTest {
     void calculate() {
         List<MajorCard> majorCards = new ArrayList<>();
         majorCards.add(majorCard);
-        cardDictionary = new CardDictionary(majorCards);
+        ObjectProvider<DummyMinorCard> dummyMinorCards = mock(ObjectProvider.class);
+        ObjectProvider<DummyOccupation> dummyOccupations = mock(ObjectProvider.class);
+        cardDictionary = new CardDictionary(majorCards, new ArrayList<>(), dummyMinorCards, new ArrayList<>(), dummyOccupations);
+
         // given
         Player player = Player.builder().game(game).userId(123L).build();
         when(game.getCardDictionary()).thenReturn(cardDictionary);
@@ -39,7 +45,7 @@ class PointCalculatorTest {
         player.addResource(ResourceType.STONE,2);
         player.addResource(ResourceType.WOOD,9);
 
-        majorCard.place(player);
+        majorCard.place(player, cardDictionary);
 
         player.buildField(2,1,FieldType.ROOM);
         player.buildField(0,4,FieldType.FARM);

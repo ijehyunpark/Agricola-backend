@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.card.Minorcard;
 
+import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Log4j2
-public class DummyMinorCard extends DefaultMinorCard implements PlaceGetResourceTrigger{
+public class DummyMinorCard extends DefaultMinorCard {
     private final ResourceStruct bonusResource = ResourceStruct.builder().resource(ResourceType.BEGGING).count(1).build();
     private static Long nextID = 1001L;
 
@@ -29,8 +30,8 @@ public class DummyMinorCard extends DefaultMinorCard implements PlaceGetResource
 
 
     @Override
-    public void place(Player player) {
-        super.place(player);
+    public void place(Player player, CardDictionary CardDictionary) {
+        super.place(player, CardDictionary);
         player.addResource(bonusResource);
     }
 }

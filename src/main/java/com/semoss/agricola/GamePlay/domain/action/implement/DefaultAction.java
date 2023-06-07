@@ -6,13 +6,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.semoss.agricola.GamePlay.domain.History;
-import com.semoss.agricola.GamePlay.domain.action.*;
+import com.semoss.agricola.GamePlay.domain.action.DoType;
 import com.semoss.agricola.GamePlay.domain.action.component.*;
+import com.semoss.agricola.GamePlay.domain.card.BakeTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Card;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
-import com.semoss.agricola.GamePlay.domain.card.BakeTrigger;
-import com.semoss.agricola.GamePlay.domain.card.Majorcard.MajorCard;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStructInterface;
 import com.semoss.agricola.GamePlay.dto.*;
@@ -127,7 +126,7 @@ public abstract class DefaultAction {
                                                 Card card = cardDictionary.getCard(improvementId);
                                                 if (card.getCardType() != CardType.MAJOR || card instanceof BakeTrigger)
                                                     throw new RuntimeException("주설비 카드가 아니거나 빵 굽기 관련 주설비카드가 아닙니다.");
-                                                ((BakeAction) action).runAction(player, (BakeTrigger) card);
+                                                ((BakeAction) action).runAction(player, (BakeTrigger) card, cardDictionary);
                                             }
                                     );
                         } catch (JsonProcessingException e) {
@@ -177,8 +176,7 @@ public abstract class DefaultAction {
                         }
                     }
                     case PLACE -> {
-                        Card card = cardDictionary.getCard((Long) act.getActs());
-                        ((PlaceAction) action).runAction(player, card);
+                        ((PlaceAction) action).runAction(player, (Long) act.getActs(), cardDictionary);
                     }
                     case STACK, STACK_ANIMAL -> {
                         ((StackAction) action).runStackAction(player, stacks);

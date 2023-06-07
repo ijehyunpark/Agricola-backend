@@ -1,6 +1,7 @@
 package com.semoss.agricola.GamePlay.service;
 
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
+import com.semoss.agricola.GamePlay.domain.CardDistributeStrategy;
 import com.semoss.agricola.GamePlay.domain.GameProgress;
 import com.semoss.agricola.GamePlay.domain.action.implement.DefaultAction;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
@@ -75,6 +76,9 @@ public class AgricolaServiceImpl implements AgricolaService {
 
         // 선공 플레이어의 경우 음식 토큰 2개, 아닌 경우 3개를 받는다.
         game.setUpStartingFood();
+
+        // 각 플레이어에게 보조설비 및 직업카드를 7장 배포한다.
+        game.distributeMinorCardsAndOccupations(CardDistributeStrategy.RANDOM);
 
         // 게임 시작 후 최초 라운드 시작을 개시한다.
         roundStart(gameRoomId);
@@ -218,7 +222,7 @@ public class AgricolaServiceImpl implements AgricolaService {
     }
 
     private void roundEndExtension(Long gameRoomId) {
-        log.info("라운드가 종료되었습니다. - Extenstion");
+        log.info("라운드가 종료되었습니다. - Extension");
         // 아그리콜라 게임 추출
         AgricolaGame game = extractGame(gameRoomId);
 
@@ -251,7 +255,7 @@ public class AgricolaServiceImpl implements AgricolaService {
         Player player = gameState.getPlayer();
 
         // 수확
-        player.harvest();
+        game.harvest(player);
 
         // 먹여 살리기 작업
         feeding(gameRoomId);

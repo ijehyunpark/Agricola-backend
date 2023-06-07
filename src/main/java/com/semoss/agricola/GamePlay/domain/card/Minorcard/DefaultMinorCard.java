@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.card.Minorcard;
 
+import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
@@ -37,13 +38,13 @@ public abstract class DefaultMinorCard implements MinorCard {
      * @return 확인 결과
      */
     @Override
-    public boolean checkPrerequisites(Player player){
+    public boolean checkPrerequisites(Player player, CardDictionary cardDictionary){
         boolean result = true;
         for (ResourceStruct ingredient : ingredients){
             result &= player.getResource(ingredient.getResource()) >= ingredient.getCount();
         }
         if (preconditionCardType == null) return result;
-        return result && (player.numCardInField(preconditionCardType) >= minCardNum);
+        return result && (cardDictionary.getCards(player).size() >= minCardNum);
     }
 
     /**
@@ -52,12 +53,13 @@ public abstract class DefaultMinorCard implements MinorCard {
      * @param player 카드를 가져갈 플레이어
      */
     @Override
-    public void place(Player player) {
-        if (!checkPrerequisites(player)) throw new IllegalRequestException("전제조건 미달성");
+    public void place(Player player, CardDictionary cardDictionary) {
+        if (!checkPrerequisites(player, cardDictionary)) throw new IllegalRequestException("전제조건 미달성");
         for (ResourceStruct ingredient : ingredients){
             player.useResource(ingredient.getResource(), ingredient.getCount());
         }
-        if (!player.getCardHand().contains(cardID)) throw new IllegalRequestException("해당 보조설비카드는 이 플레이어의 카드가 아닙니다.");
-        player.placeCard(cardID);
+
+        if (!cardDictionary.getCardInPlayerHand(player).contains(this)) throw new IllegalRequestException("해당 보조설비카드는 이 플레이어의 카드가 아닙니다.");
+        cardDictionary.place(player, this);
     }
 }

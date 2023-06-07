@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.card.Occupation;
 
+import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.StackResource;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
@@ -32,8 +33,8 @@ public class ReedCollector extends DefaultOccupation implements StackResource {
     }
 
     @Override
-    public void place(Player player) {
-        super.place(player);
+    public void place(Player player, CardDictionary cardDictionary) {
+        super.place(player, cardDictionary);
         ArrayList<Integer> list = new ArrayList<>();
 
         // 플레이어의 라운드 스택에 자원 추가

@@ -41,14 +41,13 @@ public class Action29 extends DefaultAction {
         // TODO: Memento로 실패 시 롤백
 
         PlaceAction placeAction = (PlaceAction) getActions().get(0);
-        Long act = (Long) acts.get(0).getActs();
-        Card card = cardDictionary.getCard(act);
+        Long cardId = (Long) acts.get(0).getActs();
 
         // 플레이어가 내려놓은 직업 카드 계산
         int occupationCount = 0;
-        List<Long> cards = cardDictionary.findCardsByOwner(player);
-        for (Long cardId : cards) {
-            if(cardDictionary.getCard(cardId).getCardType() == CardType.OCCUPATION){
+        List<Card> cards = cardDictionary.findCardsByOwner(player);
+        for (Card component : cards) {
+            if(component.getCardType() == CardType.OCCUPATION){
                 occupationCount++;
             }
         }
@@ -60,7 +59,7 @@ public class Action29 extends DefaultAction {
             player.useResource(ResourceType.FOOD, 1);
         }
 
-        placeAction.runAction(player, card);
+        placeAction.runAction(player, cardId, cardDictionary);
         history.writeActionType(placeAction.getActionType(), 1);
         return history;
     }

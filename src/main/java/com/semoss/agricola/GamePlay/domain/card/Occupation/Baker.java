@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.card.Occupation;
 
+import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,8 +31,8 @@ public class Baker extends DefaultOccupation implements HarvestTrigger {
     }
 
     @Override
-    public void place(Player player) {
-        super.place(player);
+    public void place(Player player, CardDictionary cardDictionary) {
+        super.place(player, cardDictionary);
         // TODO : 빵굽기
         throw new RuntimeException("미구현");
     }

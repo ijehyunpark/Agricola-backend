@@ -783,11 +783,16 @@ public class PlayerBoard {
                 if (animalNum == 0) return true;
             }
         }
-        if (animalNum == 1 && (((Room)fields[1][0]).getPet() == animalType || ((Room)fields[1][0]).getPet() == null)){
-            return ((Room)fields[1][0]).addPet(animalType);
+        if (animalNum >= 1 && (((Room)fields[1][0]).getPet() == animalType || ((Room)fields[1][0]).getPet() == null)){
+            ((Room)fields[1][0]).addPet(animalType);
+            animalNum--;
+        }
+        if (animalNum >= 1){
+            this.moveAnimalArr[animalType.getValue()].addResource(animalNum);
+            throw new IllegalRequestException("더 이상 동물을 배치할 수 없습니다. 다시 배치해야합니다.");
         }
 
-        return false;
+        return true;
     }
 
     /** TODO

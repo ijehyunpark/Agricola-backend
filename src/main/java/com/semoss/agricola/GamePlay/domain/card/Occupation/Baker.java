@@ -4,7 +4,6 @@ import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
@@ -12,9 +11,8 @@ import org.springframework.stereotype.Component;
  */
 @Getter
 @Component
-@Scope("prototype")
 public class Baker extends DefaultOccupation implements HarvestTrigger {
-    private int playerRequirement;
+    private final int playerRequirement;
 
     public Baker(@Value("${baker.id}") Long cardID,
                        @Value("${baker.name}") String name,

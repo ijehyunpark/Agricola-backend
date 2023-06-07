@@ -7,7 +7,6 @@ import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -17,17 +16,16 @@ import java.util.ArrayList;
  */
 @Getter
 @Component
-@Scope("prototype")
 public class ReedCollector extends DefaultOccupation implements StackResource {
     private final ResourceStruct stackResource = ResourceStruct.builder().resource(ResourceType.REED).count(1).build();
     private final int[] rounds = new int[]{1,2,3,4};
     private final boolean isStaticRound = false;
     private final int playerRequirement;
 
-    public ReedCollector(@Value("${mendicant.id}") Long cardID,
-                           @Value("${mendicant.name}") String name,
-                           @Value("${mendicant.players}") Integer playerRequirement,
-                           @Value("${mendicant.description}") String description) {
+    public ReedCollector(@Value("${reedCollector.id}") Long cardID,
+                           @Value("${reedCollector.name}") String name,
+                           @Value("${reedCollector.players}") Integer playerRequirement,
+                           @Value("${reedCollector.description}") String description) {
         super(cardID, name, description);
         this.playerRequirement = playerRequirement;
     }

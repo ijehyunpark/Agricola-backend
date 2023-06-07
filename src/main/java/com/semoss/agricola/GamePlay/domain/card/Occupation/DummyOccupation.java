@@ -3,6 +3,7 @@ package com.semoss.agricola.GamePlay.domain.card.Occupation;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Getter
 @Component
-@Scope("prototype")
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Log4j2
 public class DummyOccupation extends DefaultOccupation {
     private final int playerRequirement;

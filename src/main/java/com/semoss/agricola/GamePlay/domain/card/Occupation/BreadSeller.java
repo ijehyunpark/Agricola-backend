@@ -7,7 +7,6 @@ import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.util.Pair;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
@@ -15,14 +14,13 @@ import org.springframework.stereotype.Component;
  */
 @Getter
 @Component
-@Scope("prototype")
 public class BreadSeller extends DefaultOccupation implements ActionCrossTrigger{
     private final int playerRequirement;
 
-    public BreadSeller(@Value("${mendicant.id}") Long cardID,
-                  @Value("${mendicant.name}") String name,
-                  @Value("${mendicant.players}") Integer playerRequirement,
-                  @Value("${mendicant.description}") String description) {
+    public BreadSeller(@Value("${breadSeller.id}") Long cardID,
+                  @Value("${breadSeller.name}") String name,
+                  @Value("${breadSeller.players}") Integer playerRequirement,
+                  @Value("${breadSeller.description}") String description) {
         super(cardID, name, description);
         this.playerRequirement = playerRequirement;
     }

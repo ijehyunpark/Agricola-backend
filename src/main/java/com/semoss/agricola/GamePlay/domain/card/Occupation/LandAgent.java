@@ -8,7 +8,6 @@ import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,9 +15,8 @@ import org.springframework.stereotype.Component;
  */
 @Getter
 @Component
-@Scope("prototype")
 public class LandAgent extends DefaultOccupation implements ActionTrigger {
-    private int playerRequirement;
+    private final int playerRequirement;
 
     public LandAgent(@Value("${landAgent.id}") Long cardID,
                      @Value("${landAgent.name}") String name,

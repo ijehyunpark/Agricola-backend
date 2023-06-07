@@ -7,7 +7,6 @@ import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -17,17 +16,16 @@ import java.util.ArrayList;
  */
 @Getter
 @Component
-@Scope("prototype")
 public class ClayDeliveryman extends DefaultOccupation implements StackResource {
     private final ResourceStruct stackResource = ResourceStruct.builder().resource(ResourceType.CLAY).count(1).build();
     private final int[] rounds = new int[]{6,7,8,9,10,11,12,13,14};
     private final boolean isStaticRound = true;
     private final int playerRequirement;
 
-    public ClayDeliveryman(@Value("${mendicant.id}") Long cardID,
-                       @Value("${mendicant.name}") String name,
-                       @Value("${mendicant.players}") Integer playerRequirement,
-                       @Value("${mendicant.description}") String description) {
+    public ClayDeliveryman(@Value("${clayDeliveryman.id}") Long cardID,
+                       @Value("${clayDeliveryman.name}") String name,
+                       @Value("${clayDeliveryman.players}") Integer playerRequirement,
+                       @Value("${clayDeliveryman.description}") String description) {
         super(cardID, name, description);
         this.playerRequirement = playerRequirement;
     }

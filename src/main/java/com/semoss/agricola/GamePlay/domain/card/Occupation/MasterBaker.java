@@ -1,14 +1,13 @@
 package com.semoss.agricola.GamePlay.domain.card.Occupation;
 
 import com.semoss.agricola.GamePlay.domain.History;
-import com.semoss.agricola.GamePlay.domain.card.ActionTrigger;
 import com.semoss.agricola.GamePlay.domain.action.component.ActionType;
+import com.semoss.agricola.GamePlay.domain.card.ActionTrigger;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.util.Pair;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,9 +15,8 @@ import org.springframework.stereotype.Component;
  */
 @Getter
 @Component
-@Scope("prototype")
 public class MasterBaker extends DefaultOccupation implements ActionTrigger, ActionCrossTrigger {
-    private int playerRequirement;
+    private final int playerRequirement;
 
     public MasterBaker(@Value("${masterBaker.id}") Long cardID,
                      @Value("${masterBaker.name}") String name,

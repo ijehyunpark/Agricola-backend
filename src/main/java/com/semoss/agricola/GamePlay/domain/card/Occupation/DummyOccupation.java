@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 public class DummyOccupation extends DefaultOccupation {
     private final int playerRequirement;
 
-    private static long DUMMY_OCCUPATION_NEXT_ID = 3000L;
+    private static long DUMMY_OCCUPATION_NEXT_ID = 100000000L;
     public DummyOccupation(@Value("${dummy.name}") String name,
                               @Value("${dummy.players}") Integer playerRequirement,
                               @Value("${dummy.description}") String description) {

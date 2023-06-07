@@ -68,6 +68,7 @@ public class Player {
         return playerBoard.getAnimal(animalType);
     }
 
+
     /**
      * 저장소에 자원 저장
      * @param resource 저장할 자원
@@ -173,6 +174,29 @@ public class Player {
         for (ResourceStruct resource : resources) {
             useResource(resource);
         }
+    }
+
+
+    /**
+     * 동물을 소모한다.
+     * @param animalType
+     * @param num
+     */
+    public void useAnimal(AnimalType animalType, int num) {
+        List<int[]> positions = playerBoard.animalPos(animalType);
+        int total = positions.stream()
+                .mapToInt(ints -> ints[2])
+                .sum();
+        if (total < num)
+            throw new ResourceLackException("동물 개수가 부족합니다.");
+
+        int ptr = 0;
+        while(total > 0) {
+            int consume = Math.max(positions.get(ptr)[2], num);
+            playerBoard.removeAnimal(positions.get(ptr)[0], positions.get(ptr)[1], consume);
+            num -= consume;
+        }
+
     }
 
     /**

@@ -5,17 +5,18 @@ import com.semoss.agricola.GamePlay.domain.action.Event;
 import com.semoss.agricola.GamePlay.domain.action.implement.DefaultAction;
 import com.semoss.agricola.GamePlay.domain.card.Card;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
-import com.semoss.agricola.GamePlay.domain.card.CardType;
+import com.semoss.agricola.GamePlay.domain.card.CookingAnytimeTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Minorcard.MinorCard;
 import com.semoss.agricola.GamePlay.domain.card.Occupation.Occupation;
 import com.semoss.agricola.GamePlay.domain.gameboard.GameBoard;
 import com.semoss.agricola.GamePlay.domain.player.Player;
+import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
 import com.semoss.agricola.GamePlay.domain.resource.AnimalType;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
 import com.semoss.agricola.GamePlay.exception.IllegalRequestException;
 import com.semoss.agricola.GamePlay.exception.NotFoundException;
-import com.semoss.agricola.GamePlay.exception.NotImplementException;
 import com.semoss.agricola.GamePlay.exception.ServerError;
 import com.semoss.agricola.GameRoom.domain.Game;
 import com.semoss.agricola.GameRoom.domain.GameType;
@@ -294,41 +295,37 @@ public class AgricolaGame implements Game {
      * @param improvementId 자원 교환 작업 시 사용할 주설비 식별자
      * @param resource 교환할 자원의 종류와 개수
      */
-    public void playExchange(Long improvementId, ResourceType resource, Long count) {
+    public void playExchange(Long improvementId, ResourceType resource, int count) {
         Player player = this.getGameState().getPlayer();
 
-        // 플레이어가 해당 주설비를 가지고 있는지 검증한다.
+        // 플레이어가 해당 요리 가능한 카드를 가지고 있는지 검증한다.
         Card card = cardDictionary.getCard(improvementId);
-        if (card.getCardType() != CardType.MAJOR)
-            throw new IllegalRequestException("주설비카드가 아닙니다.");
         if(!cardDictionary.hasCardInField(player, card))
-            throw new NotFoundException("주설비를 가지고 있지 않습니다.");
+            throw new NotFoundException("해당 카드를 가지고 있지 않습니다.");
 
-        // TODO : 플레이어가 교환할 자원을 가지고 있는지 검증한다.
-        //
+        if(!(card instanceof CookingAnytimeTrigger))
+            throw new IllegalRequestException("요리 주설비가 아닙니다.");
+        CookingAnytimeTrigger cookingMajorCard = (CookingAnytimeTrigger) card;
 
-        // TODO: 주설비와 교환 요청 자원을 사용하여 교환 작업을 수행한다.
-        //
-        throw new NotImplementException("미구현");
+        // 주설비와 교환 요청 자원을 사용하여 교환 작업을 수행한다.
+        cookingMajorCard.cooking(player, ResourceStruct.builder().resource(resource).count(count).build());
     }
 
 
-    public void playExchange(Long improvementId, AnimalType animal, Long count) {
+    public void playExchange(Long improvementId, AnimalType animal, int count) {
         Player player = this.getGameState().getPlayer();
 
-        // 플레이어가 해당 주설비를 가지고 있는지 검증한다.
+        // 플레이어가 해당 요리 가능한 카드를 가지고 있는지 검증한다.
         Card card = cardDictionary.getCard(improvementId);
-        if (card.getCardType() != CardType.MAJOR)
-            throw new IllegalRequestException("주설비카드가 아닙니다.");
         if(!cardDictionary.hasCardInField(player, card))
-            throw new NotFoundException("주설비를 가지고 있지 않습니다.");
+            throw new NotFoundException("해당 카드를 가지고 있지 않습니다.");
 
-        // TODO : 플레이어가 교환할 자원을 가지고 있는지 검증한다.
-        //
+        if(!(card instanceof CookingAnytimeTrigger))
+            throw new IllegalRequestException("요리 주설비가 아닙니다.");
+        CookingAnytimeTrigger cookingMajorCard = (CookingAnytimeTrigger) card;
 
-        // TODO: 주설비와 교환 요청 자원을 사용하여 교환 작업을 수행한다.
-        //
-        throw new NotImplementException("미구현");
+        // 주설비와 교환 요청 자원을 사용하여 교환 작업을 수행한다.
+        cookingMajorCard.cooking(player, AnimalStruct.builder().animal(animal).count(count).build());
     }
 
     public void harvest(Player player) {

@@ -20,5 +20,5 @@ public class AgricolaExchangeRequest {
 
     @NotNull(message = "필수 입력")
     @Min(value = 1, message = "최소 1개 입력")
-    private Long count;
+    private Integer count;
 }

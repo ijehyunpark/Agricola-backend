@@ -7,6 +7,7 @@ import com.semoss.agricola.GamePlay.domain.card.Minorcard.MinorCard;
 import com.semoss.agricola.GamePlay.domain.card.Occupation.DummyOccupation;
 import com.semoss.agricola.GamePlay.domain.card.Occupation.Occupation;
 import com.semoss.agricola.GamePlay.domain.player.Player;
+import com.semoss.agricola.GamePlay.dto.CardDictionaryResponse;
 import com.semoss.agricola.GamePlay.exception.NotFoundException;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -20,9 +21,9 @@ import java.util.stream.Collectors;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-@Getter
 @Log4j2
 public class CardDictionary {
+    @Getter
     private final List<Card> cardDict = new ArrayList<>();
     private final Map<Card, Player> ownerDict = new HashMap<>();
     private final Map<Card, Player> playerHand = new HashMap<>();
@@ -77,6 +78,18 @@ public class CardDictionary {
                 .filter(entry -> entry.getValue().equals(player))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
+    }
+
+    public List<CardDictionaryResponse> getOwnerDict() {
+        return ownerDict.entrySet().stream()
+                .map(cardPlayerEntry -> new CardDictionaryResponse(cardPlayerEntry.getKey().getCardID(), cardPlayerEntry.getValue().getUserId()))
+                .toList();
+    }
+
+    public List<CardDictionaryResponse> getPlayerHand() {
+        return playerHand.entrySet().stream()
+                .map(cardPlayerEntry -> new CardDictionaryResponse(cardPlayerEntry.getKey().getCardID(), cardPlayerEntry.getValue().getUserId()))
+                .toList();
     }
 
     /**

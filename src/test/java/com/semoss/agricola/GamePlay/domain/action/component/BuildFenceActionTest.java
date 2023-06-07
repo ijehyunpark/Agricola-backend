@@ -51,6 +51,7 @@ class BuildFenceActionTest {
             System.out.println();
         }
     }
+
     @Test
     @DisplayName("울타리 건설: 성공")
     void test1() {

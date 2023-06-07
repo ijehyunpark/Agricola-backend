@@ -149,7 +149,7 @@ public class AgricolaServiceImpl implements AgricolaService {
      * @param count
      */
     @Override
-    public void playExchange(Long gameRoomId, Long improvementId, ResourceType resource, Long count) {
+    public void playExchange(Long gameRoomId, Long improvementId, ResourceType resource, int count) {
         log.info("playExchange 요청이 입력되었습니다. : " + improvementId.toString());
         log.info(resource.getName());
         log.info(count);
@@ -174,7 +174,7 @@ public class AgricolaServiceImpl implements AgricolaService {
      * @param count
      */
     @Override
-    public void playExchange(Long gameRoomId, Long improvementId, AnimalType animal, Long count) {
+    public void playExchange(Long gameRoomId, Long improvementId, AnimalType animal, int count) {
         log.info("playExchange 요청이 입력되었습니다. : " + improvementId.toString());
         log.info(animal.getName());
         log.info(count);

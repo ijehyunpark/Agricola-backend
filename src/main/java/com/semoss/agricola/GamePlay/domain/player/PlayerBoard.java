@@ -789,7 +789,7 @@ public class PlayerBoard {
         }
         if (animalNum >= 1){
             this.moveAnimalArr[animalType.getValue()].addResource(animalNum);
-            throw new IllegalRequestException("더 이상 동물을 배치할 수 없습니다. 다시 배치해야합니다.");
+            throw new AnimalOverflowException("더 이상 동물을 배치할 수 없습니다. 다시 배치해야합니다.");
         }
 
         return true;

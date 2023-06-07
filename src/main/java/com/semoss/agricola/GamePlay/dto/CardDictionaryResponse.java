@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class CardDictionaryResponse {
-    private Long playerId;
     private Long cardId;
+    private Long playerId;
 }

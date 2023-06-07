@@ -129,6 +129,10 @@ public class AgricolaServiceImpl implements AgricolaService {
         if(game.getGameState().getGameProgress() != GameProgress.PlayerAction)
             throw new RuntimeException("게임이 액션을 수락하는 단계가 아닙니다.");
 
+        // 가축 재배치가 필요한지 검증
+        if(game.needRelocation())
+            throw new BlockingException("가축 재배치가 필요합니다.");
+
         // 행동 칸 작업 수행
         game.playAction(eventId, acts);
 
@@ -167,7 +171,7 @@ public class AgricolaServiceImpl implements AgricolaService {
     }
 
     /**
-     * 언제나 가능한 행동(플레이어 턴에만 제약)\
+     * 언제나 가능한 행동(플레이어 턴에만 제약).
      * @param gameRoomId
      * @param improvementId
      * @param animal
@@ -189,6 +193,36 @@ public class AgricolaServiceImpl implements AgricolaService {
         if(game.getGameState().getGameProgress() == GameProgress.HARVEST){
             feeding(gameRoomId);
         }
+    }
+
+    /**
+     * 가축 재비치 진행
+     */
+    @Override
+    public void playRelocation(Long gameRoomId, Integer y, Integer x, Integer newY, Integer newX, Integer count) {
+        log.info("playRelocation 요청이 입력되었습니다.");
+
+        // 아그리콜라 게임 추출
+        AgricolaGame game = extractGame(gameRoomId);
+
+        // 교환 작업 수행
+        game.playRelocation(y, x, newY, newX, count);
+
+    }
+
+    /**
+     * 가축 재비치 진행
+     */
+    @Override
+    public void playRelocation(Long gameRoomId, AnimalType animalType, Integer newY, Integer newX, Integer count) {
+        log.info("playRelocation 요청이 입력되었습니다.");
+
+        // 아그리콜라 게임 추출
+        AgricolaGame game = extractGame(gameRoomId);
+
+        // 교환 작업 수행
+        game.playRelocation(animalType, newY, newX, count);
+
     }
 
     /**

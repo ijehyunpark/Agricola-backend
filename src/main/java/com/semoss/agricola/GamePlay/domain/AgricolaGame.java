@@ -271,6 +271,13 @@ public class AgricolaGame implements Game {
                 .toList();
     }
 
+
+
+    public boolean needRelocation() {
+        Player player = this.getGameState().getPlayer();
+        return player.needRelocation();
+    }
+
     /**
      * 액션을 플레이한다.
      * @param eventId 플레이할 액션
@@ -326,6 +333,21 @@ public class AgricolaGame implements Game {
 
         // 주설비와 교환 요청 자원을 사용하여 교환 작업을 수행한다.
         cookingMajorCard.cooking(player, AnimalStruct.builder().animal(animal).count(count).build());
+    }
+
+    public void playRelocation(int y, int x, int newY, int newX, int count) {
+        Player player = this.getGameState().getPlayer();
+
+        player.relocation(y, x, newY, newX, count);
+    }
+
+
+
+    public void playRelocation(AnimalType animalType, Integer newY, Integer newX, Integer count) {
+        Player player = this.getGameState().getPlayer();
+
+        player.relocation(animalType, newY, newX, count);
+
     }
 
     public void harvest(Player player) {

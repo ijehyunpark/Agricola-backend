@@ -477,4 +477,15 @@ public class Player {
         this.playerBoard.cultivate(y, x, resourceType);
     }
 
+    public boolean needRelocation() {
+        return this.playerBoard.isMovAnimalArrEmpty();
+    }
+
+    public void relocation(int y, int x, int newY, int newX, int count) {
+        this.playerBoard.relocation(y, x, newY, newX, count);
+    }
+
+    public void relocation(AnimalType animalType, Integer newY, Integer newX, Integer count) {
+        this.playerBoard.relocation(animalType, newY, newX, count);
+    }
 }

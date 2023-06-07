@@ -139,10 +139,19 @@ public class PlayerBoard {
 
 
         // 가축이 2마리 이상이면 하나를 얻는다.
+        boolean isBlocking = false;
         for (Map.Entry<AnimalType, Integer> animal : animals.entrySet()) {
             if (animal.getValue() >= 2) {
-                addAnimal(animal.getKey(), 1);
+                try {
+                    addAnimal(animal.getKey(), 1);
+                } catch (AnimalOverflowException ex) {
+                    isBlocking = true;
+                }
             }
+        }
+
+        if(isBlocking){
+            throw new AnimalOverflowException();
         }
     }
 
@@ -946,5 +955,26 @@ public class PlayerBoard {
             num += 1;
         }
         return num;
+    }
+
+    /**
+     * 임시 보관 동물 객체가 비어있는지 확인
+     * @return
+     */
+    protected boolean isMovAnimalArrEmpty() {
+        for (int i = 0; i < 3; i++) {
+            if(this.moveAnimalArr[i].getCount() > 0)
+                return false;
+        }
+        return true;
+    }
+
+
+    protected void relocation(int y, int x, int newY, int newX, int count) {
+        initMoveAnimalArr();
+    }
+
+    public void relocation(AnimalType animalType, Integer newY, Integer newX, Integer count) {
+        initMoveAnimalArr();
     }
 }

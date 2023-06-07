@@ -120,15 +120,6 @@ public class AgricolaServiceImpl implements AgricolaService {
     @Override
     public void playAction(Long gameRoomId, Long eventId, List<AgricolaActionRequest.ActionFormat> acts) {
         log.info("playAction 요청이 입력되었습니다. : " + eventId.toString());
-        //- 나의 차례가 끝나지 않았을 때 [주설비카드]를 이용하여 자원을 음식으로 교환할수있다.
-        //- 나의 차례가 끝나지 않았을 때 [직업, 보조설비 카드]를 통해 추가 행동을 할 수 있다.
-        //- 나의 차례가 끝나지 않았을 때 울타리 안에 있는 동물의 위치를 바꿀 수 있다.
-        //- 가족이 올라가지 않은 칸에 가족을 한명 놓을 수 있다.
-        //    - 행동칸에 가족을 놓으면 행동칸의 행동을 할 수 있다.
-        //    - [직업,보조카드] 행동칸처럼 가족을 놓을 수 있으면 사용할 수 있다.
-        //- 말을 놓은 후 무르기 버튼을 누르면 나의 행동이 취소되고 다시 돌아간다.
-        //- 말을 놓은 후 확정 버튼을 누르면 나의 행동이 확정된다.
-        //- 제한 시간안에 가족을 움직이지 않을 경우 더미보드판으로 가족이 이동한다.
 
         // 아그리콜라 게임 추출
         AgricolaGame game = extractGame(gameRoomId);
@@ -318,10 +309,6 @@ public class AgricolaServiceImpl implements AgricolaService {
         game.update(GameProgress.FINISH, null);
 
         game.finish();
-        //1.
-        //    - 플레이어가 소유한 자원에 따라 플레이어 점수가 확정되고 최종 순위가 확정된다.
-        //    - ‘한 번 더 하기’ 버튼을 누르면 게임방으로 돌아간다.
-        //    - ‘나가기’ 버튼을 누르면 게임로비창(게임방리스트있는곳)으로 나간다.
     }
 
     @Override

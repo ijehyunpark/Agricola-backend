@@ -2,6 +2,7 @@ package com.semoss.agricola.GamePlay.controller;
 
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
 import com.semoss.agricola.GamePlay.dto.AgricolaExchangeRequest;
+import com.semoss.agricola.GamePlay.exception.BlockingException;
 import com.semoss.agricola.GamePlay.service.AgricolaService;
 import com.semoss.agricola.GameRoom.domain.GameRoom;
 import com.semoss.agricola.GameRoom.service.GameRoomService;
@@ -59,7 +60,13 @@ public class AgricolaController {
         GameRoom gameRoom = gameRoomService.getOne(gameRoomId);
 
         // 플레이어 액션 진행
-        agricolaService.playAction(gameRoomId, actionRequest.getEventId(), actionRequest.getActs());
+        try {
+            agricolaService.playAction(gameRoomId, actionRequest.getEventId(), actionRequest.getActs());
+        } catch (BlockingException ex) {
+            log.debug("게임이 일시중단되었습니다.");
+            simpMessageSendingOperations.convertAndSend("/sub/channel/" + gameRoomId, gameRoom);
+            simpMessageSendingOperations.convertAndSend("/sub/errors" , ex.getLocalizedMessage());
+        }
 
         // 게임 상태 전송
         simpMessageSendingOperations.convertAndSend("/sub/channel/" + gameRoomId, gameRoom);
@@ -81,12 +88,18 @@ public class AgricolaController {
         GameRoom gameRoom = gameRoomService.getOne(gameRoomId);
 
         // 플레이어 교환 진행
-        for(AgricolaExchangeRequest exchange : exchangeRequest){
-            if(exchange.getResource() != null)
-                agricolaService.playExchange(gameRoomId, exchange.getImprovementId(), exchange.getResource(), exchange.getCount());
-            else
-                agricolaService.playExchange(gameRoomId, exchange.getImprovementId(), exchange.getAnimal(), exchange.getCount());
-    
+        try{
+            for(AgricolaExchangeRequest exchange : exchangeRequest){
+                if(exchange.getResource() != null)
+                    agricolaService.playExchange(gameRoomId, exchange.getImprovementId(), exchange.getResource(), exchange.getCount());
+                else
+                    agricolaService.playExchange(gameRoomId, exchange.getImprovementId(), exchange.getAnimal(), exchange.getCount());
+
+            }
+        } catch (BlockingException ex) {
+            log.debug("게임이 일시중단되었습니다.");
+            simpMessageSendingOperations.convertAndSend("/sub/channel/" + gameRoomId, gameRoom);
+            simpMessageSendingOperations.convertAndSend("/sub/errors" , ex.getLocalizedMessage());
         }
 
         // 게임 상태 전송

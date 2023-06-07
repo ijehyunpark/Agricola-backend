@@ -13,6 +13,7 @@ import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.AnimalType;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
+import com.semoss.agricola.GamePlay.exception.IllegalRequestException;
 import com.semoss.agricola.GamePlay.exception.NotFoundException;
 import com.semoss.agricola.GamePlay.exception.NotImplementException;
 import com.semoss.agricola.GamePlay.exception.ServerError;
@@ -296,10 +297,10 @@ public class AgricolaGame implements Game {
     public void playExchange(Long improvementId, ResourceType resource, Long count) {
         Player player = this.getGameState().getPlayer();
 
-        // TODO: 플레이어가 해당 주설비를 가지고 있는지 검증한다.
+        // 플레이어가 해당 주설비를 가지고 있는지 검증한다.
         Card card = cardDictionary.getCard(improvementId);
         if (card.getCardType() != CardType.MAJOR)
-            throw new RuntimeException("주설비카드가 아닙니다.");
+            throw new IllegalRequestException("주설비카드가 아닙니다.");
         if(!cardDictionary.hasCardInField(player, card))
             throw new NotFoundException("주설비를 가지고 있지 않습니다.");
 
@@ -315,10 +316,10 @@ public class AgricolaGame implements Game {
     public void playExchange(Long improvementId, AnimalType animal, Long count) {
         Player player = this.getGameState().getPlayer();
 
-        // TODO: 플레이어가 해당 주설비를 가지고 있는지 검증한다.
+        // 플레이어가 해당 주설비를 가지고 있는지 검증한다.
         Card card = cardDictionary.getCard(improvementId);
         if (card.getCardType() != CardType.MAJOR)
-            throw new RuntimeException("주설비카드가 아닙니다.");
+            throw new IllegalRequestException("주설비카드가 아닙니다.");
         if(!cardDictionary.hasCardInField(player, card))
             throw new NotFoundException("주설비를 가지고 있지 않습니다.");
 

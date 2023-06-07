@@ -12,6 +12,7 @@ import com.semoss.agricola.GamePlay.domain.card.Minorcard.FieldBonusPoint;
 import com.semoss.agricola.GamePlay.domain.card.Occupation.FinishTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Occupation.HarvestTrigger;
 import com.semoss.agricola.GamePlay.domain.resource.*;
+import com.semoss.agricola.GamePlay.exception.BlockingException;
 import com.semoss.agricola.GamePlay.exception.IllegalRequestException;
 import com.semoss.agricola.GamePlay.exception.ResourceLackException;
 import lombok.Builder;
@@ -313,7 +314,7 @@ public class Player {
         if(getResourceStruct(ResourceType.FOOD).getCount() >= foodNeeds)
             useResource(ResourceType.FOOD, foodNeeds);
         else
-            throw new ResourceLackException("음식 토큰 부족");
+            throw new BlockingException("음식 토큰 부족");
     }
 
     /**

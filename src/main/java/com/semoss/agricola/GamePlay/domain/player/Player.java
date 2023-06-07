@@ -478,7 +478,7 @@ public class Player {
     }
 
     public boolean needRelocation() {
-        return this.playerBoard.isMovAnimalArrEmpty();
+        return !this.playerBoard.isMovAnimalArrEmpty();
     }
 
     public void relocation(int y, int x, int newY, int newX, int count) {

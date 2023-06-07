@@ -180,7 +180,15 @@ public abstract class DefaultAction {
                         }
                     }
                     case PLACE -> {
-                        ((PlaceAction) action).runAction(player, (Long) act.getActs(), cardDictionary, round);
+                        try {
+                            ObjectMapper objectMapper = ObjectMapperSingleton.getInstance();
+                            String jsonString = objectMapper.writeValueAsString(act.getActs());
+                            log.info(jsonString);
+                            Long request = objectMapper.readValue(jsonString, Long.class);
+                            ((PlaceAction) action).runAction(player, request, cardDictionary, round);
+                        } catch (JsonProcessingException e) {
+                            throw new RuntimeException("요청 필드 오류");
+                        }
                     }
                     case STACK, STACK_ANIMAL -> {
                         ((StackAction) action).runStackAction(player, stacks);

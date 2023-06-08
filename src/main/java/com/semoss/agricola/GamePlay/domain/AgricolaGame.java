@@ -212,12 +212,10 @@ public class AgricolaGame implements Game {
      */
     public Optional<Player> findNextActionPlayer(){
         Player player = getGameState().getPlayer();
-        log.warn(player.isCompletedPlayed());
 
         Player nextPlayer = player;
         do{
             nextPlayer = findNextPlayer(nextPlayer);
-            log.info(nextPlayer.getUserId() + " " + player.getUserId());
             if(!nextPlayer.isCompletedPlayed())
                 return Optional.of(nextPlayer);
         } while (nextPlayer != player);

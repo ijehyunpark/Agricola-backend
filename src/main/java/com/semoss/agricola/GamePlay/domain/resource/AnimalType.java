@@ -1,8 +1,8 @@
 package com.semoss.agricola.GamePlay.domain.resource;
 
 public enum AnimalType {
-    WILD_BOAR(0),
-    SHEEP(1),
+    SHEEP(0),
+    WILD_BOAR(1),
     CATTLE(2);
 
     private final int value;

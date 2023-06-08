@@ -422,10 +422,9 @@ public class Player {
         this.playerBoard.playAction();
         // 액션 트리거 발동
         cardDictionary.getCards(this).stream()
-                .filter(card -> card.getCardType() == CardType.OCCUPATION)
-                .filter(occupation -> occupation instanceof ActionTrigger)
-                .map(occupation -> (ActionTrigger) occupation)
-                .forEach(occupation -> occupation.actionTrigger(this, history));
+                .filter(ActionTrigger.class::isInstance)
+                .map(ActionTrigger.class::cast)
+                .forEach(card -> card.actionTrigger(this, history));
     }
 
     public int getNumField(FieldType fieldType) { return playerBoard.getNumField(fieldType); }
@@ -464,7 +463,7 @@ public class Player {
     public void finish(CardDictionary cardDictionary) {
         cardDictionary.getCards(this).stream()
                 .filter(card -> card.getCardType() == CardType.OCCUPATION)
-                .filter(occupation -> occupation instanceof ActionTrigger)
+                .filter(occupation -> occupation instanceof FinishTrigger)
                 .map(occupation -> (FinishTrigger) occupation)
                 .forEach(occupation -> occupation.finishTrigger(this));
 

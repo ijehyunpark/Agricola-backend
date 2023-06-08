@@ -14,6 +14,11 @@ import java.util.List;
 @Getter
 public class Room implements Field {
 
+    private PetRoom petRoom;
+    private final FieldType fieldType = FieldType.ROOM;
+    private final boolean isPetRoom;
+    private final List<Resident> residents;
+
     @Getter
     public class PetRoom {
         private AnimalStruct animal;
@@ -48,10 +53,6 @@ public class Room implements Field {
         }
     }
 
-    private PetRoom petRoom;
-    private final FieldType fieldType = FieldType.ROOM;
-    private final boolean isPetRoom;
-    private final List<Resident> residents;
 
     @Builder
     public Room(boolean isPetRoom){
@@ -123,6 +124,10 @@ public class Room implements Field {
         return this.residents.stream()
                 .mapToInt(resident -> resident.getResidentType() == ResidentType.ADULT ? 2 : 1)
                 .sum();
+    }
+
+    public boolean isPetRoom(){
+        return isPetRoom;
     }
 
     /**

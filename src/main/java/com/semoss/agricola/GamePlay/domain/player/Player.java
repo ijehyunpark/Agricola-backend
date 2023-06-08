@@ -28,6 +28,7 @@ import java.util.List;
  */
 @Getter
 @NoArgsConstructor
+
 public class Player {
     private Long userId;
     private boolean startingToken;

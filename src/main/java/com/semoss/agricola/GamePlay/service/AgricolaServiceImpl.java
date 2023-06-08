@@ -55,34 +55,39 @@ public class AgricolaServiceImpl implements AgricolaService {
      */
     @Override
     public void start(Long gameRoomId) {
-        log.info("게임이 시작되었습니다.");
         // 게임을 사작할 게임방 검색
         GameRoom gameRoom =  gameRoomRepository.findById(gameRoomId).orElseThrow(
                 () -> new NoSuchElementException("해당 id를 가진 게임방이 존재하지 않습니다.")
         );
 
-        if (gameRoom.getGame() != null)
-            throw new RuntimeException("현재 진행중인 게임이 있습니다.");
+//          // TODO: 다인용 지원 혹은 제약 결정
+//          if (gameRoom.getParticipants().size() != 4){
+//              throw new RuntimeException("현재 4인용만 지원합니다.");
+//          }
+        AgricolaGame game;
+        synchronized (gameRoom) {
+            if (gameRoom.getGame() != null)
+                throw new RuntimeException("현재 진행중인 게임이 있습니다.");
 
-        // TODO: 다인용 지원 혹은 제약 결정
-//      if (gameRoom.getParticipants().size() != 4){
-//          throw new RuntimeException("현재 4인용만 지원합니다.");
-//      }
+            // 새로운 아그리콜라 게임 시스템을 제작한다.
+            List<DefaultAction> actions = actionProvider.stream().toList();
+            CardDictionary cardDictionary = cardDictionaryProvider.getObject();
+            game = agricolaGameProvider.getObject(gameRoom.getParticipants(), "NONE", actions, cardDictionary);
+            gameRoom.setGame(game);
 
-        // 새로운 아그리콜라 게임 시스템을 제작한다.
-        List<DefaultAction> actions = actionProvider.stream().toList();
-        CardDictionary cardDictionary = cardDictionaryProvider.getObject();
-        AgricolaGame game = agricolaGameProvider.getObject(gameRoom.getParticipants(), "NONE", actions, cardDictionary);
-        gameRoom.setGame(game);
+        }
 
-        // 선공 플레이어의 경우 음식 토큰 2개, 아닌 경우 3개를 받는다.
-        game.setUpStartingFood();
+        log.info("게임이 시작되었습니다. :" + gameRoomId);
 
-        // 각 플레이어에게 보조설비 및 직업카드를 7장 배포한다.
-        game.distributeMinorCardsAndOccupations(CardDistributeStrategy.RANDOM);
+            // 선공 플레이어의 경우 음식 토큰 2개, 아닌 경우 3개를 받는다.
+            game.setUpStartingFood();
 
-        // 게임 시작 후 최초 라운드 시작을 개시한다.
-        roundStart(gameRoomId);
+            // 각 플레이어에게 보조설비 및 직업카드를 7장 배포한다.
+            game.distributeMinorCardsAndOccupations(CardDistributeStrategy.RANDOM);
+
+            // 게임 시작 후 최초 라운드 시작을 개시한다.
+            roundStart(gameRoomId);
+
     }
 
     /**
@@ -137,7 +142,7 @@ public class AgricolaServiceImpl implements AgricolaService {
         game.playAction(eventId, acts);
 
         // 모든 플레이어가 플레이를 마칠 경우 라운드 종료, 아닌 경우 다음 플레이어로 상태 변경
-        Optional<Player> nextPlayer = game.findNextActionPlayer(game.getGameState().getPlayer());
+        Optional<Player> nextPlayer = game.findNextActionPlayer();
         if(nextPlayer.isEmpty()){
             roundEnd(gameRoomId);
         } else{

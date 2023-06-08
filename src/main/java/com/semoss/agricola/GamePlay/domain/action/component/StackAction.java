@@ -11,12 +11,12 @@ public interface StackAction extends Action {
     default void runStackAction(Player player, List<ResourceStructInterface> stacks) {
         stacks.stream()
                 .filter(ResourceStructInterface::isResource)
-                .map(resourceStructInterface -> (ResourceStruct) stacks)
+                .map(resourceStructInterface -> (ResourceStruct) resourceStructInterface)
                 .forEach(player::addResource);
 
         stacks.stream()
                 .filter(ResourceStructInterface::isAnimal)
-                .map(resourceStructInterface -> (AnimalStruct) stacks)
+                .map(resourceStructInterface -> (AnimalStruct) resourceStructInterface)
                 .forEach(player::addAnimal);
     }
 }

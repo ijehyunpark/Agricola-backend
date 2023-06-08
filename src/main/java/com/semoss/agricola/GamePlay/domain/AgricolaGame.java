@@ -208,16 +208,20 @@ public class AgricolaGame implements Game {
 
     /**
      * 플레이를 하지 않은 다음 플레이어를 찾는다.
-     * @param player 현재 플레이를 진행한 플레이어
      * @return 모든 플레이어가 플레이를 마친 경우 null, 아닌 경우 다음 플레이어
      */
-    public Optional<Player> findNextActionPlayer(Player player){
+    public Optional<Player> findNextActionPlayer(){
+        Player player = getGameState().getPlayer();
+        log.warn(player.isCompletedPlayed());
+
         Player nextPlayer = player;
         do{
-            nextPlayer = findNextPlayer(player);
+            nextPlayer = findNextPlayer(nextPlayer);
+            log.info(nextPlayer.getUserId() + " " + player.getUserId());
             if(!nextPlayer.isCompletedPlayed())
                 return Optional.of(nextPlayer);
         } while (nextPlayer != player);
+
         return Optional.empty();
     }
 

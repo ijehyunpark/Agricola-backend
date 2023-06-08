@@ -1,29 +1,27 @@
 package com.semoss.agricola.GamePlay.domain.player;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.semoss.agricola.GamePlay.domain.AgricolaGame;
 import com.semoss.agricola.GamePlay.domain.History;
+import com.semoss.agricola.GamePlay.domain.card.ActionTrigger;
+import com.semoss.agricola.GamePlay.domain.card.Card;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
-import com.semoss.agricola.GamePlay.domain.card.CookingAnytimeTrigger;
-import com.semoss.agricola.GamePlay.domain.card.CookingHarvestTrigger;
+import com.semoss.agricola.GamePlay.domain.card.Majorcard.MajorCard;
 import com.semoss.agricola.GamePlay.domain.card.Majorcard.ResourceBonusPointTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Minorcard.FieldBonusPoint;
-import com.semoss.agricola.GamePlay.domain.card.ActionTrigger;
-import com.semoss.agricola.GamePlay.domain.card.Occupation.ActionCrossTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Occupation.FinishTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Occupation.HarvestTrigger;
-import com.semoss.agricola.GamePlay.domain.card.Occupation.Occupation;
 import com.semoss.agricola.GamePlay.domain.resource.*;
+import com.semoss.agricola.GamePlay.exception.BlockingException;
 import com.semoss.agricola.GamePlay.exception.IllegalRequestException;
 import com.semoss.agricola.GamePlay.exception.ResourceLackException;
-import com.semoss.agricola.GamePlay.exception.ServerError;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
 
 /**
  * 게임 플레이어
@@ -32,20 +30,14 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class Player {
     private Long userId;
-    @JsonIgnore
-    private AgricolaGame game;
     private boolean startingToken;
     private final EnumMap<ResourceType,Integer> resources = new EnumMap<>(ResourceType.class);
     private final PlayerBoard playerBoard = PlayerBoard.builder().build();
-    private final List<Long> cardHand = new ArrayList<>();
-    private final List<Long> cardField = new ArrayList<>();
-    private final List<Occupation> occupations = new ArrayList<>();
     private final List<ResourceStructInterface>[] roundStackResource = new ArrayList[15];
 
     @Builder
-    public Player(Long userId, AgricolaGame game, boolean isStartPlayer){
+    public Player(Long userId, boolean isStartPlayer){
         this.userId = userId;
-        this.game = game;
         this.startingToken = isStartPlayer;
         for (ResourceType resource : ResourceType.values()){
             resources.put(resource,0);
@@ -75,6 +67,7 @@ public class Player {
     public int getAnimal(AnimalType animalType) {
         return playerBoard.getAnimal(animalType);
     }
+
 
     /**
      * 저장소에 자원 저장
@@ -183,6 +176,29 @@ public class Player {
         }
     }
 
+
+    /**
+     * 동물을 소모한다.
+     * @param animalType
+     * @param num
+     */
+    public void useAnimal(AnimalType animalType, int num) {
+        List<int[]> positions = playerBoard.animalPos(animalType);
+        int total = positions.stream()
+                .mapToInt(ints -> ints[2])
+                .sum();
+        if (total < num)
+            throw new ResourceLackException("동물 개수가 부족합니다.");
+
+        int ptr = 0;
+        while(total > 0) {
+            int consume = Math.max(positions.get(ptr)[2], num);
+            playerBoard.removeAnimal(positions.get(ptr)[0], positions.get(ptr)[1], consume);
+            num -= consume;
+        }
+
+    }
+
     /**
      * 해당 라운드가 시작될 때 쌓여 있는 자원 획득
      * @param round 현재 라운드
@@ -212,19 +228,13 @@ public class Player {
      * 시작 토큰을 가지도록 설정한다.
      */
     public void setStartingTokenByTrue() {
-        this.game.getPlayers().stream()
-                .filter(Player::isStartingToken)
-                .findAny()
-                .orElseThrow(ServerError::new)
-                .disableStartingToken();
-
         this.startingToken = true;
     }
 
     /**
      * 시작 토큰을 제거한다.
      */
-    private void disableStartingToken() {
+    public void disableStartingToken() {
         this.startingToken = false;
     }
 
@@ -271,61 +281,6 @@ public class Player {
         playerBoard.addStable(row,col);
     }
 
-    /** TODO
-     * 플레이어의 핸드에 해당 타입의 카드가 있는지 확인
-     * @param cardType card type
-     * @return result
-     */
-    public boolean hasCardInHand(CardType cardType) {
-        for (Long id : cardHand){
-            if (game.getCardDictionary().cardDict.get(id).getCardType() == cardType)
-                return true;
-        }
-        return false;
-    }
-
-    /**
-     * 해당 ID의 카드를 필드에 깔아두었는지 확인
-     * @param cardID 확인할 카드 ID
-     * @return 확인결과
-     */
-    public boolean hasCardInField(Long cardID) {
-        return cardField.contains(cardID);
-    }
-
-    /**
-     * 카드 타입의 카드를 필드에 얼마나 깔았는지 확인
-     * @param cardType 확인할 카드 타입
-     * @return 필드에 깐 카드 개수
-     */
-    public int numCardInField(CardType cardType) {
-        CardDictionary cardDictionary = game.getCardDictionary();
-        return (int) cardField.stream()
-                .filter(id -> cardDictionary.getCard(id).getCardType() == cardType)
-                .count();
-    }
-
-    /** TODO
-     * place card in hand to field. card becomes available.
-     * @param cardID card ID
-     * @return result
-     */
-    public boolean placeCard(Long cardID){
-        if(cardHand.remove(cardID)) {
-            cardField.add(cardID);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * 카드 획득은 card 에서 담당
-     */
-    public void addMajorCard(Long cardID){
-        cardField.add(cardID);
-        game.getCardDictionary().changeOwner(cardID,this);
-    }
-
     /**
      * 모든 플레이어가 행동을 완했는지 확인
      * @return 만약 행동이 완료되었다면, true를 반환
@@ -353,15 +308,15 @@ public class Player {
      * 수확 작업:
      * 플레이어 보드판에 있는 채소와 곡식 종자를 1개 수확한다.
      */
-    public void harvest() {
+    public void harvest(CardDictionary cardDictionary) {
         // 수확 산출물 계산
         List<ResourceStruct> outputs = this.playerBoard.harvest();
 
         // 플레이어 자원에 추가
         addResource(outputs);
 
-
-        this.occupations.stream()
+        cardDictionary.getCards(this).stream()
+                .filter(card -> card.getCardType() == CardType.OCCUPATION)
                 .filter(occupation -> occupation instanceof HarvestTrigger)
                 .map(occupation -> (HarvestTrigger) occupation)
                 .forEach(occupation -> occupation.harvestTrigger(this));
@@ -383,60 +338,60 @@ public class Player {
         if(getResourceStruct(ResourceType.FOOD).getCount() >= foodNeeds)
             useResource(ResourceType.FOOD, foodNeeds);
         else
-            throw new ResourceLackException("음식 토큰 부족");
+            throw new BlockingException("음식 토큰 부족");
     }
 
     /**
      * 수확 때 1회 사용가능한 음식 교환을 모두 반환 (동물 제외)
      * @return (사용할 자원, 변환될 음식 양)인 튜플을 가지는 리스트
      */
-    public List<ResourceStruct> resourceToFoodHarvest() {
-        return cardField.stream()
-                .map(game.getCardDictionary().getCardDict()::get)
-                .filter(card -> card instanceof CookingHarvestTrigger)
-                .map(card -> ((CookingHarvestTrigger) card).getResourceToFoodHarvest())
-                .toList();
-    }
+//    public List<ResourceStruct> resourceToFoodHarvest() {
+//        return cardField.stream()
+//                .map(game.getCardDictionary().getCardDict()::get)
+//                .filter(card -> card instanceof CookingHarvestTrigger)
+//                .map(card -> ((CookingHarvestTrigger) card).getResourceToFoodHarvest())
+//                .toList();
+//    }
 
     /**
      * 카드 중 언제든 음식 교환이 있는 경우 가장 좋은 효율을 가진 경우들을 모아서 반환
      * @return (사용할 자원, 변환될 음식 양)인 튜플을 가지는 리스트
      */
-    public List<ResourceStructInterface> resourceToFoodAnytime() {
-        return cardField.stream()
-                .map(game.getCardDictionary().cardDict::get)
-                .filter(card -> card instanceof CookingAnytimeTrigger)
-                .flatMap(card -> ((CookingAnytimeTrigger) card).getResourcesToFoodAnytime().stream())
-                .filter(ResourceStructInterface::isResource)
-                .map(resourceStructInterface -> (ResourceStruct) resourceStructInterface)
-                .collect(Collectors.groupingBy(ResourceStruct::getResource))
-                .values().stream()
-                .map(tuples -> tuples.stream()
-                        .max(Comparator.comparingInt(ResourceStruct::getCount))
-                        .orElse(null))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-    }
+//    public List<ResourceStructInterface> resourceToFoodAnytime() {
+//        return cardField.stream()
+//                .map(game.getCardDictionary().cardDict::get)
+//                .filter(card -> card instanceof CookingAnytimeTrigger)
+//                .flatMap(card -> ((CookingAnytimeTrigger) card).getResourcesToFoodAnytime().stream())
+//                .filter(ResourceStructInterface::isResource)
+//                .map(resourceStructInterface -> (ResourceStruct) resourceStructInterface)
+//                .collect(Collectors.groupingBy(ResourceStruct::getResource))
+//                .values().stream()
+//                .map(tuples -> tuples.stream()
+//                        .max(Comparator.comparingInt(ResourceStruct::getCount))
+//                        .orElse(null))
+//                .filter(Objects::nonNull)
+//                .collect(Collectors.toList());
+//    }
 
     /**
      * 카드 중 언제든 음식 교환이 있는 경우 가장 좋은 효율을 가진 경우들을 모아서 반환
      * @return (사용할 동물, 변환될 음식 양)인 튜플을 가지는 리스트
      */
-    public List<AnimalStruct> animalToFoodAnytime(){
-        return cardField.stream()
-                .map(game.getCardDictionary().cardDict::get)
-                .filter(card -> card instanceof CookingAnytimeTrigger)
-                .flatMap(card -> ((CookingAnytimeTrigger) card).getResourcesToFoodAnytime().stream())
-                .filter(ResourceStructInterface::isAnimal)
-                .map(resourceStructInterface -> (AnimalStruct) resourceStructInterface)
-                .collect(Collectors.groupingBy(AnimalStruct::getAnimal))
-                .values().stream()
-                .map(tuples -> tuples.stream()
-                        .max(Comparator.comparingInt(AnimalStruct::getCount))
-                        .orElse(null))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-    }
+//    public List<AnimalStruct> animalToFoodAnytime(){
+//        return cardField.stream()
+//                .map(game.getCardDictionary().cardDict::get)
+//                .filter(card -> card instanceof CookingAnytimeTrigger)
+//                .flatMap(card -> ((CookingAnytimeTrigger) card).getResourcesToFoodAnytime().stream())
+//                .filter(ResourceStructInterface::isAnimal)
+//                .map(resourceStructInterface -> (AnimalStruct) resourceStructInterface)
+//                .collect(Collectors.groupingBy(AnimalStruct::getAnimal))
+//                .values().stream()
+//                .map(tuples -> tuples.stream()
+//                        .max(Comparator.comparingInt(AnimalStruct::getCount))
+//                        .orElse(null))
+//                .filter(Objects::nonNull)
+//                .collect(Collectors.toList());
+//    }
 
     /**
      * 방 업그레이드
@@ -463,22 +418,14 @@ public class Player {
     /**
      * 액션을 플레이한다.
      */
-    public void playAction(History history) {
+    public void playAction(History history, CardDictionary cardDictionary) {
         this.playerBoard.playAction();
         // 액션 트리거 발동
-        this.occupations.stream()
+        cardDictionary.getCards(this).stream()
+                .filter(card -> card.getCardType() == CardType.OCCUPATION)
                 .filter(occupation -> occupation instanceof ActionTrigger)
                 .map(occupation -> (ActionTrigger) occupation)
                 .forEach(occupation -> occupation.actionTrigger(this, history));
-        //액션 크로스 트리거 발동
-        CardDictionary cardDictionary = game.getCardDictionary();
-        List<Long> keys = cardDictionary.getCardDict().entrySet().stream()
-                .filter(entry -> entry.getValue() instanceof ActionCrossTrigger)
-                .map(Map.Entry::getKey)
-                .toList();
-        keys.stream()
-                .filter(id -> cardDictionary.getOwner(id).hasCardInField(id))
-                .forEach(id -> ((ActionCrossTrigger)cardDictionary.getCard(id)).actionCrossTrigger(cardDictionary.getOwner(id),history));
     }
 
     public int getNumField(FieldType fieldType) { return playerBoard.getNumField(fieldType); }
@@ -490,37 +437,33 @@ public class Player {
     //TODO 각 카드 종류별로 판별
     public int getCardPointsResource(CardDictionary cardDictionary) {
         int result = 0;
-        result += (int)cardField.stream()
-                .filter(id -> cardDictionary.getCard(id) instanceof ResourceBonusPointTrigger)
-                .mapToLong(id -> ((ResourceBonusPointTrigger)cardDictionary.getCard(id)).checkPoint(this))
+        result += cardDictionary.getCards(this).stream()
+                .filter(card -> card.getCardType() == CardType.MAJOR)
+                .map(card -> (MajorCard) card)
+                .filter(card -> card instanceof ResourceBonusPointTrigger)
+                .mapToInt(value -> ((ResourceBonusPointTrigger) value).checkPoint(this))
                 .sum();
-        result += (int)cardField.stream()
-                .filter(id -> cardDictionary.getCard(id) instanceof FieldBonusPoint)
-                .mapToLong(id -> ((FieldBonusPoint)cardDictionary.getCard(id)).checkPoint(this))
+        result += cardDictionary.getCards(this).stream()
+                .filter(card -> card.getCardType() == CardType.MAJOR)
+                .map(card -> (MajorCard) card)
+                .filter(card -> card instanceof FieldBonusPoint)
+                .mapToInt(value -> ((FieldBonusPoint) value).checkPoint(this))
                 .sum();
         return result;
     }
 
     public int getCardBonusPoints(CardDictionary cardDictionary) {
-        return (int)cardField.stream()
-                .mapToLong(id -> cardDictionary.getCard(id).getBonusPoint())
+        return cardDictionary.getCards(this).stream()
+                .mapToInt(Card::getBonusPoint)
                 .sum();
-    }
-
-
-    /**
-     * 직업 추가
-     * @param occupation
-     */
-    public void addOccupations(Occupation occupation) {
-        this.occupations.add(occupation);
     }
 
     /**
      * 종료 트리거 발동
      */
-    public void finish() {
-        this.occupations.stream()
+    public void finish(CardDictionary cardDictionary) {
+        cardDictionary.getCards(this).stream()
+                .filter(card -> card.getCardType() == CardType.OCCUPATION)
                 .filter(occupation -> occupation instanceof ActionTrigger)
                 .map(occupation -> (FinishTrigger) occupation)
                 .forEach(occupation -> occupation.finishTrigger(this));
@@ -534,4 +477,15 @@ public class Player {
         this.playerBoard.cultivate(y, x, resourceType);
     }
 
+    public boolean needRelocation() {
+        return !this.playerBoard.isMovAnimalArrEmpty();
+    }
+
+    public void relocation(int y, int x, int newY, int newX, int count) {
+        this.playerBoard.relocation(y, x, newY, newX, count);
+    }
+
+    public void relocation(AnimalType animalType, Integer newY, Integer newX, Integer count) {
+        this.playerBoard.relocation(animalType, newY, newX, count);
+    }
 }

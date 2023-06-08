@@ -2,18 +2,20 @@ package com.semoss.agricola.GamePlay.domain.card.Minorcard;
 
 import com.semoss.agricola.GamePlay.domain.action.implement.ActionName;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
-import com.semoss.agricola.GamePlay.domain.resource.AnimalType;
 import com.semoss.agricola.GamePlay.domain.player.FieldType;
 import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
+import com.semoss.agricola.GamePlay.domain.resource.AnimalType;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 
 @Configuration
 @RequiredArgsConstructor
+@Log4j2
 public class MinorFactory {
 
     @Bean(name = "windmill")
@@ -237,19 +239,6 @@ public class MinorFactory {
                 .resourceToFoodHarvest(ResourceStruct.builder().resource(ResourceType.GRAIN).count(3).build())
                 .name("양조장")
                 .description("수확 시기에 곡물 1개를 3개의 음식으로 교환 가능")
-                .build();
-    }
-
-    // 더미카드입니다. 구걸카드 1장 획득
-    @Bean(name = "dummyMinorCard")
-    public DummyMinorCard dummyMinorCard(){
-        return DummyMinorCard.builder()
-                .bonusPoint(0)
-                .ingredients(new ResourceStruct[]{})
-                .preconditionCardType(null)
-                .minCardNum(0)
-                .name("더미 보조설비")
-                .description("구걸토큰 1개를 획득합니다.")
                 .build();
     }
 }

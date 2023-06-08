@@ -1,6 +1,7 @@
 package com.semoss.agricola.GamePlay.domain.player;
 
 import com.semoss.agricola.GamePlay.domain.resource.AnimalType;
+import com.semoss.agricola.GamePlay.exception.AnimalOverflowException;
 import com.semoss.agricola.GamePlay.exception.IllegalRequestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -145,7 +146,7 @@ class PlayerBoardTest {
 
         assertTrue(playerBoard1.addAnimal(AnimalType.SHEEP,10));
         assertTrue(playerBoard1.addAnimal(AnimalType.CATTLE,1));
-        assertThrows(IllegalRequestException.class, () -> playerBoard1.addAnimal(AnimalType.WILD_BOAR,1));
+        assertThrows(AnimalOverflowException.class, () -> playerBoard1.addAnimal(AnimalType.WILD_BOAR,1));
 
         int[][] sheepPos1 = new int[][]{{0, 3, 2}, {1, 2, 2}, {1, 3, 2}, {1, 4, 2}, {2, 3, 2}};
         int[][] cattlePos1 = new int[][]{{1, 0, 1}};

@@ -5,14 +5,19 @@ import com.semoss.agricola.GamePlay.domain.action.Event;
 import com.semoss.agricola.GamePlay.domain.action.implement.DefaultAction;
 import com.semoss.agricola.GamePlay.domain.card.Card;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
-import com.semoss.agricola.GamePlay.domain.card.CardType;
+import com.semoss.agricola.GamePlay.domain.card.CookingAnytimeTrigger;
+import com.semoss.agricola.GamePlay.domain.card.Minorcard.MinorCard;
+import com.semoss.agricola.GamePlay.domain.card.Occupation.Occupation;
 import com.semoss.agricola.GamePlay.domain.gameboard.GameBoard;
-import com.semoss.agricola.GamePlay.domain.resource.AnimalType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
+import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
+import com.semoss.agricola.GamePlay.domain.resource.AnimalType;
+import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
+import com.semoss.agricola.GamePlay.exception.IllegalRequestException;
 import com.semoss.agricola.GamePlay.exception.NotFoundException;
-import com.semoss.agricola.GamePlay.exception.NotImplementException;
+import com.semoss.agricola.GamePlay.exception.ServerError;
 import com.semoss.agricola.GameRoom.domain.Game;
 import com.semoss.agricola.GameRoom.domain.GameType;
 import com.semoss.agricola.GameRoomCommunication.domain.User;
@@ -22,9 +27,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.IntStream;
 
 /**
@@ -38,6 +41,7 @@ import java.util.stream.IntStream;
 @Log4j2
 public class AgricolaGame implements Game {
     private final GameType gameType = GameType.Agricola;
+
 
     @Getter
     public static class GameState {
@@ -92,7 +96,6 @@ public class AgricolaGame implements Game {
                 .mapToObj(i -> {
                     boolean isFirst = i == 0;
                     return Player.builder()
-                            .game(this)
                             .userId(users.get(i).getId())
                             .isStartPlayer(isFirst)
                             .build();
@@ -110,6 +113,45 @@ public class AgricolaGame implements Game {
         // 선공 플레이어의 경우 음식 토큰 2개, 아닌 경우 3개를 받는다.
         for (Player player : getPlayers()) {
             player.addResource(ResourceType.FOOD, getStartingPlayer() == player ? 2 : 3);
+        }
+    }
+
+    /**
+     * 초기 보조설비 및 직업카드를 배포한다.
+     */
+    public void distributeMinorCardsAndOccupations(CardDistributeStrategy strategy) {
+        int SELECT_MINOR_CARD_NUM = 7;
+        int SELECT_OCCUPATION_NUM = 7;
+        if (strategy == CardDistributeStrategy.RANDOM) {
+            Random random = new Random();
+
+            // 보조설비 분배
+            List<MinorCard> allMinorCards = new ArrayList<>(cardDictionary.getAllMinorCards());
+            players.forEach(
+                    player -> {
+                        int select = 0;
+                        while (select < SELECT_MINOR_CARD_NUM) {
+                            int randomIndex = random.nextInt(allMinorCards.size());
+                            MinorCard selected = allMinorCards.remove(randomIndex);
+                            cardDictionary.addCardInPlayerHand(player, selected);
+                            select++;
+                        }
+                    }
+            );
+
+            // 직업 분배
+            List<Occupation> allOccupations = new ArrayList<>(cardDictionary.getAllOccupations());
+            players.forEach(
+                    player -> {
+                        int select = 0;
+                        while (select < SELECT_MINOR_CARD_NUM) {
+                            int randomIndex = random.nextInt(allOccupations.size());
+                            Occupation selected = allOccupations.remove(randomIndex);
+                            cardDictionary.addCardInPlayerHand(player, selected);
+                            select++;
+                        }
+                    }
+            );
         }
     }
 
@@ -229,17 +271,30 @@ public class AgricolaGame implements Game {
                 .toList();
     }
 
+
+
+    public boolean needRelocation() {
+        Player player = this.getGameState().getPlayer();
+        return player.needRelocation();
+    }
+
     /**
      * 액션을 플레이한다.
      * @param eventId 플레이할 액션
      * @param acts 액션에 필요한 추가 요청
      */
     public void playAction(Long eventId, List<AgricolaActionRequest.ActionFormat> acts) {
+        // 선공 플레이어를 검색한다.
+        Player startingPlayer = this.players.stream()
+                .filter(Player::isStartingToken)
+                .findAny()
+                .orElseThrow(ServerError::new);
+
         // 액션 플레이를 수행한다.
-        History history = this.gameBoard.playAction(this.getGameState().getPlayer(), eventId, acts, this.cardDictionary);
+        History history = this.gameBoard.playAction(this.getGameState().getPlayer(), startingPlayer, this.getGameState().getRound(), eventId, acts, this.cardDictionary);
 
         // 거주자 한명을 임의로 뽑아 플레이 시킨다.
-        this.getGameState().getPlayer().playAction(history);
+        this.getGameState().getPlayer().playAction(history, this.cardDictionary);
     }
 
     /**
@@ -247,45 +302,60 @@ public class AgricolaGame implements Game {
      * @param improvementId 자원 교환 작업 시 사용할 주설비 식별자
      * @param resource 교환할 자원의 종류와 개수
      */
-    public void playExchange(Long improvementId, ResourceType resource, Long count) {
+    public void playExchange(Long improvementId, ResourceType resource, int count) {
         Player player = this.getGameState().getPlayer();
 
-        // TODO: 플레이어가 해당 주설비를 가지고 있는지 검증한다.
+        // 플레이어가 해당 요리 가능한 카드를 가지고 있는지 검증한다.
         Card card = cardDictionary.getCard(improvementId);
-        if (card.getCardType() != CardType.MAJOR)
-            throw new RuntimeException("주설비카드가 아닙니다.");
-        if(!player.hasCardInField(card.getCardID()))
-            throw new NotFoundException("주설비를 가지고 있지 않습니다.");
+        if(!cardDictionary.hasCardInField(player, card))
+            throw new NotFoundException("해당 카드를 가지고 있지 않습니다.");
 
-        // TODO : 플레이어가 교환할 자원을 가지고 있는지 검증한다.
-        //
+        if(!(card instanceof CookingAnytimeTrigger))
+            throw new IllegalRequestException("요리 주설비가 아닙니다.");
+        CookingAnytimeTrigger cookingMajorCard = (CookingAnytimeTrigger) card;
 
-        // TODO: 주설비와 교환 요청 자원을 사용하여 교환 작업을 수행한다.
-        //
-        throw new NotImplementException("미구현");
+        // 주설비와 교환 요청 자원을 사용하여 교환 작업을 수행한다.
+        cookingMajorCard.cooking(player, ResourceStruct.builder().resource(resource).count(count).build());
     }
 
 
-    public void playExchange(Long improvementId, AnimalType animal, Long count) {
+    public void playExchange(Long improvementId, AnimalType animal, int count) {
         Player player = this.getGameState().getPlayer();
 
-        // TODO: 플레이어가 해당 주설비를 가지고 있는지 검증한다.
+        // 플레이어가 해당 요리 가능한 카드를 가지고 있는지 검증한다.
         Card card = cardDictionary.getCard(improvementId);
-        if (card.getCardType() != CardType.MAJOR)
-            throw new RuntimeException("주설비카드가 아닙니다.");
-        if(!player.hasCardInField(card.getCardID()))
-            throw new NotFoundException("주설비를 가지고 있지 않습니다.");
+        if(!cardDictionary.hasCardInField(player, card))
+            throw new NotFoundException("해당 카드를 가지고 있지 않습니다.");
 
-        // TODO : 플레이어가 교환할 자원을 가지고 있는지 검증한다.
-        //
+        if(!(card instanceof CookingAnytimeTrigger))
+            throw new IllegalRequestException("요리 주설비가 아닙니다.");
+        CookingAnytimeTrigger cookingMajorCard = (CookingAnytimeTrigger) card;
 
-        // TODO: 주설비와 교환 요청 자원을 사용하여 교환 작업을 수행한다.
-        //
-        throw new NotImplementException("미구현");
+        // 주설비와 교환 요청 자원을 사용하여 교환 작업을 수행한다.
+        cookingMajorCard.cooking(player, AnimalStruct.builder().animal(animal).count(count).build());
+    }
+
+    public void playRelocation(int y, int x, int newY, int newX, int count) {
+        Player player = this.getGameState().getPlayer();
+
+        player.relocation(y, x, newY, newX, count);
+    }
+
+
+
+    public void playRelocation(AnimalType animalType, Integer newY, Integer newX, Integer count) {
+        Player player = this.getGameState().getPlayer();
+
+        player.relocation(animalType, newY, newX, count);
+
+    }
+
+    public void harvest(Player player) {
+        player.harvest(this.cardDictionary);
     }
 
     public void finish() {
-        players.forEach(Player::finish);
+        players.forEach(player -> player.finish(this.cardDictionary));
     }
 
     //로그 기능

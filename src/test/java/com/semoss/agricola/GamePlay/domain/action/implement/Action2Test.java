@@ -35,14 +35,10 @@ class Action2Test {
         cardDictionary = mock(CardDictionary.class);
 
         startPlayer = Player.builder()
-                .game(game)
-                .userId(2345L)
                 .isStartPlayer(true)
                 .build();
 
         secondPlayer = Player.builder()
-                .game(game)
-                .userId(1234L)
                 .isStartPlayer(false)
                 .build();
 
@@ -62,7 +58,7 @@ class Action2Test {
         when(game.getPlayers()).thenReturn(List.of(startPlayer, secondPlayer));
 
         // when
-        event.runActions(secondPlayer, acts, cardDictionary);
+        event.runActions(secondPlayer, startPlayer, 0, acts, cardDictionary);
 
         // then
         assertTrue(secondPlayer.isStartingToken());
@@ -80,7 +76,7 @@ class Action2Test {
         when(game.getPlayers()).thenReturn(List.of(startPlayer, secondPlayer));
 
         // when
-        event.runActions(startPlayer, acts, cardDictionary);
+        event.runActions(startPlayer, startPlayer, 0, acts, cardDictionary);
 
         // then
         assertTrue(startPlayer.isStartingToken());

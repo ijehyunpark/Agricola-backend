@@ -55,4 +55,19 @@ class CultivationActionExtensionRequestTest {
         Assertions.assertEquals(10, request.getX());
         Assertions.assertEquals(ResourceType.GRAIN, request.getResourceType());
     }
+
+    @Test
+    @DisplayName("씨앗 심기 행동 대소문자 역직렬화 테스트")
+    void deserializeTest_lowercase123() throws JsonProcessingException {
+        // given
+        String json = "{\"y\":5,\"x\":10,\"resourceType\": \"grain\"}";
+
+        // when
+        CultivationActionExtensionRequest request = mapper.readValue(json, CultivationActionExtensionRequest.class);
+
+        // then
+        Assertions.assertEquals(5, request.getY());
+        Assertions.assertEquals(10, request.getX());
+        Assertions.assertEquals(ResourceType.GRAIN, request.getResourceType());
+    }
 }

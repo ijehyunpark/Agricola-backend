@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.card.Minorcard;
 
+import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
@@ -20,8 +21,8 @@ public class MoveLeftMinorCard extends DefaultMinorCard implements PlaceGetResou
     }
 
     @Override
-    public void place(Player player) {
-        super.place(player);
+    public void place(Player player, CardDictionary cardDictionary, int round) {
+        super.place(player, cardDictionary, round);
         player.addResource(bonusResource);
     }
 }

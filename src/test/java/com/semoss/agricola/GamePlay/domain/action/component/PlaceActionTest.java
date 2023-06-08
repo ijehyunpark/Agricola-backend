@@ -5,21 +5,24 @@ import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
 import com.semoss.agricola.GamePlay.domain.card.Majorcard.MajorCard;
 import com.semoss.agricola.GamePlay.domain.card.Majorcard.MajorFactory;
+import com.semoss.agricola.GamePlay.domain.card.Minorcard.DummyMinorCard;
+import com.semoss.agricola.GamePlay.domain.card.Occupation.DummyOccupation;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
+import com.semoss.agricola.GamePlay.exception.IllegalRequestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.ObjectProvider;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PlaceActionTest {
@@ -33,20 +36,21 @@ class PlaceActionTest {
     void setUp() {
         game = mock(AgricolaGame.class);
         player = Player.builder()
-                .game(game)
                 .build();
         MajorFactory majorFactory = new MajorFactory();
         List<MajorCard> majorCards = new ArrayList<>();
         majorCard = majorFactory.firePlace1();
         majorCards.add(majorCard);
-        cardDictionary = new CardDictionary(majorCards);
+
+        ObjectProvider<DummyMinorCard> dummyMinorCards = mock(ObjectProvider.class);
+        ObjectProvider<DummyOccupation> dummyOccupations = mock(ObjectProvider.class);
+        cardDictionary = new CardDictionary(majorCards, new ArrayList<>(), dummyMinorCards, new ArrayList<>(), dummyOccupations);
     }
 
     @Test
     @DisplayName("runAction: 카드 내려놓기 - 성공")
     void runActionPrecondition1() {
         // given
-        when(game.getCardDictionary()).thenReturn(cardDictionary);
         PlaceAction placeAction = PlaceAction.builder()
                 .cardType(CardType.MAJOR)
                 .build();
@@ -58,10 +62,10 @@ class PlaceActionTest {
 
 
         // when
-        placeAction.runAction(player, majorCard);
+        placeAction.runAction(player, majorCard.getCardID(), cardDictionary, 0);
 
         // then
-        assertTrue(player.hasCardInField(majorCard.getCardID()));
+        assertTrue(cardDictionary.hasCardInField(player, majorCard));
         assertEquals(0, player.getResource(ResourceType.CLAY));
     }
 
@@ -75,7 +79,7 @@ class PlaceActionTest {
 
 
         // when
-        assertThrows(RuntimeException.class, () -> placeAction.runAction(player, majorCard));
+        assertThrows(RuntimeException.class, () -> placeAction.runAction(player, majorCard.getCardID(), cardDictionary, 0));
 
         // then
     }
@@ -94,7 +98,7 @@ class PlaceActionTest {
 
 
         // when
-        assertThrows(RuntimeException.class, () -> placeAction.runAction(player, majorCard));
+        assertThrows(RuntimeException.class, () -> placeAction.runAction(player, majorCard.getCardID(), cardDictionary, 0));
 
         // then
     }
@@ -103,11 +107,7 @@ class PlaceActionTest {
     @DisplayName("runAction: 다른 사람이 소유한 카드 내려놓기 - 실패")
     void runActionPrecondition4() {
         // given
-        when(game.getCardDictionary()).thenReturn(cardDictionary);
-        other = Player.builder()
-                .game(game)
-                .userId(2345L)
-                .build();
+        other = Player.builder().build();
         PlaceAction placeAction = PlaceAction.builder()
                 .cardType(CardType.MAJOR)
                 .build();
@@ -119,11 +119,11 @@ class PlaceActionTest {
                 .resource(ResourceType.CLAY)
                 .count(2)
                 .build());
-        placeAction.runAction(other, majorCard);
+        placeAction.runAction(other, majorCard.getCardID(), cardDictionary, 0);
 
 
         // when
-        assertThrows(RuntimeException.class, () -> placeAction.runAction(player, majorCard));
+        assertThrows(IllegalRequestException.class, () -> placeAction.runAction(player, majorCard.getCardID(), cardDictionary, 0));
 
         // then
     }

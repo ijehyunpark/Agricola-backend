@@ -23,11 +23,11 @@ public class PlayerBoard {
     private static final int FIELD_ROW = 3;
     private static final int FIELD_COL = 5;
 
-    private Field[][] fields = new Field[FIELD_ROW][FIELD_COL];
+    private final Field[][] fields = new Field[FIELD_ROW][FIELD_COL];
     private boolean[][] colFence = new boolean[3][6];
     private boolean[][] rowFence = new boolean[4][5];
     @JsonIgnore
-    private AnimalStruct[] moveAnimalArr = new AnimalStruct[3];
+    private final AnimalStruct[] moveAnimalArr = new AnimalStruct[3];
 
     @Builder
     public PlayerBoard() {
@@ -139,10 +139,19 @@ public class PlayerBoard {
 
 
         // 가축이 2마리 이상이면 하나를 얻는다.
+        boolean isBlocking = false;
         for (Map.Entry<AnimalType, Integer> animal : animals.entrySet()) {
             if (animal.getValue() >= 2) {
-                addAnimal(animal.getKey(), 1);
+                try {
+                    addAnimal(animal.getKey(), 1);
+                } catch (AnimalOverflowException ex) {
+                    isBlocking = true;
+                }
             }
+        }
+
+        if(isBlocking){
+            throw new AnimalOverflowException();
         }
     }
 
@@ -620,7 +629,7 @@ public class PlayerBoard {
     /**
      * 선택한 동물이 있는 위치와 마리 수 반환
      * @param animalType 동물 타입
-     * @return 내용물이 [row, col, count]인 list
+     * @return 내용물이 [col, row, count]인 list
      */
     protected List<int[]> animalPos(AnimalType animalType){
         Barn barn;
@@ -641,32 +650,32 @@ public class PlayerBoard {
 
     /**
      * 동물을 제거합니다.
-     * @param row row
      * @param col col
+     * @param row row
      * @param animalNum 제거할 동물 수
      * @return 제거된 동물 수
      */
-    protected int removeAnimal(int row, int col, int animalNum){
-        if (fields[row][col] == null || fields[row][col].getFieldType() != FieldType.BARN && fields[row][col].getFieldType() != FieldType.STABLE) throw new IllegalRequestException("해당 필드는 헛간이 아닙니다.");
-        AnimalType animalType = ((Barn)fields[row][col]).getAnimal().getAnimal();
-        int num = ((Barn)fields[row][col]).removeAnimal(animalNum);
-        moveAnimalArr[animalType.getValue()-9].addResource(num);
-        ifEmptyBarn(row,col);
+    protected int removeAnimal(int col, int row, int animalNum){
+        if (fields[col][row] == null || fields[col][row].getFieldType() != FieldType.BARN && fields[col][row].getFieldType() != FieldType.STABLE) throw new IllegalRequestException("해당 필드는 헛간이 아닙니다.");
+        AnimalType animalType = ((Barn)fields[col][row]).getAnimal().getAnimal();
+        int num = ((Barn)fields[col][row]).removeAnimal(animalNum);
+        moveAnimalArr[animalType.getValue()].addResource(num);
+        ifEmptyBarn(col,row);
         return num;
     }
 
     /**
      * 해당 칸의 모든 동물을 제거합니다.
-     * @param row row
      * @param col col
+     * @param row row
      * @return 제거된 동물 수
      */
-    protected int removeALLAnimals(int row, int col){
-        if (fields[row][col] == null || fields[row][col].getFieldType() != FieldType.BARN && fields[row][col].getFieldType() != FieldType.STABLE) throw new IllegalRequestException("해당 필드는 헛간이 아닙니다.");
-        AnimalType animalType = ((Barn)fields[row][col]).getAnimal().getAnimal();
-        int num = ((Barn)fields[row][col]).removeAllAnimals();
-        moveAnimalArr[animalType.getValue()-9].addResource(num);
-        ifEmptyBarn(row,col);
+    protected int removeALLAnimals(int col, int row){
+        if (fields[col][row] == null || fields[col][row].getFieldType() != FieldType.BARN && fields[col][row].getFieldType() != FieldType.STABLE) throw new IllegalRequestException("해당 필드는 헛간이 아닙니다.");
+        AnimalType animalType = ((Barn)fields[col][row]).getAnimal().getAnimal();
+        int num = ((Barn)fields[col][row]).removeAllAnimals();
+        moveAnimalArr[animalType.getValue()].addResource(num);
+        ifEmptyBarn(col,row);
         return num;
     }
 
@@ -754,9 +763,9 @@ public class PlayerBoard {
      */
     protected int addRemovedAnimal(int row, int col, AnimalType animalType, int animalNum){
         if (fields[row][col] == null || fields[row][col].getFieldType() != FieldType.BARN && fields[row][col].getFieldType() != FieldType.STABLE) throw new IllegalRequestException("해당 필드는 헛간이 아닙니다.");
-        animalNum = Integer.min(animalNum,moveAnimalArr[animalType.getValue()-9].getCount());
+        animalNum = Integer.min(animalNum,moveAnimalArr[animalType.getValue()].getCount());
         int num = ((Barn)fields[row][col]).addAnimal(animalType, animalNum);
-        moveAnimalArr[animalType.getValue()-9].subResource(num);
+        moveAnimalArr[animalType.getValue()].subResource(num);
         setSameAnimalType(row,col);
         return num;
     }
@@ -789,7 +798,7 @@ public class PlayerBoard {
         }
         if (animalNum >= 1){
             this.moveAnimalArr[animalType.getValue()].addResource(animalNum);
-            throw new IllegalRequestException("더 이상 동물을 배치할 수 없습니다. 다시 배치해야합니다.");
+            throw new AnimalOverflowException("더 이상 동물을 배치할 수 없습니다. 다시 배치해야합니다.");
         }
 
         return true;
@@ -946,5 +955,26 @@ public class PlayerBoard {
             num += 1;
         }
         return num;
+    }
+
+    /**
+     * 임시 보관 동물 객체가 비어있는지 확인
+     * @return
+     */
+    protected boolean isMovAnimalArrEmpty() {
+        for (int i = 0; i < 3; i++) {
+            if(this.moveAnimalArr[i].getCount() > 0)
+                return false;
+        }
+        return true;
+    }
+
+
+    protected void relocation(int y, int x, int newY, int newX, int count) {
+        initMoveAnimalArr();
+    }
+
+    public void relocation(AnimalType animalType, Integer newY, Integer newX, Integer count) {
+        initMoveAnimalArr();
     }
 }

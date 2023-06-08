@@ -7,7 +7,6 @@ import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
@@ -15,14 +14,13 @@ import org.springframework.stereotype.Component;
  */
 @Getter
 @Component
-@Scope("prototype")
 public class Greengrocer extends DefaultOccupation implements ActionTrigger {
-    private int playerRequirement;
+    private final int playerRequirement;
 
-    public Greengrocer(@Value("${landAgent.id}") Long cardID,
-                     @Value("${landAgent.name}") String name,
-                     @Value("${landAgent.players}") Integer playerRequirement,
-                     @Value("${landAgent.description}") String description) {
+    public Greengrocer(@Value("${greengrocer.id}") Long cardID,
+                     @Value("${greengrocer.name}") String name,
+                     @Value("${greengrocer.players}") Integer playerRequirement,
+                     @Value("${greengrocer.description}") String description) {
         super(cardID, name, description);
         this.playerRequirement = playerRequirement;
     }

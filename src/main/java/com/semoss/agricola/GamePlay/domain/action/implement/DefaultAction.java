@@ -6,13 +6,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.semoss.agricola.GamePlay.domain.History;
-import com.semoss.agricola.GamePlay.domain.action.*;
+import com.semoss.agricola.GamePlay.domain.action.DoType;
 import com.semoss.agricola.GamePlay.domain.action.component.*;
+import com.semoss.agricola.GamePlay.domain.card.BakeTrigger;
 import com.semoss.agricola.GamePlay.domain.card.Card;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
-import com.semoss.agricola.GamePlay.domain.card.BakeTrigger;
-import com.semoss.agricola.GamePlay.domain.card.Majorcard.MajorCard;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStructInterface;
 import com.semoss.agricola.GamePlay.dto.*;
@@ -101,7 +100,7 @@ public abstract class DefaultAction {
      * @param history 행동 기록 객체
      * @return 해당 행동을 수행한 후 해당 기록을 반환
      */
-    public History runAction(Player player, List<AgricolaActionRequest.ActionFormat> acts, List<ResourceStructInterface> stacks, CardDictionary cardDictionary, History history) {
+    public History runAction(Player player, Player startingPlayer, int round, List<AgricolaActionRequest.ActionFormat> acts, List<ResourceStructInterface> stacks, CardDictionary cardDictionary, History history) {
         // 입력 행동값 검증
         isCollectRequest(acts);
 
@@ -114,8 +113,12 @@ public abstract class DefaultAction {
                 AgricolaActionRequest.ActionFormat act = acts.get(actions.indexOf(action));
                 Integer times = 1; // TODO 액션 횟수 요청 정의 후 해당 값 바인딩
                 switch (action.getActionType()) {
-                    case BASIC, STARTING, UPGRADE, ADOPT -> {
+                    case BASIC, UPGRADE, ADOPT -> {
                         ((SimpleAction) action).runAction(player, history);
+                    }
+                    case STARTING -> {
+                        ((GetStartingPositionAction) action).runAction(player, startingPlayer, history);
+
                     }
                     case BAKE -> {
                         try {
@@ -127,7 +130,7 @@ public abstract class DefaultAction {
                                                 Card card = cardDictionary.getCard(improvementId);
                                                 if (card.getCardType() != CardType.MAJOR || card instanceof BakeTrigger)
                                                     throw new RuntimeException("주설비 카드가 아니거나 빵 굽기 관련 주설비카드가 아닙니다.");
-                                                ((BakeAction) action).runAction(player, (BakeTrigger) card);
+                                                ((BakeAction) action).runAction(player, (BakeTrigger) card, cardDictionary);
                                             }
                                     );
                         } catch (JsonProcessingException e) {
@@ -177,8 +180,15 @@ public abstract class DefaultAction {
                         }
                     }
                     case PLACE -> {
-                        Card card = cardDictionary.getCard((Long) act.getActs());
-                        ((PlaceAction) action).runAction(player, card);
+                        try {
+                            ObjectMapper objectMapper = ObjectMapperSingleton.getInstance();
+                            String jsonString = objectMapper.writeValueAsString(act.getActs());
+                            log.info(jsonString);
+                            Long request = objectMapper.readValue(jsonString, Long.class);
+                            ((PlaceAction) action).runAction(player, request, cardDictionary, round);
+                        } catch (JsonProcessingException e) {
+                            throw new RuntimeException("요청 필드 오류");
+                        }
                     }
                     case STACK, STACK_ANIMAL -> {
                         ((StackAction) action).runStackAction(player, stacks);

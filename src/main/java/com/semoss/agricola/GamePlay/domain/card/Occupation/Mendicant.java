@@ -4,7 +4,6 @@ import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
@@ -12,9 +11,8 @@ import org.springframework.stereotype.Component;
  */
 @Getter
 @Component
-@Scope("prototype")
 public class Mendicant extends DefaultOccupation implements FinishTrigger {
-    private int playerRequirement;
+    private final int playerRequirement;
 
     public Mendicant(@Value("${mendicant.id}") Long cardID,
                      @Value("${mendicant.name}") String name,

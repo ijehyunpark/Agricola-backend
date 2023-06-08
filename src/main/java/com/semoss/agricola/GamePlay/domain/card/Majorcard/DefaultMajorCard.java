@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.card.Majorcard;
 
+import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
@@ -32,7 +33,7 @@ public abstract class DefaultMajorCard implements MajorCard{
      * @return 확인 결과
      */
     @Override
-    public boolean checkPrerequisites(Player player){
+    public boolean checkPrerequisites(Player player, CardDictionary cardDictionary){
         boolean result = true;
         for (ResourceStruct ingredient : ingredients){
             result &= player.getResource(ingredient.getResource()) >= ingredient.getCount();
@@ -46,11 +47,12 @@ public abstract class DefaultMajorCard implements MajorCard{
      * @param player 카드를 가져갈 플레이어
      */
     @Override
-    public void place(Player player) {
-        if (!checkPrerequisites(player)) throw new IllegalRequestException("전제조건 미달성");
+    public void place(Player player, CardDictionary cardDictionary, int round) {
+        if (!checkPrerequisites(player, cardDictionary)) throw new IllegalRequestException("전제조건 미달성");
         for (ResourceStruct ingredient : ingredients){
             player.useResource(ingredient.getResource(), ingredient.getCount());
         }
-        player.addMajorCard(cardID);
+
+        cardDictionary.place(player, this);
     }
 }

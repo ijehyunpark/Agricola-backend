@@ -6,7 +6,6 @@ import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,9 +13,8 @@ import org.springframework.stereotype.Component;
  */
 @Getter
 @Component
-@Scope("prototype")
 public class UnderGardener extends DefaultOccupation implements ActionTrigger {
-    private int playerRequirement;
+    private final int playerRequirement;
 
     public UnderGardener(@Value("${underGardener.id}") Long cardID,
                      @Value("${underGardener.name}") String name,

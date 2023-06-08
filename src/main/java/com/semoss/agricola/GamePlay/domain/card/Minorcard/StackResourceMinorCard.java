@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.card.Minorcard;
 
+import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.CardType;
 import com.semoss.agricola.GamePlay.domain.card.StackResource;
 import com.semoss.agricola.GamePlay.domain.player.Player;
@@ -27,20 +28,19 @@ public class StackResourceMinorCard extends DefaultMinorCard implements StackRes
     }
 
     @Override
-    public void place(Player player) {
-        super.place(player);
+    public void place(Player player, CardDictionary cardDictionary, int round) {
+        super.place(player, cardDictionary, round);
         ArrayList<Integer> list = new ArrayList<>();
 
         // 플레이어의 라운드 스택에 자원 추가
         if (isStaticRound) {
-            int now = player.getGame().getGameState().getRound();
-            for (int round : rounds) {
-                if (round > now) list.add(round);
+            for (int targetRound : rounds) {
+                if (targetRound > round) list.add(targetRound);
             }
         }
         else {
-            for (int round : rounds) {
-                int sum = round + player.getGame().getGameState().getRound();;
+            for (int targetRound : rounds) {
+                int sum = targetRound + round;
                 if (sum > 14) break;
                 list.add(sum);
             }

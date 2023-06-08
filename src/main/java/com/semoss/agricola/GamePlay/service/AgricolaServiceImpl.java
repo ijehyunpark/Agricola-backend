@@ -1,6 +1,7 @@
 package com.semoss.agricola.GamePlay.service;
 
 import com.semoss.agricola.GamePlay.domain.AgricolaGame;
+import com.semoss.agricola.GamePlay.domain.CardDistributeStrategy;
 import com.semoss.agricola.GamePlay.domain.GameProgress;
 import com.semoss.agricola.GamePlay.domain.action.implement.DefaultAction;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
@@ -8,6 +9,7 @@ import com.semoss.agricola.GamePlay.domain.resource.AnimalType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
+import com.semoss.agricola.GamePlay.exception.BlockingException;
 import com.semoss.agricola.GameRoom.domain.GameRoom;
 import com.semoss.agricola.GameRoom.domain.GameType;
 import com.semoss.agricola.GameRoom.repository.GameRoomRepository;
@@ -76,6 +78,9 @@ public class AgricolaServiceImpl implements AgricolaService {
         // 선공 플레이어의 경우 음식 토큰 2개, 아닌 경우 3개를 받는다.
         game.setUpStartingFood();
 
+        // 각 플레이어에게 보조설비 및 직업카드를 7장 배포한다.
+        game.distributeMinorCardsAndOccupations(CardDistributeStrategy.RANDOM);
+
         // 게임 시작 후 최초 라운드 시작을 개시한다.
         roundStart(gameRoomId);
     }
@@ -116,15 +121,6 @@ public class AgricolaServiceImpl implements AgricolaService {
     @Override
     public void playAction(Long gameRoomId, Long eventId, List<AgricolaActionRequest.ActionFormat> acts) {
         log.info("playAction 요청이 입력되었습니다. : " + eventId.toString());
-        //- 나의 차례가 끝나지 않았을 때 [주설비카드]를 이용하여 자원을 음식으로 교환할수있다.
-        //- 나의 차례가 끝나지 않았을 때 [직업, 보조설비 카드]를 통해 추가 행동을 할 수 있다.
-        //- 나의 차례가 끝나지 않았을 때 울타리 안에 있는 동물의 위치를 바꿀 수 있다.
-        //- 가족이 올라가지 않은 칸에 가족을 한명 놓을 수 있다.
-        //    - 행동칸에 가족을 놓으면 행동칸의 행동을 할 수 있다.
-        //    - [직업,보조카드] 행동칸처럼 가족을 놓을 수 있으면 사용할 수 있다.
-        //- 말을 놓은 후 무르기 버튼을 누르면 나의 행동이 취소되고 다시 돌아간다.
-        //- 말을 놓은 후 확정 버튼을 누르면 나의 행동이 확정된다.
-        //- 제한 시간안에 가족을 움직이지 않을 경우 더미보드판으로 가족이 이동한다.
 
         // 아그리콜라 게임 추출
         AgricolaGame game = extractGame(gameRoomId);
@@ -132,6 +128,10 @@ public class AgricolaServiceImpl implements AgricolaService {
         // 해당 턴이 유효한지 검증
         if(game.getGameState().getGameProgress() != GameProgress.PlayerAction)
             throw new RuntimeException("게임이 액션을 수락하는 단계가 아닙니다.");
+
+        // 가축 재배치가 필요한지 검증
+        if(game.needRelocation())
+            throw new BlockingException("가축 재배치가 필요합니다.");
 
         // 행동 칸 작업 수행
         game.playAction(eventId, acts);
@@ -153,7 +153,7 @@ public class AgricolaServiceImpl implements AgricolaService {
      * @param count
      */
     @Override
-    public void playExchange(Long gameRoomId, Long improvementId, ResourceType resource, Long count) {
+    public void playExchange(Long gameRoomId, Long improvementId, ResourceType resource, int count) {
         log.info("playExchange 요청이 입력되었습니다. : " + improvementId.toString());
         log.info(resource.getName());
         log.info(count);
@@ -171,14 +171,14 @@ public class AgricolaServiceImpl implements AgricolaService {
     }
 
     /**
-     * 언제나 가능한 행동(플레이어 턴에만 제약)\
+     * 언제나 가능한 행동(플레이어 턴에만 제약).
      * @param gameRoomId
      * @param improvementId
      * @param animal
      * @param count
      */
     @Override
-    public void playExchange(Long gameRoomId, Long improvementId, AnimalType animal, Long count) {
+    public void playExchange(Long gameRoomId, Long improvementId, AnimalType animal, int count) {
         log.info("playExchange 요청이 입력되었습니다. : " + improvementId.toString());
         log.info(animal.getName());
         log.info(count);
@@ -193,6 +193,36 @@ public class AgricolaServiceImpl implements AgricolaService {
         if(game.getGameState().getGameProgress() == GameProgress.HARVEST){
             feeding(gameRoomId);
         }
+    }
+
+    /**
+     * 가축 재비치 진행
+     */
+    @Override
+    public void playRelocation(Long gameRoomId, Integer y, Integer x, Integer newY, Integer newX, Integer count) {
+        log.info("playRelocation 요청이 입력되었습니다.");
+
+        // 아그리콜라 게임 추출
+        AgricolaGame game = extractGame(gameRoomId);
+
+        // 교환 작업 수행
+        game.playRelocation(y, x, newY, newX, count);
+
+    }
+
+    /**
+     * 가축 재비치 진행
+     */
+    @Override
+    public void playRelocation(Long gameRoomId, AnimalType animalType, Integer newY, Integer newX, Integer count) {
+        log.info("playRelocation 요청이 입력되었습니다.");
+
+        // 아그리콜라 게임 추출
+        AgricolaGame game = extractGame(gameRoomId);
+
+        // 교환 작업 수행
+        game.playRelocation(animalType, newY, newX, count);
+
     }
 
     /**
@@ -218,7 +248,7 @@ public class AgricolaServiceImpl implements AgricolaService {
     }
 
     private void roundEndExtension(Long gameRoomId) {
-        log.info("라운드가 종료되었습니다. - Extenstion");
+        log.info("라운드가 종료되었습니다. - Extension");
         // 아그리콜라 게임 추출
         AgricolaGame game = extractGame(gameRoomId);
 
@@ -251,7 +281,7 @@ public class AgricolaServiceImpl implements AgricolaService {
         Player player = gameState.getPlayer();
 
         // 수확
-        player.harvest();
+        game.harvest(player);
 
         // 먹여 살리기 작업
         feeding(gameRoomId);
@@ -314,10 +344,8 @@ public class AgricolaServiceImpl implements AgricolaService {
         game.update(GameProgress.FINISH, null);
 
         game.finish();
-        //1.
-        //    - 플레이어가 소유한 자원에 따라 플레이어 점수가 확정되고 최종 순위가 확정된다.
-        //    - ‘한 번 더 하기’ 버튼을 누르면 게임방으로 돌아간다.
-        //    - ‘나가기’ 버튼을 누르면 게임로비창(게임방리스트있는곳)으로 나간다.
+
+        throw new BlockingException("게임 종료");
     }
 
     @Override

@@ -25,11 +25,13 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(MockitoExtension.class)
 class Action1Test {
     Player player;
+    Player startPlayer;
     Event event;
     CardDictionary cardDictionary;
 
     @BeforeEach
     void setUp(){
+        startPlayer = mock(Player.class);
         ActionFactory actionFactory = new ActionFactory();
         cardDictionary = mock(CardDictionary.class);
 
@@ -55,7 +57,7 @@ class Action1Test {
                 new AgricolaActionRequest.ActionFormat(false, null));
 
         // when
-        event.runActions(player, acts, cardDictionary);
+        event.runActions(player, startPlayer, 0,  acts, cardDictionary);
 
         // then
         assertEquals(0, player.getResource(ResourceType.WOOD));
@@ -76,7 +78,7 @@ class Action1Test {
                 new AgricolaActionRequest.ActionFormat(false, null));
 
         // when
-        event.runActions(player, acts, cardDictionary);
+        event.runActions(player, startPlayer, 0,  acts, cardDictionary);
 
         // then
         assertEquals(0, player.getResource(ResourceType.CLAY));
@@ -98,7 +100,7 @@ class Action1Test {
                 new AgricolaActionRequest.ActionFormat(false, null));
 
         // when
-        event.runActions(player, acts, cardDictionary);
+        event.runActions(player, startPlayer, 0,  acts, cardDictionary);
 
         // then
         assertEquals(0, player.getResource(ResourceType.STONE));
@@ -117,7 +119,7 @@ class Action1Test {
 
         // when
         assertThrows(ResourceLackException.class, () -> {
-            event.runActions(player, acts, cardDictionary);
+            event.runActions(player, startPlayer, 0,  acts, cardDictionary);
         });
 
         // then
@@ -134,7 +136,7 @@ class Action1Test {
                 new AgricolaActionRequest.ActionFormat(true, new BuildActionExtensionRequest(2,3)));
 
         // when
-        event.runActions(player, acts, cardDictionary);
+        event.runActions(player, startPlayer, 0,  acts, cardDictionary);
 
         // then
         assertEquals(FieldType.ROOM, player.getPlayerBoard().getFields()[2][4].getFieldType());
@@ -151,7 +153,7 @@ class Action1Test {
                 new AgricolaActionRequest.ActionFormat(true, new BuildActionExtensionRequest(2,4)));
 
         // when
-        event.runActions(player, acts, cardDictionary);
+        event.runActions(player, startPlayer, 0,  acts, cardDictionary);
 
         // then
         assertEquals(FieldType.STABLE, player.getPlayerBoard().getFields()[2][4].getFieldType());

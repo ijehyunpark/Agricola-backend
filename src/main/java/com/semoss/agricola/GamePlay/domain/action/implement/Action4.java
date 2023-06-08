@@ -33,21 +33,20 @@ public class Action4 extends DefaultAction {
     }
 
     @Override
-    public History runAction(Player player, List<AgricolaActionRequest.ActionFormat> acts, List<ResourceStructInterface> stacks, CardDictionary cardDictionary, History history) {
+    public History runAction(Player player, Player startingPlayer, int round, List<AgricolaActionRequest.ActionFormat> acts, List<ResourceStructInterface> stacks, CardDictionary cardDictionary, History history) {
         // 입력 행동값 검증
         super.isCollectRequest(acts);
 
         // TODO: Memento로 실패 시 롤백
 
         PlaceAction placeAction = (PlaceAction) getActions().get(0);
-        Long act = (Long) acts.get(0).getActs();
-        Card card = cardDictionary.getCard(act);
+        Long cardId = (Long) acts.get(0).getActs();
 
         // 플레이어가 내려놓은 직업 카드 계산
         int occupationCount = 0;
-        List<Long> cards = cardDictionary.findCardsByOwner(player);
-        for (Long cardId : cards) {
-            if(cardDictionary.getCard(cardId).getCardType() == CardType.OCCUPATION){
+        List<Card> cards = cardDictionary.findCardsByOwner(player);
+        for (Card component : cards) {
+            if(component.getCardType() == CardType.OCCUPATION){
                 occupationCount++;
             }
         }
@@ -57,7 +56,7 @@ public class Action4 extends DefaultAction {
             player.useResource(ResourceType.FOOD, 1);
         }
 
-        placeAction.runAction(player, card);
+        placeAction.runAction(player, cardId, cardDictionary, round);
         history.writeActionType(placeAction.getActionType(), 1);
         return history;
     }

@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.card.Majorcard;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.semoss.agricola.GamePlay.domain.card.CookingHarvestTrigger;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
@@ -12,8 +13,11 @@ import lombok.Getter;
  */
 @Getter
 public class Workshop extends DefaultMajorCard implements CookingHarvestTrigger, ResourceBonusPointTrigger{
+    @JsonIgnore
     private final ResourceStruct resourceToFoodHarvest; // 수확시 1회에 한해 자원을 음식으로 교환
+    @JsonIgnore
     private final ResourceType resourceTypeToPoints; // 점수계산시 사용하는 자원
+    @JsonIgnore
     private final int[][] resourceNumToPoints; // [[개수,점수],[]] 가장 뒤에서부터 만족하는 것 적용(가장 큰점수 적용)
 
     @Builder

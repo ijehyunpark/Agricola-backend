@@ -1,5 +1,6 @@
 package com.semoss.agricola.GamePlay.domain.card.Majorcard;
 
+import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.card.StackResource;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
@@ -27,14 +28,13 @@ public class Well extends DefaultMajorCard implements MajorCard, StackResource {
     }
 
     @Override
-    public void place(Player player) {
-        super.place(player);
-        int nowRound = player.getGame().getGameState().getRound();
+    public void place(Player player, CardDictionary cardDictionary, int round) {
+        super.place(player, cardDictionary, round);
         int sum;
         ArrayList<Integer> list = new ArrayList<>();
 
         for (int stackRound : rounds) {
-            sum = stackRound + nowRound;
+            sum = stackRound + round;
             if (sum > 14) {
                 break;
             }

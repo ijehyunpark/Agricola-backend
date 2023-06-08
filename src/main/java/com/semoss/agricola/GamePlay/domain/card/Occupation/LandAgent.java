@@ -2,12 +2,12 @@ package com.semoss.agricola.GamePlay.domain.card.Occupation;
 
 import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.card.ActionTrigger;
+import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
 import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStruct;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
@@ -15,9 +15,8 @@ import org.springframework.stereotype.Component;
  */
 @Getter
 @Component
-@Scope("prototype")
 public class LandAgent extends DefaultOccupation implements ActionTrigger {
-    private int playerRequirement;
+    private final int playerRequirement;
 
     public LandAgent(@Value("${landAgent.id}") Long cardID,
                      @Value("${landAgent.name}") String name,
@@ -41,8 +40,8 @@ public class LandAgent extends DefaultOccupation implements ActionTrigger {
 
 
     @Override
-    public void place(Player player) {
-        super.place(player);
+    public void place(Player player, CardDictionary cardDictionary, int round) {
+        super.place(player, cardDictionary, round);
         player.addResource(ResourceStruct.builder()
                 .resource(ResourceType.VEGETABLE)
                 .count(1)

@@ -5,8 +5,8 @@ import com.semoss.agricola.GamePlay.domain.CardDistributeStrategy;
 import com.semoss.agricola.GamePlay.domain.GameProgress;
 import com.semoss.agricola.GamePlay.domain.action.implement.DefaultAction;
 import com.semoss.agricola.GamePlay.domain.card.CardDictionary;
-import com.semoss.agricola.GamePlay.domain.resource.AnimalType;
 import com.semoss.agricola.GamePlay.domain.player.Player;
+import com.semoss.agricola.GamePlay.domain.resource.AnimalType;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
 import com.semoss.agricola.GamePlay.exception.BlockingException;
@@ -162,10 +162,15 @@ public class AgricolaServiceImpl implements AgricolaService {
         AgricolaGame game = extractGame(gameRoomId);
 
         // 교환 작업 수행
-        game.playExchange(improvementId, resource, count);
+        if(resource != ResourceType.BEGGING){
+            game.playExchange(improvementId, resource, count);
+        }
 
         // 만약 게임 상태가 수확단계에서 이루어진 교환이라면 이후에 수확 과정을 진행한다.
         if(game.getGameState().getGameProgress() == GameProgress.HARVEST){
+            if(resource == ResourceType.BEGGING){
+                game.addBegging(count);
+            }
             feeding(gameRoomId);
         }
     }

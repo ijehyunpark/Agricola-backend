@@ -43,6 +43,7 @@ public class AgricolaGame implements Game {
     private final GameType gameType = GameType.Agricola;
 
 
+
     @Getter
     public static class GameState {
         private int round = -1;
@@ -333,6 +334,17 @@ public class AgricolaGame implements Game {
 
         // 주설비와 교환 요청 자원을 사용하여 교환 작업을 수행한다.
         cookingMajorCard.cooking(player, AnimalStruct.builder().animal(animal).count(count).build());
+    }
+
+
+    /**
+     * 식량 토큰과 구걸 토큰을 교환한다.
+     */
+    public void addBegging(int count) {
+        Player player = this.getGameState().getPlayer();
+
+        player.addResource(ResourceType.BEGGING, count);
+        player.addResource(ResourceType.FOOD, count);
     }
 
     public void playRelocation(int y, int x, int newY, int newX, int count) {

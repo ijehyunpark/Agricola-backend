@@ -250,7 +250,7 @@ public class ActionFactory {
                         .build())
                 .resource(ResourceStruct.builder()
                         .resource(ResourceType.FOOD)
-                        .count(2)
+                        .count(1)
                         .build())
                 .build();
     }

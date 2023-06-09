@@ -762,6 +762,11 @@ public class PlayerBoard {
      * @return 이동한 동물 수(수용가능한 동물 양에 따라 결과값이 달라짐)
      */
     protected int addRemovedAnimal(int row, int col, AnimalType animalType, int animalNum){
+        if (animalNum == 1 && fields[row][col] instanceof Room && ((Room) fields[row][col]).isPetRoom() && ((Room)fields[row][col]).getPet() == null) {
+            ((Room)fields[row][col]).addPet(animalType);
+            moveAnimalArr[animalType.getValue()].subResource(1);
+            return 1;
+        }
         if (fields[row][col] == null || fields[row][col].getFieldType() != FieldType.BARN && fields[row][col].getFieldType() != FieldType.STABLE) throw new IllegalRequestException("해당 필드는 헛간이 아닙니다.");
         animalNum = Integer.min(animalNum,moveAnimalArr[animalType.getValue()].getCount());
         int num = ((Barn)fields[row][col]).addAnimal(animalType, animalNum);
@@ -771,7 +776,6 @@ public class PlayerBoard {
     }
 
     /**
-     * TODO 초과된 동물을 removed animal 로 간주하고 추가 입력
      * 행동칸이나 수확행동을 통해 동물을 추가 하였을때 자동으로 배치하는 함수
      * @param animalType 동물 타입
      * @param animalNum 동물 수
@@ -892,6 +896,42 @@ public class PlayerBoard {
             System.out.println();
         }
     }
+
+    /**
+     * test 함수
+     */
+    public void printBarn() {
+        for (int i = 0; i < fields.length; i++) {
+            for (int j = 0; j < fields[0].length; j++) {
+                if (fields[i][j] == null) System.out.print("null");
+                else {
+                    if (fields[i][j] instanceof Barn){
+                        AnimalStruct tmp = ((Barn)fields[i][j]).getAnimal();
+                        if (tmp.getAnimal() == null) System.out.print("EMP0");
+                        else if (tmp.getAnimal() == AnimalType.SHEEP) System.out.printf("SH%2d",tmp.getCount());
+                        else if (tmp.getAnimal() == AnimalType.WILD_BOAR) System.out.printf("WB%2d",tmp.getCount());
+                        else if (tmp.getAnimal() == AnimalType.CATTLE) System.out.printf("CA%2d",tmp.getCount());
+                        else System.out.print("ERRR");
+                    }
+                    else if ((fields[i][j] instanceof Room) && ((Room)fields[i][j]).isPetRoom()) {
+                        AnimalType temp = ((Room)fields[i][j]).getPet();
+                        if (temp == null) System.out.print("EMP0");
+                        else if (temp == AnimalType.SHEEP) System.out.printf("SH%2d",1);
+                        else if (temp == AnimalType.WILD_BOAR) System.out.printf("WB%2d",1);
+                        else if (temp == AnimalType.CATTLE) System.out.printf("CA%2d",1);
+                        else System.out.print("ERRR");
+                    }
+                    else
+                        System.out.print(fields[i][j].getFieldType().toString());
+                }
+                System.out.print(" ");
+            }
+            System.out.println();
+        }
+    }
+
+
+
     /**
      * 경작 가능성 검증
      */

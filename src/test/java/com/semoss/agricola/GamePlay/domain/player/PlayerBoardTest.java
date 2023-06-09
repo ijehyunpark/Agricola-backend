@@ -1,9 +1,11 @@
 package com.semoss.agricola.GamePlay.domain.player;
 
+import com.semoss.agricola.GamePlay.domain.resource.AnimalStruct;
 import com.semoss.agricola.GamePlay.domain.resource.AnimalType;
 import com.semoss.agricola.GamePlay.exception.AnimalOverflowException;
 import com.semoss.agricola.GamePlay.exception.IllegalRequestException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -136,6 +138,7 @@ class PlayerBoardTest {
     }
 
     @Test
+    @DisplayName("동물 추가")
     void testAnimalMove() {
         //TODO 보완해야합니다. add, delete 누락되있음
         playerBoard1.buildFence(fence1[0],fence1[1]);
@@ -158,6 +161,59 @@ class PlayerBoardTest {
         for (int i=0;i<cattlePos1.length;i++) {
             assertArrayEquals(cattlePos1[i],result[i]);
         }
+    }
 
+    @Test
+    @DisplayName("동물 제거후 이동")
+    void moveAnimalTest(){
+        //given
+        playerBoard3.buildFence(fence3_1[0],fence3_1[1]);
+        playerBoard3.buildFence(fence3_2[0],fence3_2[1]);
+        playerBoard3.buildFence(fence3_3[0],fence3_3[1]);
+        playerBoard3.addAnimal(AnimalType.SHEEP,2);
+        playerBoard3.addAnimal(AnimalType.WILD_BOAR,2);
+        playerBoard3.addAnimal(AnimalType.CATTLE,2);
+        playerBoard3.printBarn();
+        AnimalStruct[] expectedMovedAnimal = new AnimalStruct[]{
+                AnimalStruct.builder().animal(AnimalType.SHEEP).count(1).build(),
+                AnimalStruct.builder().animal(AnimalType.WILD_BOAR).count(1).build(),
+                AnimalStruct.builder().animal(AnimalType.CATTLE).count(1).build()
+        };
+
+        //when
+        playerBoard3.removeAnimal(0,3,1);
+        playerBoard3.removeAnimal(1,4,1);
+        playerBoard3.removeAnimal(2,2,1);
+
+        //then
+        AnimalStruct[] actualMovedAnimal = playerBoard3.getMoveAnimalArr();
+        assertEquals(expectedMovedAnimal[0].getCount(),actualMovedAnimal[0].getCount());
+        assertEquals(expectedMovedAnimal[1].getCount(),actualMovedAnimal[1].getCount());
+        assertEquals(expectedMovedAnimal[2].getCount(),actualMovedAnimal[2].getCount());
+
+        //when
+        playerBoard3.addRemovedAnimal(1,0,AnimalType.SHEEP,1);
+        playerBoard3.addRemovedAnimal(1,4,AnimalType.WILD_BOAR,1);
+        playerBoard3.addRemovedAnimal(2,4,AnimalType.CATTLE,1);
+        playerBoard3.printBarn();
+
+        //then
+        assertTrue(playerBoard3.isMovAnimalArrEmpty());
+    }
+
+    @Test
+    @DisplayName("동물 자동 추가 불가시 throw 테스트")
+    void addAnimalThrowTest() {
+        //given
+        playerBoard3.buildFence(fence3_1[0], fence3_1[1]);
+        playerBoard3.buildFence(fence3_2[0], fence3_2[1]);
+        playerBoard3.buildFence(fence3_3[0], fence3_3[1]);
+        playerBoard3.addAnimal(AnimalType.SHEEP, 2);
+        playerBoard3.addAnimal(AnimalType.WILD_BOAR, 2);
+        playerBoard3.addAnimal(AnimalType.CATTLE, 2);
+
+        //when,then
+        assertThrows(AnimalOverflowException.class, () -> playerBoard3.addAnimal(AnimalType.WILD_BOAR,2));
+        assertEquals(1,playerBoard3.getMoveAnimalArr()[AnimalType.WILD_BOAR.getValue()].getCount());
     }
 }

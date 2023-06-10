@@ -46,7 +46,7 @@ public class AgricolaGame implements Game {
 
     @Getter
     public static class GameState {
-        private int round = -1;
+        private int round = 0;
         private GameProgress gameProgress;
         @JsonProperty("playerId")
         @JsonIdentityReference(alwaysAsId = true)

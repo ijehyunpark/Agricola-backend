@@ -1,5 +1,7 @@
 package com.semoss.agricola.GamePlay.domain.action.implement;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.semoss.agricola.GamePlay.domain.History;
 import com.semoss.agricola.GamePlay.domain.action.DoType;
 import com.semoss.agricola.GamePlay.domain.action.component.PlaceAction;
@@ -10,6 +12,8 @@ import com.semoss.agricola.GamePlay.domain.player.Player;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceStructInterface;
 import com.semoss.agricola.GamePlay.domain.resource.ResourceType;
 import com.semoss.agricola.GamePlay.dto.AgricolaActionRequest;
+import com.semoss.agricola.GamePlay.exception.IllegalRequestException;
+import com.semoss.agricola.util.ObjectMapperSingleton;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -41,7 +45,15 @@ public class Action29 extends DefaultAction {
         // TODO: Memento로 실패 시 롤백
 
         PlaceAction placeAction = (PlaceAction) getActions().get(0);
-        Long cardId = (Long) acts.get(0).getActs();
+        Long cardId;
+        try {
+            AgricolaActionRequest.ActionFormat actionFormat = acts.get(0);
+            ObjectMapper objectMapper = ObjectMapperSingleton.getInstance();
+            String jsonString = objectMapper.writeValueAsString(actionFormat.getActs());
+            cardId = objectMapper.readValue(jsonString, Long.class);
+        } catch (JsonProcessingException e){
+            throw new IllegalRequestException("요청 필드 오류");
+        }
 
         // 플레이어가 내려놓은 직업 카드 계산
         int occupationCount = 0;

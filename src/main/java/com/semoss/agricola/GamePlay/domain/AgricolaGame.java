@@ -43,6 +43,7 @@ public class AgricolaGame implements Game {
     private final GameType gameType = GameType.Agricola;
 
 
+
     @Getter
     public static class GameState {
         private int round = -1;
@@ -207,16 +208,18 @@ public class AgricolaGame implements Game {
 
     /**
      * 플레이를 하지 않은 다음 플레이어를 찾는다.
-     * @param player 현재 플레이를 진행한 플레이어
      * @return 모든 플레이어가 플레이를 마친 경우 null, 아닌 경우 다음 플레이어
      */
-    public Optional<Player> findNextActionPlayer(Player player){
+    public Optional<Player> findNextActionPlayer(){
+        Player player = getGameState().getPlayer();
+
         Player nextPlayer = player;
         do{
-            nextPlayer = findNextPlayer(player);
+            nextPlayer = findNextPlayer(nextPlayer);
             if(!nextPlayer.isCompletedPlayed())
                 return Optional.of(nextPlayer);
         } while (nextPlayer != player);
+
         return Optional.empty();
     }
 
@@ -333,6 +336,17 @@ public class AgricolaGame implements Game {
 
         // 주설비와 교환 요청 자원을 사용하여 교환 작업을 수행한다.
         cookingMajorCard.cooking(player, AnimalStruct.builder().animal(animal).count(count).build());
+    }
+
+
+    /**
+     * 식량 토큰과 구걸 토큰을 교환한다.
+     */
+    public void addBegging(int count) {
+        Player player = this.getGameState().getPlayer();
+
+        player.addResource(ResourceType.BEGGING, count);
+        player.addResource(ResourceType.FOOD, count);
     }
 
     public void playRelocation(int y, int x, int newY, int newX, int count) {

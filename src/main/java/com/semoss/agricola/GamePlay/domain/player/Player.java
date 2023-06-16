@@ -28,13 +28,14 @@ import java.util.List;
  */
 @Getter
 @NoArgsConstructor
-
 public class Player {
     private Long userId;
     private boolean startingToken;
     private final EnumMap<ResourceType,Integer> resources = new EnumMap<>(ResourceType.class);
     private final PlayerBoard playerBoard = PlayerBoard.builder().build();
-    private final List<ResourceStructInterface>[] roundStackResource = new ArrayList[15];
+    private static final int ROUND_STACK_RESOURCE_SIZE = 15;
+    private final List<List<ResourceStructInterface>> roundStackResource = new ArrayList<>(ROUND_STACK_RESOURCE_SIZE);
+
 
     @Builder
     public Player(Long userId, boolean isStartPlayer){
@@ -42,9 +43,6 @@ public class Player {
         this.startingToken = isStartPlayer;
         for (ResourceType resource : ResourceType.values()){
             resources.put(resource,0);
-        }
-        for (int i = 0; i < 15; i++) {
-            roundStackResource[i] = new ArrayList<>();
         }
     }
 
@@ -103,8 +101,8 @@ public class Player {
      */
     public void addRoundStack(int[] rounds, ResourceStruct resourceStruct){
         for (int round : rounds) {
-            if (round >= roundStackResource.length) throw new IllegalRequestException("잘못된 라운드가 입력되었습니다.");
-            roundStackResource[round].add(resourceStruct);
+            if (round >= ROUND_STACK_RESOURCE_SIZE) throw new IllegalRequestException("잘못된 라운드가 입력되었습니다.");
+            roundStackResource.get(round).add(resourceStruct);
         }
     }
 
@@ -115,8 +113,8 @@ public class Player {
      */
     public void addRoundStack(int[] rounds, AnimalStruct animalStruct){
         for (int round : rounds) {
-            if (round >= roundStackResource.length) throw new IllegalRequestException("잘못된 라운드가 입력되었습니다.");
-            roundStackResource[round].add(animalStruct);
+            if (round >= ROUND_STACK_RESOURCE_SIZE) throw new IllegalRequestException("잘못된 라운드가 입력되었습니다.");
+            roundStackResource.get(round).add(animalStruct);
         }
     }
 
@@ -205,7 +203,7 @@ public class Player {
      * @param round 현재 라운드
      */
     public void getRoundStack(int round){
-        for (ResourceStructInterface resourceStruct : roundStackResource[round]){
+        for (ResourceStructInterface resourceStruct : roundStackResource.get(round)){
             if(resourceStruct.isResource())
                 this.addResource((ResourceStruct) resourceStruct);
             else if (resourceStruct.isAnimal())
